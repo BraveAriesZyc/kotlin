@@ -1,0 +1,20 @@
+CREATE TABLE MessageTable (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uid TEXT NOT NULL,
+  type TEXT NOT NULL,
+  content TEXT NOT NULL,
+  imageUrl TEXT NOT NULL,
+  videoUrl TEXT NOT NULL,
+   audioUrl TEXT NOT NULL,
+   fileUrl TEXT NOT NULL,
+   role TEXT NOT NULL ,
+    sessionId TEXT NOT NULL,
+    timestamp INTEGER NOT NULL
+);
+
+insertMessage:
+INSERT INTO MessageTable (uid, type, content, imageUrl, videoUrl, audioUrl, fileUrl, role, sessionId, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+
+selectAllMessages:
+SELECT * FROM MessageTable;

@@ -1,0 +1,25 @@
+
+CREATE TABLE UserTable (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uid TEXT NOT NULL,
+  userName TEXT NOT NULL,
+  avatar TEXT NOT NULL,
+  age INTEGER NOT NULL,
+  sex TEXT NOT NULL
+);
+
+selectUser:
+SELECT * FROM UserTable;
+
+insertUser:
+INSERT INTO UserTable (uid, userName,  avatar, age, sex)
+VALUES (?, ?, ?, ?, ?);
+
+removeUser:
+DELETE FROM UserTable WHERE uid = ?;
+
+updateUser:
+UPDATE UserTable SET userName = ?, avatar = ? , age = ?, sex = ? WHERE uid = ?;
+
+
+
