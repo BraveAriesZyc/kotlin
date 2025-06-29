@@ -23,7 +23,7 @@ class ThemeManager private constructor() {
     )
     val themeMap: StateFlow<Map<AppTheme, ColorScheme>> = _themeMap
 
-    val currentTheme = mutableStateOf(antDesign)
+    val currentTheme = mutableStateOf(element)
 
     fun updateTheme(theme: AppTheme) {
         currentTheme.value = _themeMap.value[theme] ?: antDesign

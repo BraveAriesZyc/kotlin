@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<style name="Theme.Clover_app" parent="android:Theme.Material.Light.NoActionBar">
+	<style name="Theme.Clover_app" parent="android:Theme.Material.NoActionBar">
 		<!-- 仅覆盖背景设置为透明 -->
-		<item name="android:windowBackground">@android:color/transparent</item>
+<!--		<item name="android:windowBackground">@android:color/transparent</item>-->
 		<item name="android:windowIsTranslucent">true</item>
-		
-		<!-- 可选：如果需要透明状态栏 -->
-		<!-- <item name="android:statusBarColor">@android:color/transparent</item> -->
-		
-		<!-- 可选：如果需要透明导航栏 -->
-		<!-- <item name="android:navigationBarColor">@android:color/transparent</item> -->
 	</style>
 </resources>
