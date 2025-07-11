@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -43,15 +46,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zyc.clover.utils.event.GlobalAntiShake.debounceClick
+import com.zyc.clover.R
 
 import kotlinx.coroutines.launch
 
@@ -141,7 +153,27 @@ fun MenuDrawer(
                                                     modifier = Modifier.wrapContentWidth(),
                                                     shape = RoundedCornerShape(2.dp),
                                                     label = { Text(it.title) },
-                                                    icon = { Icon(it.icon, contentDescription = null) },
+                                                    icon = {
+                                                        Box(
+                                                            content = {
+                                                                // 上层清晰图标（使用 BoxScope 的 align 扩展函数居中对齐）
+                                                                Text(
+                                                                    text = it.icon,
+                                                                    color = MaterialTheme.colorScheme.primary,
+                                                                    fontSize = 24.sp,
+                                                                    fontFamily = FontFamily(Font(R.font.icons)),
+                                                                    modifier = Modifier.align(Alignment.Center)
+                                                                )
+                                                            },
+                                                            modifier = Modifier
+                                                                .wrapContentSize()
+                                                                .clip(CircleShape)
+                                                                .background(
+                                                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                                                                )
+                                                                .padding(5.dp)
+                                                        )
+                                                    },
                                                     selected = it.selected,
                                                     onClick = {
                                                         scope.launch { drawerState.close() }
@@ -173,7 +205,7 @@ fun MenuDrawer(
 
 class NavigationDrawerItemType(
     val title: String,
-    val icon: ImageVector,
+    val icon: String,
     val selected: Boolean = false,
     val onClick: () -> Unit = {}
 )

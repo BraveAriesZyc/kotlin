@@ -1,6 +1,5 @@
 package com.zyc.clover.pages.layout
 
-import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,7 +11,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 
 
 import androidx.compose.runtime.*
@@ -20,24 +18,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.zyc.clover.InitAppViewModel
 import com.zyc.clover.components.drawer.MenuDrawer
 
 import com.zyc.clover.components.page_screen.PageScreen
 import com.zyc.clover.components.page_screen.PageScreenData
 import com.zyc.clover.route.LocalNavController
-import com.zyc.clover.ui.pages.layout.LayoutScreenViewModel
-import com.zyc.clover.ui.pages.layout.NavItem
 
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
-import com.zyc.clover.R
 
 @Composable
 fun LayoutScreen() {
@@ -156,10 +147,5 @@ fun BottomNavigationItem(
             contentDescription = "item.title",
             modifier = Modifier.size(24.dp)
         )
-//        Text(
-//            text = "\uEA20",
-//           fontSize = 24.sp,
-//            fontFamily = FontFamily(Font(R.font.icons))
-//        )
     }
 }

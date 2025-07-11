@@ -1,8 +1,6 @@
-package com.zyc.clover.ui.pages.layout
+package com.zyc.clover.pages.layout
 
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
@@ -29,14 +27,14 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
     val drawerList = listOf(
         NavigationDrawerItemType(
             title = "华为应用市场",
-            icon = Icons.Default.Warning,
+            icon = "\uEA20",
             onClick = {
                 navController.navigate(WebViewRoute("https://developer.huawei.com/consumer/cn/service/josp/agc/index.html#/myApp?menuId=97458334310914199"))
             }
         ),
         NavigationDrawerItemType(
             title = "百度",
-            icon = Icons.Default.Warning,
+            icon = "\uEE64",
             onClick = {
                 navController.navigate(WebViewRoute("https://www.iconfont.cn/home/index?spm=a313x.collections_index.1998910419.2.44b63a81zIc8sP"))
             }
