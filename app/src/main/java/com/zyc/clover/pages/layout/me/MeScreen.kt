@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.zyc.clover.components.ZAppBar
+import com.zyc.clover.components.drawer.DrawerViewModel
 
 import com.zyc.clover.route.LocalNavController
 import com.zyc.clover.ui.theme.LocalTheme
@@ -36,14 +37,13 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MeScreen(toggleDrawer: () -> Unit) {
+fun MeScreen() {
     val navController = LocalNavController.current
     val meViewModel = viewModel<MeViewModel>()
+    val drawerViewModel = viewModel<DrawerViewModel>()
 
     val themeModel = LocalTheme.current
     val themeMap by themeModel.themeMap.collectAsState()
-//    val currentTheme by themeMap.currentTheme.collectAsState()
-
     val scope = rememberCoroutineScope()
     Scaffold(
         topBar = {
@@ -53,7 +53,7 @@ fun MeScreen(toggleDrawer: () -> Unit) {
                     IconButton(
                         onClick = {
                             scope.launch {
-                                toggleDrawer()
+                                drawerViewModel.toggleDrawer()
                             }
                         },
                         content = {
@@ -73,7 +73,11 @@ fun MeScreen(toggleDrawer: () -> Unit) {
                     .padding(top = pd.calculateTopPadding()),
                 content = {
 
-                    Column {
+                    Column(
+                        modifier = Modifier.padding(pd),
+                        verticalArrangement = Arrangement.SpaceEvenly,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Text(text = "主题选择")
                         Text(text = "${themeMap.size}")
                         // 添加垂直间距
@@ -87,10 +91,11 @@ fun MeScreen(toggleDrawer: () -> Unit) {
                                 Text(text = entry.key.name)
                             }
                         }
+
+
+                        Text(modifier = Modifier.padding(pd), text = "我的")
                     }
 
-
-                    Text(modifier = Modifier.padding(pd), text = "我的")
                 }
             )
 

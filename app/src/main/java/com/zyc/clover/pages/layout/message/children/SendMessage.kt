@@ -1,4 +1,4 @@
-package com.zyc.clover.pages.layout.children.message.children
+package com.zyc.clover.pages.layout.message.children
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +42,7 @@ import com.zyc.clover.models.enums.Role
 import com.zyc.clover.models.UserModel
 import com.zyc.clover.models.enums.MessageType
 import com.zyc.clover.components.ZAppBar
+import com.zyc.clover.pages.layout.children.message.children.SendMessageViewModel
 import com.zyc.clover.route.LocalNavController
 
 import com.zyc.clover.utils.event.GlobalAntiShake.debounceClick

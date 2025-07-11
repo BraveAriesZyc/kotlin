@@ -8,20 +8,25 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.DrawerValue
+
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
+
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.Text
+
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.compose.ui.unit.sp
 import com.zyc.clover.InitAppViewModel
+import com.zyc.clover.components.drawer.MenuDrawer
 
 import com.zyc.clover.components.page_screen.PageScreen
 import com.zyc.clover.components.page_screen.PageScreenData
@@ -31,9 +36,8 @@ import com.zyc.clover.ui.pages.layout.NavItem
 
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
-
+import com.zyc.clover.R
 
 @Composable
 fun LayoutScreen() {
@@ -42,6 +46,8 @@ fun LayoutScreen() {
     val viewModel by remember { mutableStateOf(LayoutScreenViewModel(navController)) }
     // 在Composable层创建PagerState
     val pagerState = rememberPagerState(pageCount = { viewModel.navItems.size })
+    //
+    val drawerState by viewModel.drawerState.collectAsState()
     // 同步ViewModel与PagerState的状态
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }
@@ -55,23 +61,34 @@ fun LayoutScreen() {
     }
     // 当 ViewModel 中的状态变化时，更新 DrawerState
 
-    Scaffold(
+    Box(
         modifier = Modifier.fillMaxSize(),
-        content = { pd ->
-            Box(
-                modifier = Modifier.fillMaxSize().padding(bottom = pd.calculateBottomPadding()),
+        content = {
+
+            MenuDrawer(
+                drawerList = viewModel.drawerList,
                 content = {
-                    PageScreen(
-                        data = PageScreenData(
-                            pagerState = pagerState,
-                            pageContents = viewModel.navItems.map { it.screen }
-                        )
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        content = { pd ->
+                            Box(
+                                modifier = Modifier.fillMaxSize().padding(bottom = pd.calculateBottomPadding()),
+                                content = {
+                                    PageScreen(
+                                        data = PageScreenData(
+                                            pagerState = pagerState,
+                                            pageContents = viewModel.navItems.map { it.screen }
+                                        )
+                                    )
+                                }
+                            )
+                        },
+                        bottomBar = {
+                            BottomNavigationBar(viewModel.navItems, pagerState)
+                        }
                     )
                 }
             )
-        },
-        bottomBar = {
-            BottomNavigationBar(viewModel.navItems, pagerState)
         }
     )
 }
@@ -139,6 +156,10 @@ fun BottomNavigationItem(
             contentDescription = "item.title",
             modifier = Modifier.size(24.dp)
         )
-
+//        Text(
+//            text = "\uEA20",
+//           fontSize = 24.sp,
+//            fontFamily = FontFamily(Font(R.font.icons))
+//        )
     }
 }

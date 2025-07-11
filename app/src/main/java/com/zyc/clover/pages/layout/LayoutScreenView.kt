@@ -2,7 +2,6 @@ package com.zyc.clover.ui.pages.layout
 
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -13,7 +12,7 @@ import androidx.navigation.NavController
 import com.zyc.clover.R
 import com.zyc.clover.components.drawer.NavigationDrawerItemType
 import com.zyc.clover.pages.layout.children.friend.FriendScreen
-import com.zyc.clover.pages.layout.children.home.HomeScreen
+import com.zyc.clover.pages.layout.home.HomeScreen
 import com.zyc.clover.pages.layout.children.me.MeScreen
 import com.zyc.clover.pages.layout.children.message.MessageScreen
 import com.zyc.clover.route.WebViewRoute
@@ -74,7 +73,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             title = "我的",
             icon = R.drawable.my,
             selectIcon = R.drawable.select_my,
-            screen = { MeScreen { toggleDrawer() } }
+            screen = { MeScreen() }
         )
     )
 
@@ -84,11 +83,6 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
         if (page != _currentPage.intValue) {
             _currentPage.intValue = page
         }
-    }
-
-
-    fun toggleDrawer() {
-        _drawerState.value = !_drawerState.value
     }
 
 }

@@ -1,25 +1,21 @@
 package com.zyc.clover.route
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.zyc.clover.pages.auth.LoginScreen
 import com.zyc.clover.pages.auth.RegisterScreen
 import com.zyc.clover.pages.layout.LayoutScreen
 import com.zyc.clover.pages.layout.children.message.MessageScreen
-import com.zyc.clover.pages.layout.children.message.children.SendMessageScreen
+import com.zyc.clover.pages.layout.message.children.SendMessageScreen
 import com.zyc.clover.pages.start.StartScreen
 import com.zyc.clover.pages.web.WebViewScreen
 

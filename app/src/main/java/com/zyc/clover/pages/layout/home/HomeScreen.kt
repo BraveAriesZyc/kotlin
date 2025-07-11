@@ -1,4 +1,4 @@
-package com.zyc.clover.pages.layout.children.home
+package com.zyc.clover.pages.layout.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.zyc.clover.components.ZAppBar
+import com.zyc.clover.pages.layout.children.home.HomeViewModel
 
 
 val PADDING = 8.dp

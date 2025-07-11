@@ -13,7 +13,7 @@ val fontFamily = FontFamily(
     fonts = listOf(
         Font(R.font.dj),
         Font(R.font.we_chat, FontWeight.W500),
-        Font(R.font.word_bold, FontWeight.Bold)
+        Font(R.font.word_bold, FontWeight.Bold),
     )
 )
 

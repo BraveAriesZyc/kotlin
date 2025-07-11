@@ -63,8 +63,6 @@ fun LoginScreen( ) {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                         content = {
-
-
                             AsyncImage(
                                 model = "https://zhoudaxian.oss-rg-china-mainland.aliyuncs.com/avatar.jpg",
                                 modifier = Modifier.size(100.dp).clip(RoundedCornerShape(50.dp)),
@@ -79,7 +77,6 @@ fun LoginScreen( ) {
                                     authView.setUserName(it)
                                 },
                             )
-
                             Spacer(modifier = Modifier.height(16.dp))
 
                             NoBorderFormInput(
@@ -90,7 +87,6 @@ fun LoginScreen( ) {
                                     authView.setPassword(it)
                                 },
                             )
-
                             Spacer(modifier = Modifier.height(24.dp))
                             FormButton(
                                 text = "登录",
