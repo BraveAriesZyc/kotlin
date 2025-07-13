@@ -1,7 +1,7 @@
 package com.zyc.clover.di
 
 import com.zyc.clover.InitAppViewModel
-import com.zyc.clover.pages.layout.children.message.MessageViewModel
+import com.zyc.clover.pages.layout.message.MessageViewModel
 import com.zyc.clover.pages.layout.children.message.children.SendMessageViewModel
 import com.zyc.clover.repository.ChatRepository
 import com.zyc.clover.repository.MessageRepository

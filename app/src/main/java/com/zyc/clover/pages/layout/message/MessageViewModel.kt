@@ -1,4 +1,4 @@
-package com.zyc.clover.pages.layout.children.message
+package com.zyc.clover.pages.layout.message
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

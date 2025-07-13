@@ -51,7 +51,7 @@ fun NavigationRouterScreen() {
 data object RootRoute
 
 val installRoot: (NavGraphBuilder.() -> Unit) = {
-    navigation<RootRoute>(startDestination = StartRoute) {
+    navigation<RootRoute>(startDestination = RegisterRoute) {
         composableSlide<StartRoute> { StartScreen() }
         composableSlide<LoginRoute> { LoginScreen() }
         composableSlide<RegisterRoute> { RegisterScreen() }

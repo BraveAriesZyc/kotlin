@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,6 +35,7 @@ import com.zyc.clover.components.element.components.input.NoBorderFormInput
 import com.zyc.clover.route.LocalNavController
 import com.zyc.clover.route.LoginRoute
 import com.zyc.clover.route.RegisterRoute
+import com.zyc.clover.ui.theme.CloverAppTheme
 
 import com.zyc.clover.utils.event.GlobalAntiShake.debounceClick
 
@@ -43,8 +45,9 @@ fun RegisterScreen( ) {
     val navController = LocalNavController.current
     val authView = viewModel<AuthViewModel>()
 
-    val userName by authView.userName.collectAsState()
+    val userName by authView.phone.collectAsState()
     val password by authView.password.collectAsState()
+
 
 
     Scaffold(
@@ -69,9 +72,9 @@ fun RegisterScreen( ) {
                             NoBorderFormInput(
                                 modifier = Modifier.fillMaxWidth(),
                                 value = userName,
-                                placeholder = "请输入用户名",
+                                placeholder = "请输入手机号",
                                 onValueChange = { it ->
-                                    authView.setUserName(it)
+                                    authView.setPhone(it)
                                 },
                             )
 
@@ -90,7 +93,7 @@ fun RegisterScreen( ) {
                             FormButton(
                                 text = "注册",
                                 onClick = {
-                                    authView.loginSubmit()
+                                    authView.registerSubmit()
                                 }
                             )
                             Row(

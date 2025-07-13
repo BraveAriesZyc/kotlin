@@ -39,7 +39,7 @@ fun LoginScreen( ) {
     val navController = LocalNavController.current
     val authView = viewModel<AuthViewModel>()
 
-    val userName by authView.userName.collectAsState()
+    val phone by authView.phone.collectAsState()
     val password by authView.password.collectAsState()
 
 
@@ -71,10 +71,10 @@ fun LoginScreen( ) {
                             Spacer(modifier = Modifier.height(30.dp))
                             NoBorderFormInput(
                                 modifier = Modifier.fillMaxWidth(),
-                                value = userName,
+                                value = phone,
                                 placeholder = "请输入用户名",
                                 onValueChange = { it ->
-                                    authView.setUserName(it)
+                                    authView.setPhone(it)
                                 },
                             )
                             Spacer(modifier = Modifier.height(16.dp))

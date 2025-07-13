@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -53,7 +54,6 @@ fun WebViewScreen(url: String) {
 
                                     // 其他常用设置
                                     settings.domStorageEnabled = true
-                                    settings.databaseEnabled = true
                                     settings.setSupportZoom(true)
                                     settings.builtInZoomControls = true
                                     settings.displayZoomControls = false
@@ -86,7 +86,7 @@ fun WebViewScreen(url: String) {
                         focusedElevation = 0.dp     // 聚焦状态阴影
                     ),
                     onClick = { navController.popBackStack() },
-                    content = { Icon(Icons.Filled.KeyboardArrowLeft, contentDescription = "返回") }
+                    content = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "返回") }
                 )
             })
         }

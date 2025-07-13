@@ -1,18 +1,21 @@
 package com.zyc.clover.pages.auth
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.zyc.clover.api.LoginApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class AuthViewModel : ViewModel() {
-    private val _userName = MutableStateFlow("")
+    private val _phone = MutableStateFlow("")
     private val _password = MutableStateFlow("")
-    val userName: StateFlow<String> = _userName
+    val phone: StateFlow<String> = _phone
     val password: StateFlow<String> = _password
 
 
-    fun setUserName(userName: String) {
-        _userName.value = userName
+    fun setPhone(userName: String) {
+        _phone.value = userName
     }
 
     fun setPassword(password: String) {
@@ -20,7 +23,13 @@ class AuthViewModel : ViewModel() {
     }
 
     fun loginSubmit() {
-
-
+        viewModelScope.launch {
+            LoginApi.login(phone.value, password.value)
+        }
+    }
+    fun registerSubmit() {
+        viewModelScope.launch {
+            LoginApi.register(phone.value, password.value)
+        }
     }
 }

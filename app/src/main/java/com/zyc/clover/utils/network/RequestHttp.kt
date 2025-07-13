@@ -1,5 +1,6 @@
 package com.zyc.clover.utils.network
 
+import android.util.Log
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -19,7 +20,7 @@ import kotlinx.serialization.json.Json
  * HTTP请求工具类
  */
 object RequestHttp {
-    const val BASE_URL = "http://192.168.103.33:9000/api"
+    const val BASE_URL = "http://192.168.10.2:9000/api"
 
     // 初始化HTTP客户端
     val httpClient: HttpClient = createHttpClient()
@@ -72,8 +73,7 @@ object RequestHttp {
         path: String,
         params: Map<String, Any>? = null
     ): ResponseData<T> = executeRequest {
-        httpClient.get {
-            url { encodedPath = path }
+        httpClient.get("$BASE_URL$path"){
             params?.forEach { (key, value) ->
                 parameter(key, value)
             }
@@ -90,8 +90,8 @@ object RequestHttp {
         path: String,
         data: Any? = null
     ): ResponseData<T> = executeRequest {
-        httpClient.post {
-            url { encodedPath = path }
+        Log.i("RequestHttp", "POST请求: $path")
+        httpClient.post("$BASE_URL$path"){
             data?.let { setBody(it) }
         }
     }
@@ -106,8 +106,7 @@ object RequestHttp {
         path: String,
         data: Any? = null
     ): ResponseData<T> = executeRequest {
-        httpClient.put {
-            url { encodedPath = path }
+        httpClient.put("$BASE_URL$path"){
             data?.let { setBody(it) }
         }
     }
@@ -122,8 +121,7 @@ object RequestHttp {
         path: String,
         params: Map<String, Any>? = null
     ): ResponseData<T> = executeRequest {
-        httpClient.delete {
-            url { encodedPath = path }
+        httpClient.delete("$BASE_URL$path"){
             params?.forEach { (key, value) ->
                 parameter(key, value)
             }
@@ -155,6 +153,7 @@ object RequestHttp {
             val responseData: ResponseData<T> = response.body()
             responseData
         } catch (e: Exception) {
+            Log.e("RequestHttp", "HTTP请求异常: ${e.message}")
             handleRequestException(e)
         }
     }
@@ -162,7 +161,7 @@ object RequestHttp {
     /**
      * 记录请求信息
      */
-fun logRequestInfo(response: HttpResponse) {
+    fun logRequestInfo(response: HttpResponse) {
         val request = response.request
         println("HTTP请求: ${request.method} ${request.url.fullPath}")
         println("HTTP状态码: ${response.status.value} ${response.status.description}")
@@ -171,7 +170,7 @@ fun logRequestInfo(response: HttpResponse) {
     /**
      * 处理请求异常
      */
-     inline fun <reified T> handleRequestException(e: Exception): ResponseData<T> {
+    inline fun <reified T> handleRequestException(e: Exception): ResponseData<T> {
         val apiException = when (e) {
             is SocketTimeoutException -> ApiException(408, "连接超时")
             is ConnectTimeoutException -> ApiException(408, "连接超时")
