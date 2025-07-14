@@ -47,6 +47,7 @@ fun RegisterScreen( ) {
 
     val userName by authView.phone.collectAsState()
     val password by authView.password.collectAsState()
+    val confirmPassword by authView.confirmPassword.collectAsState()
 
 
 
@@ -86,6 +87,16 @@ fun RegisterScreen( ) {
                                 placeholder = "请输入密码",
                                 onValueChange = { it ->
                                     authView.setPassword(it)
+                                },
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            NoBorderFormInput(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = confirmPassword,
+                                placeholder = "确认密码",
+                                onValueChange = { it ->
+                                    authView.setConfirmPassword(it)
                                 },
                             )
 

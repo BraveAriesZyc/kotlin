@@ -20,6 +20,7 @@ import kotlinx.serialization.json.Json
  * HTTP请求工具类
  */
 object RequestHttp {
+    //    const val BASE_URL = "http://192.168.65.33:9000/api"
     const val BASE_URL = "http://192.168.10.2:9000/api"
 
     // 初始化HTTP客户端
@@ -73,7 +74,7 @@ object RequestHttp {
         path: String,
         params: Map<String, Any>? = null
     ): ResponseData<T> = executeRequest {
-        httpClient.get("$BASE_URL$path"){
+        httpClient.get("$BASE_URL$path") {
             params?.forEach { (key, value) ->
                 parameter(key, value)
             }
@@ -90,8 +91,7 @@ object RequestHttp {
         path: String,
         data: Any? = null
     ): ResponseData<T> = executeRequest {
-        Log.i("RequestHttp", "POST请求: $path")
-        httpClient.post("$BASE_URL$path"){
+        httpClient.post("$BASE_URL$path") {
             data?.let { setBody(it) }
         }
     }
@@ -106,7 +106,7 @@ object RequestHttp {
         path: String,
         data: Any? = null
     ): ResponseData<T> = executeRequest {
-        httpClient.put("$BASE_URL$path"){
+        httpClient.put("$BASE_URL$path") {
             data?.let { setBody(it) }
         }
     }
@@ -121,7 +121,7 @@ object RequestHttp {
         path: String,
         params: Map<String, Any>? = null
     ): ResponseData<T> = executeRequest {
-        httpClient.delete("$BASE_URL$path"){
+        httpClient.delete("$BASE_URL$path") {
             params?.forEach { (key, value) ->
                 parameter(key, value)
             }
@@ -136,24 +136,17 @@ object RequestHttp {
     ): ResponseData<T> {
         return try {
             val response = block()
-
             logRequestInfo(response)
-
             // 处理HTTP状态码
             val httpStatusCode = response.status.value
-            if (httpStatusCode !in 200..299) {
-                return ResponseData(
-                    httpStatusCode,
-                    "HTTP请求失败: ${response.status.description}",
-                    data = null
-                )
+            when (httpStatusCode) {
+                in 200..299 -> response.body<ResponseData<T>>() // 成功状态码
+                in 300..399 -> throw ApiException(httpStatusCode, "重定向: ${response.status.description}")
+                in 400..499 -> throw ApiException(httpStatusCode, "客户端错误: ${response.status.description}")
+                in 500..599 -> throw ApiException(httpStatusCode, "服务器错误: ${response.status.description}")
+                else -> throw ApiException(httpStatusCode, "未知状态码: ${response.status.description}")
             }
-
-            // 解析响应数据
-            val responseData: ResponseData<T> = response.body()
-            responseData
         } catch (e: Exception) {
-            Log.e("RequestHttp", "HTTP请求异常: ${e.message}")
             handleRequestException(e)
         }
     }
@@ -194,7 +187,7 @@ class ApiException(val code: Int, override val message: String) : Exception(mess
 @Serializable
 data class ResponseData<T>(
     val code: Int,
-    val msg: String,
+    val message: String,
     val data: T?
 )
 

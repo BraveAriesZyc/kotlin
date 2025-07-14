@@ -1,7 +1,5 @@
 package com.zyc.clover.models
 
-import java.time.LocalDateTime
-
 data class UserModel(
     var id : Long? = null,
     /**
@@ -81,3 +79,21 @@ data class UserModel(
 
     var updateTime: String? = null
 )
+
+fun UserModel.toMap(): Map<String, String> {
+    return mapOf(
+        "id" to id.toString(),
+        "userId" to userId.toString(),
+        "nickname" to nickname.toString(),
+        "password" to password.toString(),
+        "phone" to phone.toString(),
+        "email" to email.toString(),
+        "avatar" to avatar.toString(),
+        "background" to background.toString(),
+        "gender" to gender.toString(),
+        "birthday" to birthday.toString(),
+        "bio" to bio.toString(),
+        "status" to status.toString(),
+        "lastLoginTime" to lastLoginTime.toString(),
+    )
+}
