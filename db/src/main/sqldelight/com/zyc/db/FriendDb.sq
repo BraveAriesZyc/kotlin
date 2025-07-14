@@ -1,6 +1,6 @@
 CREATE TABLE FriendTable (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  uid INTEGER NOT NULL,
+  userId INTEGER NOT NULL,
   userName TEXT NOT NULL,
   isChat INTEGER NOT NULL,  --  是否聊天 0 不在聊天 1 在聊天
   avatar TEXT NOT NULL
@@ -10,16 +10,16 @@ selectFriends:
 SELECT * FROM FriendTable;
 
 selectFriend:
-SELECT * FROM FriendTable WHERE uid = ?;
+SELECT * FROM FriendTable WHERE userId = ?;
 
 selectFriendChat:
 SELECT * FROM FriendTable WHERE isChat = 1;
 
 insertFriend:
-INSERT INTO FriendTable (uid, userName, avatar,  isChat) VALUES (?, ?,? , 0);
+INSERT INTO FriendTable (userId, userName, avatar,  isChat) VALUES (?, ?,? , 0);
 
 updateFriend:
-UPDATE FriendTable SET userName = ?, avatar = ?,  isChat = ? WHERE uid = ?;
+UPDATE FriendTable SET userName = ?, avatar = ?,  isChat = ? WHERE userId = ?;
 
 deleteFriend:
-DELETE FROM FriendTable WHERE uid = ?;
+DELETE FROM FriendTable WHERE userId = ?;

@@ -12,7 +12,7 @@ class MessageDao(
         return query.selectAllMessages().executeAsList().map {
             MessageEntity(
                 id = it.id,
-                uid = it.uid,
+                userId = it.userId,
                 type = it.type,
                 content = it.content,
                 imageUrl = it.imageUrl,
@@ -26,7 +26,7 @@ class MessageDao(
     }
     fun insertMessage(message: MessageEntity): Long {
         return query.insertMessage(
-            uid = message.uid,
+            userId = message.userId,
             type = message.type,
             content = message.content,
             imageUrl = message.imageUrl,

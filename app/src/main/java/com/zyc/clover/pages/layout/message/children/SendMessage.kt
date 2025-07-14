@@ -65,7 +65,7 @@ fun SendMessageScreen(conversationId: String) {
     Scaffold(
         topBar = {
             ZAppBar(
-                title = friend.userName,
+                title = "${friend.nickname}",
                 onBack = {
                     navController.popBackStack()
                     keyboardController?.hide()
@@ -102,7 +102,7 @@ fun SendMessageScreen(conversationId: String) {
 
                         sendMessageViewModel.sendMessage(
                             MessageModel(
-                                uid = user.uid,
+                                userId = "${user.userId}",
                                 type = MessageType.TEXT.value,
                                 content = it,
                                 sessionId = conversationId,
@@ -138,7 +138,7 @@ fun MessageItem(item: MessageModel, friend: UserModel, user: UserModel) {
                 horizontalAlignment = if (isSelf) Alignment.End else Alignment.Start,
                 content = {
                     Text(
-                        text = user.userName, style = TextStyle(
+                        text =  "${user.nickname}", style = TextStyle(
                             fontSize = 12.sp
                         )
                     )

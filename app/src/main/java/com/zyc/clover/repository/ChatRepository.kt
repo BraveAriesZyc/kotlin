@@ -10,7 +10,7 @@ interface ChatRepository {
     val user : StateFlow<UserModel>
     val messages : StateFlow<List<MessageModel>>
     fun getMessages(sessionId: String)
-    fun getUser(uid: String): UserModel
+    fun getUser(userId: String): UserModel
     fun sendMessage(message: MessageModel)
     fun initApp()
 }

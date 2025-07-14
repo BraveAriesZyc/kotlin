@@ -1,25 +1,101 @@
 
 CREATE TABLE UserTable (
+  -- 主键ID（自增）
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  uid TEXT NOT NULL,
-  userName TEXT NOT NULL,
-  avatar TEXT NOT NULL,
-  age INTEGER NOT NULL,
-  sex TEXT NOT NULL
+  -- 用户唯一标识
+  user_id TEXT,
+  -- 用户昵称
+  nickname TEXT,
+  -- 手机号码
+  phone TEXT,
+  -- 邮箱地址
+  email TEXT,
+  -- 用户头像URL
+  avatar TEXT,
+  -- 背景图URL
+  background TEXT,
+  -- 性别（0-未知，1-男，2-女）
+  gender INTEGER,
+  -- 生日
+  birthday TEXT,
+  -- 个人简介
+  bio TEXT,
+  -- 用户状态（0-正常，1-禁用，2-锁定）
+  status INTEGER,
+  -- 最后登录时间
+  last_login_time TEXT,  -- 存储LocalDateTime为字符串（如"2024-07-14T10:30:00"）
+  -- 最后登录IP
+  last_login_ip TEXT,
+  -- 创建时间
+  create_time TEXT,      -- 存储LocalDateTime为字符串
+  -- 更新时间
+  update_time TEXT       -- 存储LocalDateTime为字符串
 );
+
+insertUser:
+INSERT INTO UserTable (
+  user_id,        -- 用户唯一标识
+  nickname,       -- 用户昵称
+  phone,          -- 手机号码
+  email,          -- 邮箱地址
+  avatar,         -- 用户头像URL
+  background,     -- 背景图URL
+  gender,         -- 性别（0-未知，1-男，2-女）
+  birthday,       -- 生日
+  bio,            -- 个人简介
+  status,         -- 用户状态（0-正常，1-禁用，2-锁定）
+  last_login_time,-- 最后登录时间
+  last_login_ip,  -- 最后登录IP
+  create_time,    -- 创建时间
+  update_time     -- 更新时间
+) VALUES (?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+removeUser:
+DELETE FROM UserTable WHERE user_id = ?;
+UPDATE UserTable
+SET
+  nickname = ?,       -- 用户昵称
+  phone = ?,          -- 手机号码
+  email = ?,          -- 邮箱地址
+  avatar = ?,         -- 用户头像URL
+  background = ?,     -- 背景图URL
+  gender = ?,         -- 性别
+  birthday = ?,       -- 生日
+  bio = ?,            -- 个人简介
+  status = ?,         -- 用户状态
+  last_login_time = ?,-- 最后登录时间
+  last_login_ip = ?,  -- 最后登录IP
+  update_time = ?     -- 更新时间（通常设为 CURRENT_TIMESTAMP）
+WHERE
+  user_id = ?;        -- 定位唯一用户
+
+updateUser:
+UPDATE UserTable
+SET
+  nickname = ?,       -- 用户昵称
+  phone = ?,          -- 手机号码
+  email = ?,          -- 邮箱地址
+  avatar = ?,         -- 用户头像URL
+  background = ?,     -- 背景图URL
+  gender = ?,         -- 性别
+  birthday = ?,       -- 生日
+  bio = ?,            -- 个人简介
+  status = ?,         -- 用户状态
+  last_login_time = ?,-- 最后登录时间
+  last_login_ip = ?,  -- 最后登录IP
+  update_time = ?     -- 更新时间（通常设为 CURRENT_TIMESTAMP）
+WHERE
+  user_id = ?;        -- 定位唯一用户
+
+-- 查询单个用户
+selectUserByUserId:
+SELECT
+  user_id, nickname, phone, email, avatar, background,
+  gender, birthday, bio, status, last_login_time,
+  last_login_ip, create_time, update_time
+FROM UserTable
+WHERE user_id = ?;
+
 
 selectUser:
 SELECT * FROM UserTable;
-
-insertUser:
-INSERT INTO UserTable (uid, userName,  avatar, age, sex)
-VALUES (?, ?, ?, ?, ?);
-
-removeUser:
-DELETE FROM UserTable WHERE uid = ?;
-
-updateUser:
-UPDATE UserTable SET userName = ?, avatar = ? , age = ?, sex = ? WHERE uid = ?;
-
-
-

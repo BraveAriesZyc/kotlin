@@ -51,7 +51,7 @@ class MessageRepositoryImpl(
     override fun sendMessage(message: MessageModel) {
         val i = databaseRepository.messageDao.insertMessage(
             MessageEntity(
-                uid = message.uid,
+                userId = message.userId,
                 type = message.type,
                 content = message.content,
                 role = message.role,
@@ -81,7 +81,7 @@ class MessageRepositoryImpl(
         _messageList.value = databaseRepository.messageDao.selectMessage().map {
             MessageModel(
                 id = it.id,
-                uid = it.uid,
+                userId = it.userId,
                 type = it.type,
                 content = it.content,
                 role = it.role,

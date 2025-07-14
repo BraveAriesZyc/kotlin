@@ -20,9 +20,9 @@ class ChatRepositoryImpl(
         messageRepository.getMessages(sessionId)
     }
 
-    override fun getUser(uid: String): UserModel {
+    override fun getUser(userId: String): UserModel {
 
-        return userRepository.getFriend(uid)
+        return userRepository.getFriend(userId)
     }
 
     override fun sendMessage(message: MessageModel) {

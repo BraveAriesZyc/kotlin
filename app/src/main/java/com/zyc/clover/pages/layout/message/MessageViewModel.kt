@@ -20,9 +20,9 @@ class MessageViewModel(
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
 
-    fun getUser(uid: String): UserModel {
-        Log.d("getUser", "uid: $uid")
-        return chatRepository.getUser(uid)
+    fun getUser(userId: String): UserModel {
+        Log.d("getUser", "userId: $userId")
+        return chatRepository.getUser(userId)
     }
 
     fun refresh() {

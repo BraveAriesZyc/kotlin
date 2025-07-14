@@ -3,6 +3,7 @@ package com.zyc.clover.pages.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zyc.clover.api.LoginApi
+import com.zyc.clover.models.UserModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -24,12 +25,23 @@ class AuthViewModel : ViewModel() {
 
     fun loginSubmit() {
         viewModelScope.launch {
-            LoginApi.login(phone.value, password.value)
+            LoginApi.login(
+                UserModel(
+                    phone = phone.value,
+                    password = password.value
+                )
+            )
         }
     }
+
     fun registerSubmit() {
         viewModelScope.launch {
-            LoginApi.register(phone.value, password.value)
+            LoginApi.register(
+                UserModel(
+                    phone = phone.value,
+                    password = password.value
+                )
+            )
         }
     }
 }

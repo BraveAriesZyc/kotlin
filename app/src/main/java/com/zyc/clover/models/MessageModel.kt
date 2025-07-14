@@ -7,7 +7,7 @@ import com.zyc.clover.models.enums.Role
 
 data class MessageModel(
     val id: Long = 0,
-    val uid: String,
+    val userId: String,
     val type: String = MessageType.TEXT.value,
     val content: String = "",
     val imageUrl: String = "",

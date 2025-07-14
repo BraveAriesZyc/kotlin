@@ -11,57 +11,37 @@ import kotlinx.coroutines.flow.StateFlow
 class UserRepositoryImpl(
     private val databaseRepository: DatabaseRepository
 ) : UserRepository {
-    private val _user = MutableStateFlow(
-        UserModel(
-            userName = "不思梦",
-            uid = "99999999",
-            avatar = "https://zhoudaxian.oss-rg-china-mainland.aliyuncs.com/avatar.jpg",
-            age = 18,
-            sex = "男"
-        )
-    )
+    private val _user = MutableStateFlow<UserModel>(UserModel())
 
 
-    private val _friendList = MutableStateFlow(
-        listOf(
-            UserModel(
-                userName = "⭐残乡碎梦🍀",
-                uid = "1",
-                avatar = "https://zhoudaxian.oss-rg-china-mainland.aliyuncs.com/avatar1.jpg",
-                age = 18,
-                sex = "male"
-            ),
-            UserModel(
-                userName = "🍀不思梦❀",
-                uid = "2",
-                avatar = "https://zhoudaxian.oss-rg-china-mainland.aliyuncs.com/avatar1.jpg",
-                age = 18,
-                sex = "male"
-            ),
-        )
-    )
+    private val _friendList = MutableStateFlow<List<UserModel>>(emptyList())
 
 
     override val user: StateFlow<UserModel> = _user
-    override fun getFriend(uid: String): UserModel {
-        databaseRepository.userDao.insertUser( )
-
-
+    override fun getFriend(userId: String): UserModel {
         val userList = databaseRepository.userDao.selectUser().map {
             UserModel(
-                userName = it.userName,
-                uid = it.uid,
+                userId = it.userId,
                 avatar = it.avatar,
-                age = it.age,
-                sex = it.sex
+                nickname = it.nickname,
+                phone = it.phone,
+                email = it.email,
+                gender = it.gender,
+                birthday = it.birthday,
+                status = it.status,
+                bio = it.bio,
+                background = it.background,
+                lastLoginIp = it.lastLoginIp,
+                lastLoginTime = it.lastLoginTime,
+                createTime = it.createTime,
+                updateTime = it.updateTime,
             )
         }
-        Log.e("database", "$userList")
-
         return _friendList.value.first {
-            it.uid == uid
+            it.userId == userId
         }
     }
+
     override fun initApp() {
 
     }
