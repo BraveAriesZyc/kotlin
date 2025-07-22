@@ -1,4 +1,4 @@
-package com.zyc.clover.models.enums
+package com.zyc.data.models.enums
 
 enum class Role(val value: String) {
     USER("user"),

@@ -36,16 +36,15 @@ import coil3.compose.AsyncImage
 
 import com.zyc.clover.components.keyboard.InputArea
 
-import com.zyc.clover.models.MessageModel
 
-import com.zyc.clover.models.enums.Role
-import com.zyc.clover.models.UserModel
-import com.zyc.clover.models.enums.MessageType
 import com.zyc.clover.components.ZAppBar
-import com.zyc.clover.pages.layout.children.message.children.SendMessageViewModel
 import com.zyc.clover.route.LocalNavController
 
 import com.zyc.clover.utils.event.GlobalAntiShake.debounceClick
+import com.zyc.data.models.MessageModel
+import com.zyc.data.models.UserModel
+import com.zyc.data.models.enums.MessageType
+import com.zyc.data.models.enums.Role
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -59,13 +58,13 @@ fun SendMessageScreen(conversationId: String) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         sendMessageViewModel.getMessages(conversationId)
     }
     Scaffold(
         topBar = {
             ZAppBar(
-                title = "${friend.nickname}",
+                title = friend.nickname ?: "未知",
                 onBack = {
                     navController.popBackStack()
                     keyboardController?.hide()
@@ -97,7 +96,7 @@ fun SendMessageScreen(conversationId: String) {
                     }
                 }
                 InputArea(onSend = { it ->
-                    if (it.isNotEmpty()){
+                    if (it.isNotEmpty()) {
                         // 在协程作用域中调用挂起函数
 
                         sendMessageViewModel.sendMessage(
@@ -138,7 +137,7 @@ fun MessageItem(item: MessageModel, friend: UserModel, user: UserModel) {
                 horizontalAlignment = if (isSelf) Alignment.End else Alignment.Start,
                 content = {
                     Text(
-                        text =  "${user.nickname}", style = TextStyle(
+                        text = "${user.nickname}", style = TextStyle(
                             fontSize = 12.sp
                         )
                     )
@@ -180,7 +179,7 @@ fun MessageItem(item: MessageModel, friend: UserModel, user: UserModel) {
 @Composable
 fun MessageItemText(item: MessageModel) {
     Text(
-        text = item.content, style = TextStyle(
+        text = item.content ?: "", style = TextStyle(
             fontSize = 12.sp
         )
     )
@@ -189,25 +188,25 @@ fun MessageItemText(item: MessageModel) {
 @Composable
 fun MessageItemImage(item: MessageModel) {
     val context = LocalContext.current
-    Text(item.imageUrl)
+    Text(item.imageUrl ?: "")
 }
 
 @Composable
 fun MessageItemVideo(item: MessageModel) {
     val context = LocalContext.current
-    Text(item.videoUrl)
+    Text(item.videoUrl ?: "")
 }
 
 @Composable
 fun MessageItemAudio(item: MessageModel) {
     val context = LocalContext.current
-    Text(item.audioUrl)
+    Text(item.audioUrl ?: "")
 }
 
 @Composable
 fun MessageItemFile(item: MessageModel) {
     val context = LocalContext.current
-    Text(item.fileUrl)
+    Text(item.fileUrl ?: "")
 }
 
 

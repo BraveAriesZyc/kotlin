@@ -2,16 +2,15 @@ CREATE TABLE MessageTable (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   userId TEXT NOT NULL,
   type TEXT NOT NULL,
-  content TEXT NOT NULL,
-  imageUrl TEXT NOT NULL,
-  videoUrl TEXT NOT NULL,
-   audioUrl TEXT NOT NULL,
-   fileUrl TEXT NOT NULL,
-   role TEXT NOT NULL ,
-    sessionId TEXT NOT NULL,
-    timestamp INTEGER NOT NULL
+  content TEXT,
+  imageUrl TEXT,
+  videoUrl TEXT,  -- 保持非空约束
+  audioUrl TEXT,
+  fileUrl TEXT,  -- 移除NOT NULL，允许为NULL
+  role TEXT NOT NULL,
+  sessionId TEXT NOT NULL,
+  timestamp INTEGER NOT NULL
 );
-
 insertMessage:
 INSERT INTO MessageTable (userId, type, content, imageUrl, videoUrl, audioUrl, fileUrl, role, sessionId, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 

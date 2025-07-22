@@ -42,6 +42,7 @@ android {
 
 dependencies {
     implementation(project(":db"))
+    implementation(project(":data"))
     implementation(project(":common"))
 
 

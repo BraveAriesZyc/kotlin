@@ -1,6 +1,6 @@
-package com.zyc.clover.models
+package com.zyc.data.models
 
-data class UserModel(
+data class FriedModel(
     var id : Long? = null,
     /**
      * 用户唯一标识
@@ -80,7 +80,7 @@ data class UserModel(
     var updateTime: String? = null
 )
 
-fun UserModel.toMap(): Map<String, String> {
+fun FriedModel.toMap(): Map<String, String> {
     return mapOf(
         "id" to id.toString(),
         "userId" to userId.toString(),

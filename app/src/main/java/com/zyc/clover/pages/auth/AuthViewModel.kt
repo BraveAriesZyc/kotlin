@@ -4,8 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zyc.clover.api.LoginApi
-import com.zyc.clover.models.UserModel
+
 import com.zyc.clover.utils.network.ResponseData
+import com.zyc.data.models.UserModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

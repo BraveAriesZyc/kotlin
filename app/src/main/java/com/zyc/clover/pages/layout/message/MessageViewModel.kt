@@ -4,9 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
-import com.zyc.clover.models.SessionMemberModel
-import com.zyc.clover.models.UserModel
+
 import com.zyc.clover.repository.ChatRepository
+import com.zyc.data.models.SessionMemberModel
+import com.zyc.data.models.UserModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +21,7 @@ class MessageViewModel(
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
 
-    fun getUser(userId: String): UserModel {
+    fun getUser(userId: String): UserModel? {
         Log.d("getUser", "userId: $userId")
         return chatRepository.getUser(userId)
     }

@@ -3,6 +3,7 @@ package com.zyc.clover.components.drawer
 import android.graphics.drawable.shapes.Shape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,29 +12,21 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -51,7 +44,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
@@ -67,145 +63,208 @@ import com.zyc.clover.R
 
 import kotlinx.coroutines.launch
 
+val ICON_SIZE = 24.sp
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuDrawer(
     drawerList: List<NavigationDrawerItemType>,
-    onClose: () -> Unit = {}, // 添加关闭回调
+    onClose: () -> Unit = {},
     content: @Composable () -> Unit,
     layout: Boolean = true
 ) {
+
+
     val drawerViewModel = viewModel<DrawerViewModel>()
-
     val showDrawer by drawerViewModel.drawerState.collectAsState()
-    val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
-    // 跟踪抽屉状态的变化
     var lastDrawerValue by remember { mutableStateOf(drawerState.currentValue) }
 
-    // 当外部状态变化时，更新抽屉状态
-    LaunchedEffect(showDrawer) {
-        if (showDrawer) {
+    // 抽屉状态与外部状态同步（打开/关闭）
+    LaunchedEffect(showDrawer, drawerState) {
+        if (showDrawer && drawerState.currentValue == DrawerValue.Closed) {
             drawerState.open()
-        } else {
+        } else if (!showDrawer && drawerState.currentValue == DrawerValue.Open) {
             drawerState.close()
         }
     }
 
-    // 当抽屉状态变化时，检查是否已关闭
+    // 监听抽屉关闭事件，触发外部回调
     LaunchedEffect(drawerState) {
         snapshotFlow { drawerState.currentValue }
-            .collect { value ->
-                // 如果抽屉从打开变为关闭，触发关闭回调
-                if (lastDrawerValue == DrawerValue.Open && value == DrawerValue.Closed) {
+            .collect { currentValue ->
+                if (lastDrawerValue == DrawerValue.Open && currentValue == DrawerValue.Closed) {
                     onClose()
                 }
-                lastDrawerValue = value
+                lastDrawerValue = currentValue
             }
     }
 
-    val insets = WindowInsets.systemBars
-    // 计算顶部安全距离（状态栏高度）
+    // 计算顶部安全区域（状态栏高度）
     val topInset = with(LocalDensity.current) {
-        insets.getTop(
-            this
-        ).toDp()
+        WindowInsets.systemBars.getTop(this).toDp()
     }
 
-    val layout = remember(layout) {
+    // 布局方向：根据参数切换（默认LTR）
+    val layoutDirection = remember(layout) {
         if (layout) LayoutDirection.Rtl else LayoutDirection.Ltr
     }
-    CompositionLocalProvider(LocalLayoutDirection provides layout) {
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            gesturesEnabled = false,
-            scrimColor = Color.Transparent,
-            drawerContent = {
-                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                    ModalDrawerSheet(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        drawerContainerColor = Color.Transparent,
-                        drawerTonalElevation = 0.dp,
-                        windowInsets = WindowInsets(0),
-                        drawerShape = RoundedCornerShape(0.dp),
-                        content = {
-                            // 创建一个可点击的背景，点击时关闭抽屉
-                            Row(
-                                content = {
-                                    Spacer(
-                                        modifier = Modifier.fillMaxHeight().weight(2f).background(Color.Transparent)
-                                            .debounceClick {
-                                                drawerViewModel.toggleDrawer()
-                                            },
-                                    )
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxHeight()
-                                            .background(MaterialTheme.colorScheme.onPrimary)
-                                            .weight(3f)
-                                            .padding(top = topInset)
-                                            .verticalScroll(rememberScrollState()),
-                                        content = {
-                                            drawerList.map {
-                                                NavigationDrawerItem(
-                                                    modifier = Modifier.wrapContentWidth(),
-                                                    shape = RoundedCornerShape(2.dp),
-                                                    label = { Text(it.title) },
-                                                    icon = {
-                                                        Box(
-                                                            content = {
-                                                                // 上层清晰图标（使用 BoxScope 的 align 扩展函数居中对齐）
-                                                                Text(
-                                                                    text = it.icon,
-                                                                    color = MaterialTheme.colorScheme.primary,
-                                                                    fontSize = 24.sp,
-                                                                    fontFamily = FontFamily(Font(R.font.icons)),
-                                                                    modifier = Modifier.align(Alignment.Center)
-                                                                )
-                                                            },
-                                                            modifier = Modifier
-                                                                .wrapContentSize()
-                                                                .clip(CircleShape)
-                                                                .background(
-                                                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                                                                )
-                                                                .padding(5.dp)
-                                                        )
-                                                    },
-                                                    selected = it.selected,
-                                                    onClick = {
-                                                        scope.launch { drawerState.close() }
-                                                        it.onClick()
-                                                    }
-                                                )
-                                            }
-                                        }
-                                    )
 
-                                }
+    // 独立组件：抽屉列表项（提取重复UI）
+    @Composable
+    fun DrawerItem(
+        item: NavigationDrawerItemType
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .clickable(
+                    onClick = {
+                        item.onClick()
+                        scope.launch {
+                            drawerState.close()
+                        }
+                    }
+                )
+                .debounceClick(
+                    onClick = {
+                        item.onClick()
+                        scope.launch {
+                            drawerState.close()
+                        }
+                    }
+                ),
+            content = {
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(8.dp),
+                    content = {
+// 模糊背景层
+                        Box(
+                            modifier = Modifier
+                                .size(44.dp)
+                                .width(30.dp)
+                                .align(Alignment.Center),
+                            content = {
+                                // 径向渐变背景（先绘制渐变，再对其单独模糊）
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .align(
+                                            Alignment.Center
+                                        )
+                                        .clip(CircleShape)
+                                        .blur(12.dp)
+                                        .background(
+                                            Brush.radialGradient(
+                                                colorStops = arrayOf(
+                                                    0.0f to item.color.copy(alpha = 0.4f),
+                                                    0.1f to item.color.copy(alpha = 0.35f),
+                                                    0.3f to item.color.copy(alpha = 0.3f),
+                                                    0.4f to item.color.copy(alpha = 0.25f),
+                                                    0.5f to item.color.copy(alpha = 0.2f),
+                                                    0.6f to item.color.copy(alpha = 0.15f),
+                                                    0.7f to item.color.copy(alpha = 0.1f),
+                                                    0.75f to Color.Transparent,
+                                                    1.0f to Color.Transparent
+                                                ),
+                                            )
+                                        )
+                                )
+                            }
+                        )
+
+                        // 图标层
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .align(Alignment.Center),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = item.icon,
+                                color = item.color,
+                                fontSize = ICON_SIZE,
+                                fontFamily = FontFamily(Font(R.font.icons))
                             )
                         }
-                    )
+                    }
+                )
+                Box(
+                    modifier = Modifier.weight(1f),
+                    content = {
+                        Text(
+                            text = item.title,
+                            modifier = Modifier.padding(start = 12.dp),
+                            color = item.color,
+                        )
+                    }
+                )
+            })
+    }
+
+    CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            gesturesEnabled = false, // 禁用手势滑动（保持原有逻辑）
+            scrimColor = Color.Transparent, // 无遮罩色
+            drawerContent = {
+                // 强制抽屉内容使用LTR布局（避免文字方向混乱）
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    ModalDrawerSheet(
+                        modifier = Modifier.fillMaxSize(),
+                        drawerContainerColor = Color.Transparent,
+                        drawerTonalElevation = 0.dp,
+                        windowInsets = WindowInsets(0.dp), // 移除默认内边距
+                        drawerShape = RoundedCornerShape(0.dp)
+                    ) {
+                        // 点击空白区域关闭抽屉
+                        Row {
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .weight(2f)
+                                    .background(Color.Transparent)
+                                    .debounceClick { drawerViewModel.toggleDrawer() }
+                            )
+
+                            // 抽屉内容列表
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .background(
+                                        MaterialTheme.colorScheme.onPrimary
+                                    )
+                                    .weight(3f)
+                                    .padding(top = topInset)
+                                    .verticalScroll(rememberScrollState())
+                            ) {
+                                drawerList.forEach { DrawerItem(item = it) }
+                            }
+                        }
+                    }
                 }
-
-
             },
             content = {
+                // 主内容区域强制LTR布局
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                     content()
                 }
             }
         )
     }
-
-
 }
 
+// 数据类保持不变
 class NavigationDrawerItemType(
     val title: String,
     val icon: String,
-    val selected: Boolean = false,
+    val color: Color,
     val onClick: () -> Unit = {}
 )

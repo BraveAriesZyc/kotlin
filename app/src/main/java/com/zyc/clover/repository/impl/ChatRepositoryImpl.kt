@@ -1,11 +1,12 @@
 package com.zyc.clover.repository.impl
 
-import com.zyc.clover.models.MessageModel
-import com.zyc.clover.models.SessionMemberModel
-import com.zyc.clover.models.UserModel
+
 import com.zyc.clover.repository.ChatRepository
 import com.zyc.clover.repository.MessageRepository
 import com.zyc.clover.repository.UserRepository
+import com.zyc.data.models.MessageModel
+import com.zyc.data.models.SessionMemberModel
+import com.zyc.data.models.UserModel
 import kotlinx.coroutines.flow.StateFlow
 
 // 假设这是你的 ChatRepository 实现类
@@ -20,7 +21,7 @@ class ChatRepositoryImpl(
         messageRepository.getMessages(sessionId)
     }
 
-    override fun getUser(userId: String): UserModel {
+    override fun getUser(userId: String): UserModel? {
 
         return userRepository.getFriend(userId)
     }
@@ -31,7 +32,7 @@ class ChatRepositoryImpl(
 
 
     override fun initApp() {
-        messageRepository.initApp()
+//        messageRepository.initApp()
         userRepository.initApp()
     }
 

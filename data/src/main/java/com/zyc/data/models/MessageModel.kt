@@ -1,20 +1,20 @@
-package com.zyc.db.database.entity
+package com.zyc.data.models
+
+import com.zyc.data.models.enums.MessageType
+import com.zyc.data.models.enums.Role
 
 
-import kotlinx.serialization.Serializable
 
-
-@Serializable
-data class MessageEntity(
+data class MessageModel(
     val id: Long = 0,
     val userId: String,
-    val type: String,
+    val type: String = MessageType.TEXT.value,
     val content: String? = "",
     val imageUrl: String? = "",
     val videoUrl: String? = "",
     val audioUrl: String? = "",
     val fileUrl: String? = "",
-    val role: String = "user",
+    val role: String = Role.USER.value,
     val sessionId : String = "",
     val timestamp: Long = System.currentTimeMillis()
 )

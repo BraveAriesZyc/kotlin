@@ -1,4 +1,4 @@
-package com.zyc.clover.models.enums
+package com.zyc.data.models.enums
 
 enum class MessageType(val value: String) {
     TEXT("text"), // 文本

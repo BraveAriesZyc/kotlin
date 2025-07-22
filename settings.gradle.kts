@@ -23,3 +23,4 @@ rootProject.name = "clover_app"
 include(":app")
 include(":db")
 include(":common")
+include(":data")

@@ -1,8 +1,9 @@
 package com.zyc.clover.repository
 
-import com.zyc.clover.models.MessageModel
-import com.zyc.clover.models.SessionMemberModel
-import com.zyc.clover.models.UserModel
+
+import com.zyc.data.models.MessageModel
+import com.zyc.data.models.SessionMemberModel
+import com.zyc.data.models.UserModel
 import kotlinx.coroutines.flow.StateFlow
 
 interface ChatRepository {
@@ -10,7 +11,7 @@ interface ChatRepository {
     val user : StateFlow<UserModel>
     val messages : StateFlow<List<MessageModel>>
     fun getMessages(sessionId: String)
-    fun getUser(userId: String): UserModel
+    fun getUser(userId: String): UserModel?
     fun sendMessage(message: MessageModel)
     fun initApp()
 }

@@ -1,12 +1,12 @@
 package com.zyc.clover.repository.impl
 
 
-import android.util.Log
-
-import com.zyc.clover.models.MessageModel
-import com.zyc.clover.models.SessionMemberModel
-import com.zyc.clover.models.enums.Role
 import com.zyc.clover.repository.MessageRepository
+import com.zyc.data.models.FriedModel
+import com.zyc.data.models.MessageModel
+import com.zyc.data.models.SessionMemberModel
+import com.zyc.data.models.UserModel
+import com.zyc.data.models.enums.Role
 import com.zyc.db.database.DatabaseRepository
 import com.zyc.db.database.entity.MessageEntity
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,7 +77,6 @@ class MessageRepositoryImpl(
     }
 
     override fun initApp() {
-        Log.d("MessageRepositoryImpl", "initApp: ${_messageList.value}")
         _messageList.value = databaseRepository.messageDao.selectMessage().map {
             MessageModel(
                 id = it.id,

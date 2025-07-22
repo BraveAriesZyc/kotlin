@@ -1,9 +1,8 @@
 package com.zyc.clover.repository
 
-import com.zyc.clover.models.MessageModel
-import com.zyc.clover.models.SessionMemberModel
-import com.zyc.clover.models.UserModel
 
+import com.zyc.data.models.MessageModel
+import com.zyc.data.models.SessionMemberModel
 import kotlinx.coroutines.flow.StateFlow
 
 interface MessageRepository {

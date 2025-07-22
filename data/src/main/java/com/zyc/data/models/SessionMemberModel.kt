@@ -1,6 +1,4 @@
-package com.zyc.clover.models
-
-import com.zyc.clover.models.enums.Role
+package com.zyc.data.models
 
 
 data class SessionMemberModel(

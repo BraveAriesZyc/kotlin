@@ -45,8 +45,6 @@ import com.zyc.clover.route.StartRoute
 
 import com.zyc.clover.utils.event.GlobalAntiShake
 import kotlinx.coroutines.delay
-import kotlinx.serialization.Serializable
-
 
 @Composable
 fun StartScreen() {

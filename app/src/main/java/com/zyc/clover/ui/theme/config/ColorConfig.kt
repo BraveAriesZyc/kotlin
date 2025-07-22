@@ -1,10 +1,8 @@
 package com.zyc.clover.ui.theme.config
 
 import androidx.compose.material3.ColorScheme
-import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Stable
-
-
+import androidx.compose.ui.graphics.Color
 
 
 @Stable
@@ -112,13 +110,3 @@ val element = ColorScheme(
     surfaceDim = Color(0xFFE6E8EB)                        // 暗淡表面（深填充色#E6E8EB）
 )
 
-
-
-
-
-
-
-data class ColorSchemeType(
-    val title: String,
-    val colorScheme: ColorScheme
-)

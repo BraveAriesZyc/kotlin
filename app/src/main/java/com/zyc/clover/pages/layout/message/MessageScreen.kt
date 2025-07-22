@@ -1,4 +1,4 @@
-package com.zyc.clover.pages.layout.children.message
+package com.zyc.clover.pages.layout.message
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -33,14 +33,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 
-import com.zyc.clover.models.SessionMemberModel
+
 import com.zyc.clover.route.SendMessageRoute
 import com.zyc.clover.components.ZAppBar
-import com.zyc.clover.pages.layout.message.MessageViewModel
 import com.zyc.clover.route.LocalNavController
 
 import com.zyc.clover.utils.event.GlobalAntiShake.debounceClick
 import com.zyc.clover.utils.refresh.CustomOverscrollEffect
+import com.zyc.data.models.SessionMemberModel
 
 import org.koin.compose.viewmodel.koinViewModel
 

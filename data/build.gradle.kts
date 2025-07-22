@@ -1,11 +1,10 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
-    alias(libs.plugins.sqlDelight)
 }
 
 android {
-    namespace = "com.zyc.db"
+    namespace = "com.zyc.data"
     compileSdk = 35
 
     defaultConfig {
@@ -30,19 +29,12 @@ android {
     }
 }
 
-sqldelight {
-    databases {
-        create("Database") {
-            packageName.set("com.zyc.db")
-        }
-    }
-}
-
-
-
 dependencies {
-    implementation(project(":common"))
-    implementation(project(":data"))
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.android.driver)
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.material)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
 }

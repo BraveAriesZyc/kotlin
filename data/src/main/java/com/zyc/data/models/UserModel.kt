@@ -1,10 +1,7 @@
-package com.zyc.db.database.entity
+package com.zyc.data.models
 
-import kotlinx.serialization.Serializable
-
-@Serializable
-data class FriendEntity(
-    var id: Long? = null,
+data class UserModel(
+    var id : Long? = null,
     /**
      * 用户唯一标识
      */
@@ -82,3 +79,21 @@ data class FriendEntity(
 
     var updateTime: String? = null
 )
+
+fun UserModel.toMap(): Map<String, String> {
+    return mapOf(
+        "id" to id.toString(),
+        "userId" to userId.toString(),
+        "nickname" to nickname.toString(),
+        "password" to password.toString(),
+        "phone" to phone.toString(),
+        "email" to email.toString(),
+        "avatar" to avatar.toString(),
+        "background" to background.toString(),
+        "gender" to gender.toString(),
+        "birthday" to birthday.toString(),
+        "bio" to bio.toString(),
+        "status" to status.toString(),
+        "lastLoginTime" to lastLoginTime.toString(),
+    )
+}
