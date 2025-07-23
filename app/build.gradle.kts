@@ -83,6 +83,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // 视屏播放exoplayer
+
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.exoplayer.dash)
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.ui.compose)
+
 
     implementation(platform("androidx.compose:compose-bom:2024.09.00"))
     androidTestImplementation(platform("androidx.compose:compose-bom:2024.09.00"))

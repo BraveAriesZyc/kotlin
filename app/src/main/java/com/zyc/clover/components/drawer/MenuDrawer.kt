@@ -43,11 +43,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
@@ -141,61 +144,50 @@ fun MenuDrawer(
                 ),
             content = {
                 Box(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(8.dp),
+                    modifier = Modifier.wrapContentSize(),
                     content = {
-// 模糊背景层
                         Box(
                             modifier = Modifier
                                 .size(44.dp)
-                                .width(30.dp)
-                                .align(Alignment.Center),
-                            content = {
-                                // 径向渐变背景（先绘制渐变，再对其单独模糊）
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .align(
-                                            Alignment.Center
+                                .padding(4.dp)
+                                .drawBehind {
+                                    drawIntoCanvas { canvas ->
+                                        val paint = Paint().apply {
+                                            color = item.color.copy(alpha = 0.3f)
+                                            asFrameworkPaint().maskFilter =
+                                                android.graphics.BlurMaskFilter(
+                                                    60f,
+                                                    android.graphics.BlurMaskFilter.Blur.NORMAL
+                                                )
+                                        }
+                                        canvas.drawCircle(
+                                            center = Offset(size.width / 2, size.height / 2),
+                                            radius = size.minDimension / 2.5f,
+                                            paint
                                         )
-                                        .clip(CircleShape)
-                                        .blur(12.dp)
-                                        .background(
-                                            Brush.radialGradient(
-                                                colorStops = arrayOf(
-                                                    0.0f to item.color.copy(alpha = 0.4f),
-                                                    0.1f to item.color.copy(alpha = 0.35f),
-                                                    0.3f to item.color.copy(alpha = 0.3f),
-                                                    0.4f to item.color.copy(alpha = 0.25f),
-                                                    0.5f to item.color.copy(alpha = 0.2f),
-                                                    0.6f to item.color.copy(alpha = 0.15f),
-                                                    0.7f to item.color.copy(alpha = 0.1f),
-                                                    0.75f to Color.Transparent,
-                                                    1.0f to Color.Transparent
-                                                ),
-                                            )
-                                        )
-                                )
-                            }
+                                    }
+                                },
+                            contentAlignment = Alignment.Center,
+                            content = {}
                         )
-
                         // 图标层
                         Box(
                             modifier = Modifier
                                 .size(32.dp)
                                 .align(Alignment.Center),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = item.icon,
-                                color = item.color,
-                                fontSize = ICON_SIZE,
-                                fontFamily = FontFamily(Font(R.font.icons))
-                            )
-                        }
+                            contentAlignment = Alignment.Center,
+                            content = {
+                                Text(
+                                    text = item.icon,
+                                    color = item.color,
+                                    fontSize = ICON_SIZE,
+                                    fontFamily = FontFamily(Font(R.font.icons))
+                                )
+                            }
+                        )
                     }
                 )
+
                 Box(
                     modifier = Modifier.weight(1f),
                     content = {

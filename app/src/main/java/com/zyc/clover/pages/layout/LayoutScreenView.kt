@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.zyc.clover.R
 import com.zyc.clover.components.drawer.NavigationDrawerItemType
-import com.zyc.clover.pages.layout.children.friend.FriendScreen
+import com.zyc.clover.pages.layout.friend.FriendScreen
 import com.zyc.clover.pages.layout.children.me.MeScreen
 import com.zyc.clover.pages.layout.home.HomeScreen
 import com.zyc.clover.pages.layout.message.MessageScreen
