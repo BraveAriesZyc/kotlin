@@ -3,6 +3,7 @@ package com.zyc.clover.utils.manager
 import android.content.Context
 import android.util.Log
 import androidx.annotation.OptIn
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -45,28 +46,20 @@ class VideoPreloadManager(private val context: Context) {
     /** 协程作用域，用于异步操作 */
     private val managerScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
-    /** 播放器状态回调接口 */
-    interface PlayerStateCallback {
-        fun onPlayerReady(videoUrl: String)
-        fun onPlayerBuffering(videoUrl: String, receivedBufferPercent: Int)
-        fun onPlayerError(videoUrl: String, error: String)
-        fun onPlayerEnded(videoUrl: String)
-    }
 
-    /** 播放器状态回调 */
-    private var stateCallback: PlayerStateCallback? = null
 
     /**
      * 获取或创建指定视频URL的播放器实例
      *
      * @param videoUrl 视频的URL地址
+     * @param repeatMode 是否启用重复播放模式
      * @return 对应的ExoPlayer实例
      */
-    fun getOrCreatePlayer(videoUrl: String): ExoPlayer {
+    fun getOrCreatePlayer(videoUrl: String, repeatMode: Boolean = false): ExoPlayer {
         // 更新访问顺序，将当前URL移至最近使用位置
         updateAccessOrder(videoUrl)
         // 从池中获取，若不存在则创建新实例
-        return playerPool[videoUrl] ?: createNewPlayer(videoUrl)
+        return playerPool[videoUrl] ?: createNewPlayer(videoUrl, repeatMode)
     }
 
     /**
@@ -75,10 +68,11 @@ class VideoPreloadManager(private val context: Context) {
      * 当播放器池达到最大容量时，会先释放最久未使用的实例(当前播放的除外)
      *
      * @param videoUrl 视频的URL地址
+     * @param repeatMode 是否启用重复播放模式
      * @return 新创建的ExoPlayer实例
      */
     @OptIn(UnstableApi::class)
-    private fun createNewPlayer(videoUrl: String): ExoPlayer {
+    private fun createNewPlayer(videoUrl: String, repeatMode: Boolean = false): ExoPlayer {
         // 当池已满时，移除最久未使用的播放器(当前播放的除外)
         if (playerPool.size >= maxPoolSize) {
             // 使用读锁查找最久未使用且不是当前播放的URL
@@ -130,6 +124,8 @@ class VideoPreloadManager(private val context: Context) {
                 playWhenReady = false
                 // 设置初始音量
                 volume = 1.0f
+                // 设置重复模式
+                this.repeatMode = if (repeatMode) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
                 // 准备播放器
                 prepare()
 
@@ -137,40 +133,27 @@ class VideoPreloadManager(private val context: Context) {
                 addListener(object : Player.Listener {
                     override fun onPlaybackStateChanged(playbackState: Int) {
                         when (playbackState) {
-                            // 播放结束时暂停并通知回调
                             Player.STATE_ENDED -> {
-                                pause()
-                                stateCallback?.onPlayerEnded(videoUrl)
-                                Log.d("视频预加载", "播放结束: $videoUrl")
+                                if (!repeatMode) {
+                                    pause()
+                                }
                             }
-                            // 准备就绪时输出日志并通知回调
                             Player.STATE_READY -> {
-                                Log.d("视频预加载", "播放器已就绪: $videoUrl")
-                                stateCallback?.onPlayerReady(videoUrl)
+                                // 播放器已就绪
                             }
-                            // 缓冲状态，可显示加载指示器
                             Player.STATE_BUFFERING -> {
-                                // 获取当前缓冲进度
-                                val bufferedPosition = bufferedPosition
-                                val duration = duration
-                                val bufferPercent = if (duration > 0) (bufferedPosition * 100 / duration).toInt() else 0
-                                Log.d("视频预加载", "缓冲中: $videoUrl，已缓冲: $bufferPercent%")
-                                stateCallback?.onPlayerBuffering(videoUrl, bufferPercent)
+                                // 缓冲中
                             }
-                            // 空闲状态，可能需要重新准备
                             Player.STATE_IDLE -> {
-                                Log.d("视频预加载", "播放器空闲状态: $videoUrl")
                                 // 如果是当前播放的视频，尝试重新准备
                                 if (videoUrl == currentPlayingUrl) {
                                     managerScope.launch {
-                                        delay(500) // 延迟500ms后重试
+                                        delay(500)
                                         if (playbackState == Player.STATE_IDLE) {
                                             try {
                                                 prepare()
-                                                Log.d("视频预加载", "重新准备播放器: $videoUrl")
                                             } catch (e: Exception) {
                                                 Log.e("视频预加载", "重新准备播放器失败: $videoUrl", e)
-                                                stateCallback?.onPlayerError(videoUrl, "重新准备失败: ${e.message}")
                                             }
                                         }
                                     }
@@ -180,10 +163,8 @@ class VideoPreloadManager(private val context: Context) {
                     }
 
                     // 播放错误时输出日志并通知回调
-                    override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
-                        val errorMsg = "播放器错误 ($videoUrl): ${error.message}"
-                         Log.e("视频预加载", errorMsg)
-                        stateCallback?.onPlayerError(videoUrl, error.message ?: "未知错误")
+                    override fun onPlayerError(error: PlaybackException) {
+                        Log.e("视频预加载", "播放器错误 ($videoUrl): ${error.message}")
 
                         // 如果是当前播放的视频出错，清除当前播放状态
                         if (videoUrl == currentPlayingUrl) {
@@ -216,15 +197,11 @@ class VideoPreloadManager(private val context: Context) {
 
     /**
      * 预加载指定视频
-     *
-     * @param videoUrl 视频的URL地址
      */
-    fun preloadVideo(videoUrl: String) {
-        // 如果池中没有该视频的播放器且URL不为空，则预加载
+    fun preloadVideo(videoUrl: String, repeatMode: Boolean = false) {
         if (!playerPool.containsKey(videoUrl) && videoUrl.isNotEmpty()) {
             try {
-                createNewPlayer(videoUrl)
-                 Log.d("视频预加载", "预加载成功: $videoUrl")
+                createNewPlayer(videoUrl, repeatMode)
             } catch (e: Exception) {
                 Log.e("视频预加载", "预加载失败: $videoUrl", e)
             }
@@ -268,13 +245,10 @@ class VideoPreloadManager(private val context: Context) {
             player.pause()
             player.playWhenReady = false
         }
-        Log.d("视频预加载", "暂停所有播放器")
     }
 
     /**
      * 暂停除指定视频外的所有播放器
-     *
-     * @param excludeUrl 不暂停的视频URL
      */
     fun pauseAllExcept(excludeUrl: String) {
         playerPool.forEach { (url, player) ->
@@ -283,62 +257,55 @@ class VideoPreloadManager(private val context: Context) {
                 player.playWhenReady = false
             }
         }
-        Log.d("视频预加载", "暂停除 $excludeUrl 外的所有播放器")
     }
 
     /**
      * 播放指定视频
-     *
-     * @param videoUrl 视频的URL地址
      */
     fun playVideo(videoUrl: String) {
         playerPool[videoUrl]?.let { player ->
-            // 暂停其他所有播放器
             pauseAllExcept(videoUrl)
-            // 设置当前播放
             setCurrentPlaying(videoUrl)
 
-            // 根据当前状态决定如何播放
             if (player.playbackState == androidx.media3.common.Player.STATE_READY ||
                 player.playbackState == androidx.media3.common.Player.STATE_BUFFERING) {
                 player.playWhenReady = true
                 player.play()
             } else {
-                // 尚未准备好时，设置为准备好后自动播放
                 player.playWhenReady = true
             }
-            Log.d("视频预加载", "开始播放视频: $videoUrl")
-        } ?: Log.w("视频预加载", "播放失败，未找到播放器: $videoUrl")
+        }
     }
 
     /**
      * 暂停指定视频
-     *
-     * @param videoUrl 视频的URL地址
      */
     fun pauseVideo(videoUrl: String) {
         playerPool[videoUrl]?.let { player ->
             player.pause()
             player.playWhenReady = false
-            // 如果暂停的是当前播放的视频，清除当前播放状态
             if (currentPlayingUrl == videoUrl) {
                 currentPlayingUrl = null
             }
-            Log.d("视频预加载", "暂停视频: $videoUrl")
-        } ?: Log.w("视频预加载", "暂停失败，未找到播放器: $videoUrl")
+        }
     }
 
     /**
      * 设置指定视频的音量
-     *
-     * @param videoUrl 视频URL
-     * @param volume 音量值(0.0-1.0)
      */
     fun setVolume(videoUrl: String, volume: Float) {
         val clampedVolume = volume.coerceIn(0.0f, 1.0f)
         playerPool[videoUrl]?.let { player ->
             player.volume = clampedVolume
-            Log.d("视频预加载", "设置音量: $videoUrl = $clampedVolume")
+        }
+    }
+
+    /**
+     * 设置指定视频的重复播放模式
+     */
+    fun setRepeatMode(videoUrl: String, repeatMode: Boolean) {
+        playerPool[videoUrl]?.let { player ->
+            player.repeatMode = if (repeatMode) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
         }
     }
 
@@ -362,14 +329,7 @@ class VideoPreloadManager(private val context: Context) {
         return playerPool[videoUrl]
     }
 
-    /**
-     * 设置播放器状态回调
-     *
-     * @param callback 状态回调接口
-     */
-    fun setStateCallback(callback: PlayerStateCallback?) {
-        this.stateCallback = callback
-    }
+
 
     /**
      * 检查播放器是否存在
@@ -393,8 +353,6 @@ class VideoPreloadManager(private val context: Context) {
 
     /**
      * 强制清理指定视频的播放器
-     *
-     * @param videoUrl 视频URL
      */
     fun forceReleasePlayer(videoUrl: String) {
         playerPool[videoUrl]?.let { player ->
@@ -408,7 +366,6 @@ class VideoPreloadManager(private val context: Context) {
         if (currentPlayingUrl == videoUrl) {
             currentPlayingUrl = null
         }
-        Log.d("视频预加载", "强制释放播放器: $videoUrl")
     }
 
     /**
@@ -462,7 +419,5 @@ class VideoPreloadManager(private val context: Context) {
     fun destroy() {
         managerScope.cancel()
         releaseAll()
-        stateCallback = null
-        Log.d("视频预加载", "VideoPreloadManager已销毁")
     }
 }

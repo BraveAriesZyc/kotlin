@@ -28,6 +28,7 @@ import androidx.media3.ui.PlayerView
 import androidx.media3.ui.AspectRatioFrameLayout
 import com.zyc.clover.R
 import com.zyc.clover.components.drawer.ICON_SIZE
+import com.zyc.clover.utils.event.GlobalAntiShake.debounceClick
 import com.zyc.clover.utils.manager.VideoPreloadManager
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
@@ -39,22 +40,12 @@ import kotlin.math.roundToInt
 fun VideoPlayer(
     videoUrl: String,
     modifier: Modifier = Modifier,
-    externalPlayer: ExoPlayer? = null, // 外部传入的播放器实例
-    preloadManager: VideoPreloadManager? = null, // 视频预加载管理器
-    showCustomControls: Boolean = true, // 是否显示自定义控制器
-    onPlayerReady: ((String) -> Unit)? = null, // 播放器就绪回调
-    onPlayerBuffering: ((String, Int) -> Unit)? = null, // 缓冲进度回调
-    onPlayerError: ((String, String) -> Unit)? = null, // 播放错误回调
-    onPlayerEnded: ((String) -> Unit)? = null // 播放结束回调
+    externalPlayer: ExoPlayer? = null,
+    repeatMode: Boolean = true
 ) {
     val context = LocalContext.current
 
     // 状态变量
-    var isPlayerReady by remember { mutableStateOf(false) }
-    var bufferPercent by remember { mutableIntStateOf(0) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-
-    // 自定义控制器状态
     var isPlaying by remember { mutableStateOf(false) }
     var currentPosition by remember { mutableLongStateOf(0L) }
     var duration by remember { mutableLongStateOf(0L) }
@@ -62,52 +53,27 @@ fun VideoPlayer(
     var volume by remember { mutableFloatStateOf(1f) }
     var isMuted by remember { mutableStateOf(false) }
     var isDragging by remember { mutableStateOf(false) } // 是否正在拖拽进度条
-    var bufferPercentage by remember { mutableIntStateOf(0) }
 
     // 1. 优先使用外部传入的播放器，否则创建新的
     val player = externalPlayer ?: remember {
         ExoPlayer.Builder(context).build()
     }
 
-    // 2. 设置状态回调监听器
-    LaunchedEffect(preloadManager, videoUrl) {
-        preloadManager?.setStateCallback(object : VideoPreloadManager.PlayerStateCallback {
-            override fun onPlayerReady(videoUrl: String) {
-                isPlayerReady = true
-                onPlayerReady?.invoke(videoUrl)
-            }
-
-            override fun onPlayerBuffering(videoUrl: String, receivedBufferPercent: Int) {
-                bufferPercent = receivedBufferPercent
-                onPlayerBuffering?.invoke(videoUrl, receivedBufferPercent)
-            }
-
-            override fun onPlayerError(videoUrl: String, error: String) {
-                errorMessage = error
-                isPlayerReady = false
-                onPlayerError?.invoke(videoUrl, error)
-            }
-
-            override fun onPlayerEnded(videoUrl: String) {
-                isPlayerReady = false
-                onPlayerEnded?.invoke(videoUrl)
-            }
-        })
+    // 设置重复播放模式
+    LaunchedEffect(repeatMode) {
+        player.repeatMode = if (repeatMode) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
     }
 
-    // 3. 只有在没有外部播放器时才处理视频地址变化
+
+
+    // 处理视频地址变化
     if (externalPlayer == null) {
         LaunchedEffect(videoUrl) {
             if (videoUrl.isNotEmpty()) {
-                try {
-                    val mediaItem = MediaItem.fromUri(videoUrl)
-                    player.setMediaItem(mediaItem)
-                    player.prepare()
-                    player.playWhenReady = false // 默认不自动播放，由管理器控制
-                } catch (e: Exception) {
-                    errorMessage = "加载视频失败: ${e.message}"
-                    android.util.Log.e("视频播放器", "加载视频失败: $videoUrl", e)
-                }
+                val mediaItem = MediaItem.fromUri(videoUrl)
+                player.setMediaItem(mediaItem)
+                player.prepare()
+                player.playWhenReady = false
             }
         }
     }
@@ -136,26 +102,17 @@ fun VideoPlayer(
             override fun onPlaybackStateChanged(playbackState: Int) {
                 when (playbackState) {
                     Player.STATE_READY -> {
-                        isPlayerReady = true
                         duration = player.duration
                     }
-
                     Player.STATE_ENDED -> {
-                        isPlaying = false
-                        onPlayerEnded?.invoke(videoUrl)
+                        if (!repeatMode) {
+                            isPlaying = false
+                        }
                     }
                 }
             }
         }
         player.addListener(listener)
-    }
-
-    // 定期更新缓冲进度
-    LaunchedEffect(isPlayerReady) {
-        while (isPlayerReady) {
-            bufferPercentage = player.bufferedPercentage
-            delay(500) // 每500ms更新一次缓冲进度
-        }
     }
 
     // 定期更新播放进度
@@ -166,9 +123,9 @@ fun VideoPlayer(
         }
     }
 
-    // 自动隐藏控制器 - 拖拽时不隐藏
+    // 自动隐藏控制器
     LaunchedEffect(showControls, isDragging) {
-        if (showControls && showCustomControls && !isDragging) {
+        if (showControls && !isDragging) {
             delay(3000)
             showControls = false
         }
@@ -186,40 +143,36 @@ fun VideoPlayer(
                     setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
                     // 优化性能设置
                     setShutterBackgroundColor(android.graphics.Color.BLACK)
+                    setRepeatToggleModes(Player.REPEAT_MODE_ONE)
                     setKeepContentOnPlayerReset(true)
                 }
             },
             update = { playerView ->
-                // 确保播放器绑定正确
                 if (playerView.player != player) {
                     playerView.player = player
                 }
-
-                // 根据状态更新UI
-                playerView.setShowBuffering(
-                    if (isPlayerReady) PlayerView.SHOW_BUFFERING_WHEN_PLAYING
-                    else PlayerView.SHOW_BUFFERING_ALWAYS
-                )
             },
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
                 .clickable {
-                    if (showCustomControls) {
+                    if (isPlaying) {
+                        player.pause()
+                        showControls = true
+                    } else {
                         showControls = !showControls
                     }
                 }
         )
 
-        // 控制器覆盖层 - 包含播放/暂停按钮和进度条
-        if (showCustomControls && showControls) {
+        // 控制器覆盖层
+        if (showControls) {
             CustomVideoControls(
                 isPlaying = isPlaying,
                 currentPosition = currentPosition,
                 duration = duration,
                 volume = volume,
                 isMuted = isMuted,
-                bufferPercentage = bufferPercentage,
                 isDragging = isDragging,
                 onPlayPause = {
                     if (isPlaying) {
@@ -265,7 +218,6 @@ fun CustomVideoControls(
     duration: Long,
     volume: Float,
     isMuted: Boolean,
-    bufferPercentage: Int,
     isDragging: Boolean,
     onPlayPause: () -> Unit,
     onSeek: (Long) -> Unit,
@@ -276,36 +228,42 @@ fun CustomVideoControls(
     onMuteToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Column(
         modifier = modifier
+            .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.2f)),
         content = {
-            // 中央播放/暂停按钮
-            IconButton(
-                onClick = onPlayPause,
+            Column(
                 modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(72.dp)
-                    .clip(CircleShape)
-                    .background(Color.Black.copy(alpha = 0.15f)),
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .clickable(
+                        onClick = {
+                            onPlayPause()
+                        }
+                    ),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
-                    Text(
-                        text = if (isPlaying) "\uED96" else "\uEDCF",
-                        color = Color.White,
-                        fontSize = 55.sp,
-                        fontFamily = FontFamily(Font(R.font.icons))
-                    )
+                    // 中央播放按钮 - 只在暂停时显示
+                    if (!isPlaying) {
+                        Text(
+                            text = "\uEDCF", // 播放图标
+                            color = Color.White,
+                            fontSize = 80.sp,
+                            fontFamily = FontFamily(Font(R.font.icons))
+                        )
+                    }
                 }
             )
 
             Box(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                    .wrapContentHeight()
                     .fillMaxWidth(),
                 content = {
                     CustomProgressBar(
-                        progress = if (duration > 0) currentPosition.toFloat() / duration.toFloat() else 0f,
-                        bufferProgress = bufferPercentage / 100f,
+                        progress = if (duration > 0) currentPosition.toFloat() / duration else 0f,
                         onProgressChange = onProgressChange,
                         onDragStart = onDragStart,
                         onDragEnd = onDragEnd,
