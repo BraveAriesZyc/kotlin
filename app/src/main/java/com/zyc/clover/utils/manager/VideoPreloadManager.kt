@@ -48,7 +48,7 @@ class VideoPreloadManager(private val context: Context) {
     /** 播放器状态回调接口 */
     interface PlayerStateCallback {
         fun onPlayerReady(videoUrl: String)
-        fun onPlayerBuffering(videoUrl: String, bufferPercent: Int)
+        fun onPlayerBuffering(videoUrl: String, receivedBufferPercent: Int)
         fun onPlayerError(videoUrl: String, error: String)
         fun onPlayerEnded(videoUrl: String)
     }
