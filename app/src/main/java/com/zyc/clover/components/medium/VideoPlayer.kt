@@ -49,7 +49,8 @@ fun VideoPlayer(
     var isPlaying by remember { mutableStateOf(false) }
     var currentPosition by remember { mutableLongStateOf(0L) }
     var duration by remember { mutableLongStateOf(0L) }
-    var showControls by remember { mutableStateOf(true) }
+    var hasUserInteracted by remember { mutableStateOf(false) } // 用户是否已经点击过页面
+    var showControls by remember { mutableStateOf(false) } // 初始不显示控制器
     var volume by remember { mutableFloatStateOf(1f) }
     var isMuted by remember { mutableStateOf(false) }
     var isDragging by remember { mutableStateOf(false) } // 是否正在拖拽进度条
@@ -63,7 +64,6 @@ fun VideoPlayer(
     LaunchedEffect(repeatMode) {
         player.repeatMode = if (repeatMode) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
     }
-
 
 
     // 处理视频地址变化
@@ -104,6 +104,7 @@ fun VideoPlayer(
                     Player.STATE_READY -> {
                         duration = player.duration
                     }
+
                     Player.STATE_ENDED -> {
                         if (!repeatMode) {
                             isPlaying = false
@@ -123,9 +124,9 @@ fun VideoPlayer(
         }
     }
 
-    // 自动隐藏控制器
-    LaunchedEffect(showControls, isDragging) {
-        if (showControls && !isDragging) {
+    // 自动隐藏控制器 - 只有在用户已经交互过后才自动隐藏
+    LaunchedEffect(showControls, isDragging, hasUserInteracted) {
+        if (showControls && !isDragging && hasUserInteracted) {
             delay(3000)
             showControls = false
         }
@@ -156,6 +157,7 @@ fun VideoPlayer(
                 .fillMaxSize()
                 .background(Color.Black)
                 .clickable {
+                    hasUserInteracted = true // 标记用户已经交互过
                     if (isPlaying) {
                         player.pause()
                         showControls = true
@@ -256,27 +258,27 @@ fun CustomVideoControls(
                     }
                 }
             )
+            if (!isPlaying) {
+                Box(
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth(),
+                    content = {
+                        CustomProgressBar(
+                            progress = if (duration > 0) currentPosition.toFloat() / duration else 0f,
+                            onProgressChange = onProgressChange,
+                            onDragStart = onDragStart,
+                            onDragEnd = onDragEnd,
+                            currentTime = formatTime(currentPosition),
+                            totalTime = formatTime(duration),
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .fillMaxWidth()
+                        )
 
-            Box(
-                modifier = Modifier
-                    .wrapContentHeight()
-                    .fillMaxWidth(),
-                content = {
-                    CustomProgressBar(
-                        progress = if (duration > 0) currentPosition.toFloat() / duration else 0f,
-                        onProgressChange = onProgressChange,
-                        onDragStart = onDragStart,
-                        onDragEnd = onDragEnd,
-                        currentTime = formatTime(currentPosition),
-                        totalTime = formatTime(duration),
-                        modifier = Modifier
-                            .wrapContentHeight()
-                            .fillMaxWidth()
-                    )
-
-                }
-            )
-
+                    }
+                )
+            }
         }
     )
 }

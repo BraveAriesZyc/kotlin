@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Menu
@@ -43,7 +44,7 @@ fun ZAppBar(
     modifier: Modifier = Modifier,
     title: String = "",
     actions: @Composable () -> Unit? = {},
-    navigationIcon: ImageVector = Icons.Filled.KeyboardArrowLeft,
+    navigationIcon: ImageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
     isNavigationIcon: Boolean = false,
     background: Color = MaterialTheme.colorScheme.background,
     onBack: () -> Unit = {}
