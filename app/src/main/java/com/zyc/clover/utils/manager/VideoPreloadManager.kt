@@ -7,11 +7,23 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.cache.CacheDataSource
+import androidx.media3.datasource.cache.SimpleCache
+import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
+
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
+import java.io.File
+import android.app.ActivityManager
+import android.os.Debug
 
 
 /**
@@ -37,14 +49,38 @@ class VideoPreloadManager(private val context: Context) {
     /** 读写锁，保护accessOrder的线程安全 */
     private val accessOrderLock = ReentrantReadWriteLock()
 
-    /** 播放器池的最大容量 */
-    private val maxPoolSize = 3
+    /** 播放器池的最大容量 - 进一步优化：降低到2个以减少内存使用 */
+    private val maxPoolSize = 2
 
     /** 当前正在播放的视频URL */
     private var currentPlayingUrl: String? = null
 
     /** 协程作用域，用于异步操作 */
     private val managerScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    
+    /** 内存监控相关 */
+    private val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+    private var lastMemoryCheckTime = 0L
+    private val memoryCheckInterval = 10000L // 10秒检查一次内存
+    
+    /** 缓存配置 - 简化：降低缓存大小避免内存问题 */
+    private val cache: SimpleCache by lazy {
+        val cacheDir = File(context.cacheDir, "video_preload_cache")
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs()
+        }
+        val cacheEvictor = LeastRecentlyUsedCacheEvictor(30 * 1024 * 1024L) // 30MB缓存，进一步减少内存使用
+        SimpleCache(cacheDir, cacheEvictor)
+    }
+    
+    /** 缓存数据源工厂 - 简化配置 */
+    private val cacheDataSourceFactory: CacheDataSource.Factory by lazy {
+        val dataSourceFactory = DefaultDataSource.Factory(context)
+        CacheDataSource.Factory()
+            .setCache(cache)
+            .setUpstreamDataSourceFactory(dataSourceFactory)
+            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+    }
 
 
 
@@ -73,6 +109,19 @@ class VideoPreloadManager(private val context: Context) {
      */
     @OptIn(UnstableApi::class)
     private fun createNewPlayer(videoUrl: String, repeatMode: Boolean = false): ExoPlayer {
+        return try {
+            createPlayerWithCache(videoUrl, repeatMode)
+        } catch (e: Exception) {
+            Log.e("视频预加载", "创建缓存播放器失败，使用基础配置: $videoUrl", e)
+            createBasicPlayer(videoUrl, repeatMode)
+        }
+    }
+
+    /**
+     * 创建带缓存的播放器实例
+     */
+    @OptIn(UnstableApi::class)
+    private fun createPlayerWithCache(videoUrl: String, repeatMode: Boolean): ExoPlayer {
         // 当池已满时，移除最久未使用的播放器(当前播放的除外)
         if (playerPool.size >= maxPoolSize) {
             // 使用读锁查找最久未使用且不是当前播放的URL
@@ -95,28 +144,31 @@ class VideoPreloadManager(private val context: Context) {
             }
         }
 
-        // 构建新的ExoPlayer实例并配置
-        val player = ExoPlayer.Builder(context)
-            // 配置缓冲策略，优化播放流畅度
-            .setLoadControl(
-                androidx.media3.exoplayer.DefaultLoadControl.Builder()
-                    .setBufferDurationsMs(
-                        10000,  // 最小缓冲时长(毫秒)：10秒
-                        30000,  // 最大缓冲时长(毫秒)：30秒
-                        1000,   // 播放启动所需的缓冲时长(毫秒)：1秒
-                        3000    // 播放后继续缓冲的时长(毫秒)：3秒
-                    )
-                    .build()
-            )
-            // 配置音频属性，减少杂音
-            .setAudioAttributes(
-                androidx.media3.common.AudioAttributes.Builder()
-                    .setUsage(androidx.media3.common.C.USAGE_MEDIA)
-                    .setContentType(androidx.media3.common.C.AUDIO_CONTENT_TYPE_MOVIE)
-                    .build(),
-                true // 允许音频焦点自动处理
-            )
-            .build().apply {
+        // 更保守的加载控制器配置 - 减少缓冲以降低内存使用
+         val loadControl = DefaultLoadControl.Builder()
+             .setBufferDurationsMs(
+                 1500,   // 最小缓冲时长：1.5秒
+                 5000,   // 最大缓冲时长：5秒
+                 500,    // 播放启动缓冲：0.5秒
+                 800     // 播放后继续缓冲：0.8秒
+             )
+             .build()
+         
+         // 音频属性配置
+         val audioAttributes = AudioAttributes.Builder()
+             .setUsage(C.USAGE_MEDIA)
+             .setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
+             .build()
+         
+         // 创建媒体源工厂
+         val mediaSourceFactory = DefaultMediaSourceFactory(cacheDataSourceFactory)
+         
+         // 构建ExoPlayer实例
+         val player = ExoPlayer.Builder(context)
+             .setMediaSourceFactory(mediaSourceFactory)
+             .setLoadControl(loadControl)
+             .setAudioAttributes(audioAttributes, true)
+             .build().apply {
                 // 设置媒体资源
                 val mediaItem = androidx.media3.common.MediaItem.fromUri(videoUrl)
                 setMediaItem(mediaItem)
@@ -139,21 +191,36 @@ class VideoPreloadManager(private val context: Context) {
                                 }
                             }
                             Player.STATE_READY -> {
-                                // 播放器已就绪
+                                // 关键修复7: 播放器就绪时确保视频帧可见
+                                Log.d("视频预加载", "播放器就绪: $videoUrl")
+                                // 确保视频表面已准备好
+                                if (videoUrl == currentPlayingUrl && !playWhenReady) {
+                                    // 预加载第一帧但不播放
+                                    seekTo(0)
+                                }
                             }
                             Player.STATE_BUFFERING -> {
-                                // 缓冲中
+                                Log.d("视频预加载", "缓冲中: $videoUrl")
                             }
                             Player.STATE_IDLE -> {
-                                // 如果是当前播放的视频，尝试重新准备
+                                Log.w("视频预加载", "播放器空闲状态: $videoUrl")
+                                // 关键修复8: 改进空闲状态处理，避免无限重试
                                 if (videoUrl == currentPlayingUrl) {
                                     managerScope.launch {
-                                        delay(500)
+                                        delay(1000) // 增加延迟时间
                                         if (playbackState == Player.STATE_IDLE) {
                                             try {
+                                                Log.d("视频预加载", "尝试重新准备播放器: $videoUrl")
+                                                val mediaItem = androidx.media3.common.MediaItem.fromUri(videoUrl)
+                                                setMediaItem(mediaItem)
                                                 prepare()
                                             } catch (e: Exception) {
                                                 Log.e("视频预加载", "重新准备播放器失败: $videoUrl", e)
+                                                // 如果重试失败，从池中移除该播放器
+                                                playerPool.remove(videoUrl)
+                                                accessOrderLock.write {
+                                                    accessOrder.remove(videoUrl)
+                                                }
                                             }
                                         }
                                     }
@@ -162,9 +229,50 @@ class VideoPreloadManager(private val context: Context) {
                         }
                     }
 
-                    // 播放错误时输出日志并通知回调
+                    // 关键修复9: 增强播放错误处理和恢复机制
                     override fun onPlayerError(error: PlaybackException) {
-                        Log.e("视频预加载", "播放器错误 ($videoUrl): ${error.message}")
+                        Log.e("视频预加载", "播放器错误 ($videoUrl): ${error.message}", error)
+                        
+                        // 根据错误类型进行不同处理
+                        when (error.errorCode) {
+                            PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED,
+                            PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_TIMEOUT -> {
+                                Log.w("视频预加载", "网络错误，尝试重新加载: $videoUrl")
+                                // 网络错误，延迟后重试
+                                managerScope.launch {
+                                    delay(2000)
+                                    try {
+                                        val mediaItem = androidx.media3.common.MediaItem.fromUri(videoUrl)
+                                        setMediaItem(mediaItem)
+                                        prepare()
+                                    } catch (e: Exception) {
+                                        Log.e("视频预加载", "重试失败: $videoUrl", e)
+                                        // 重试失败，从池中移除
+                                        playerPool.remove(videoUrl)
+                                        accessOrderLock.write {
+                                            accessOrder.remove(videoUrl)
+                                        }
+                                    }
+                                }
+                            }
+                            PlaybackException.ERROR_CODE_PARSING_CONTAINER_MALFORMED,
+                            PlaybackException.ERROR_CODE_PARSING_MANIFEST_MALFORMED -> {
+                                Log.e("视频预加载", "视频格式错误，移除播放器: $videoUrl")
+                                // 格式错误，直接移除
+                                playerPool.remove(videoUrl)
+                                accessOrderLock.write {
+                                    accessOrder.remove(videoUrl)
+                                }
+                            }
+                            else -> {
+                                Log.e("视频预加载", "未知错误，移除播放器: $videoUrl")
+                                // 其他错误，移除播放器
+                                playerPool.remove(videoUrl)
+                                accessOrderLock.write {
+                                    accessOrder.remove(videoUrl)
+                                }
+                            }
+                        }
 
                         // 如果是当前播放的视频出错，清除当前播放状态
                         if (videoUrl == currentPlayingUrl) {
@@ -177,6 +285,78 @@ class VideoPreloadManager(private val context: Context) {
         // 将新创建的播放器添加到池中
         playerPool[videoUrl] = player
         // 更新访问顺序
+        updateAccessOrder(videoUrl)
+        return player
+    }
+
+    /**
+     * 创建基础播放器实例（无缓存）
+     */
+    private fun createBasicPlayer(videoUrl: String, repeatMode: Boolean): ExoPlayer {
+        // 当池已满时，移除最久未使用的播放器(当前播放的除外)
+        if (playerPool.size >= maxPoolSize) {
+            val lruKey = accessOrderLock.read {
+                accessOrder.firstOrNull { it != currentPlayingUrl }
+                    ?: accessOrder.firstOrNull()
+            }
+
+            lruKey?.let { key ->
+                playerPool[key]?.let { player ->
+                    player.stop()
+                    player.release()
+                }
+                playerPool.remove(key)
+                accessOrderLock.write {
+                    accessOrder.remove(key)
+                }
+                Log.d("视频预加载", "LRU清理播放器: $key")
+            }
+        }
+
+        // 基础播放器配置
+        val player = ExoPlayer.Builder(context).build().apply {
+            val mediaItem = androidx.media3.common.MediaItem.fromUri(videoUrl)
+            setMediaItem(mediaItem)
+            playWhenReady = false
+            volume = 1.0f
+            this.repeatMode = if (repeatMode) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
+            prepare()
+
+            addListener(object : Player.Listener {
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    when (playbackState) {
+                        Player.STATE_ENDED -> {
+                            if (!repeatMode) {
+                                pause()
+                            }
+                        }
+                        Player.STATE_IDLE -> {
+                            if (videoUrl == currentPlayingUrl) {
+                                managerScope.launch {
+                                    delay(500)
+                                    if (playbackState == Player.STATE_IDLE) {
+                                        try {
+                                            prepare()
+                                        } catch (e: Exception) {
+                                            Log.e("视频预加载", "重新准备播放器失败: $videoUrl", e)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                override fun onPlayerError(error: PlaybackException) {
+                    Log.e("视频预加载", "播放器错误 ($videoUrl): ${error.message}")
+                    if (videoUrl == currentPlayingUrl) {
+                        currentPlayingUrl = null
+                    }
+                }
+            })
+        }
+
+        playerPool[videoUrl] = player
         updateAccessOrder(videoUrl)
         return player
     }
@@ -196,14 +376,22 @@ class VideoPreloadManager(private val context: Context) {
     }
 
     /**
-     * 预加载指定视频
+     * 预加载指定视频 - 添加内存检查
      */
     fun preloadVideo(videoUrl: String, repeatMode: Boolean = false) {
         if (!playerPool.containsKey(videoUrl) && videoUrl.isNotEmpty()) {
-            try {
-                createNewPlayer(videoUrl, repeatMode)
-            } catch (e: Exception) {
-                Log.e("视频预加载", "预加载失败: $videoUrl", e)
+            // 预加载前检查内存状态
+            if (checkMemoryAndCleanup()) {
+                managerScope.launch {
+                    try {
+                        createNewPlayer(videoUrl, repeatMode)
+                        Log.d("视频预加载", "预加载成功: $videoUrl")
+                    } catch (e: Exception) {
+                        Log.e("视频预加载", "预加载失败: $videoUrl", e)
+                    }
+                }
+            } else {
+                Log.w("视频预加载", "内存不足，跳过预加载: $videoUrl")
             }
         }
     }
@@ -414,10 +602,75 @@ class VideoPreloadManager(private val context: Context) {
     }
 
     /**
+     * 智能内存检查和清理
+     * @return 是否有足够内存继续操作
+     */
+    private fun checkMemoryAndCleanup(): Boolean {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastMemoryCheckTime < memoryCheckInterval) {
+            return true // 间隔时间内不重复检查
+        }
+        lastMemoryCheckTime = currentTime
+        
+        val memoryInfo = ActivityManager.MemoryInfo()
+        activityManager.getMemoryInfo(memoryInfo)
+        
+        // 计算内存使用率
+        val usedMemoryPercent = (memoryInfo.totalMem - memoryInfo.availMem).toFloat() / memoryInfo.totalMem
+        
+        Log.d("内存监控", "内存使用率: ${(usedMemoryPercent * 100).toInt()}%")
+        
+        // 如果内存使用率超过80%，进行清理
+        if (usedMemoryPercent > 0.8f) {
+            Log.w("内存监控", "内存使用率过高，开始清理")
+            onMemoryPressure()
+            return false
+        }
+        
+        // 如果内存使用率超过70%且播放器池不为空，清理非当前播放的视频
+        if (usedMemoryPercent > 0.7f && playerPool.size > 1) {
+            Log.w("内存监控", "内存使用率较高，清理部分缓存")
+            cleanupNonCurrentPlayers()
+        }
+        
+        return true
+    }
+    
+    /**
+     * 清理非当前播放的播放器
+     */
+    private fun cleanupNonCurrentPlayers() {
+        val currentPlaying = currentPlayingUrl
+        val toRemove = mutableListOf<String>()
+        
+        playerPool.forEach { (url, player) ->
+            if (url != currentPlaying) {
+                player.stop()
+                player.release()
+                toRemove.add(url)
+            }
+        }
+        
+        toRemove.forEach { url ->
+            playerPool.remove(url)
+            accessOrderLock.write {
+                accessOrder.remove(url)
+            }
+            Log.d("内存清理", "清理播放器: $url")
+        }
+    }
+    
+    /**
      * 销毁管理器，释放所有资源
      */
     fun destroy() {
         managerScope.cancel()
         releaseAll()
+        // 释放缓存资源
+        try {
+            cache.release()
+        } catch (e: Exception) {
+            Log.e("视频预加载", "释放缓存失败", e)
+        }
     }
 }

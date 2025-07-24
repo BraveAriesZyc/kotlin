@@ -28,8 +28,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.zyc.clover.components.ZAppBar
 import com.zyc.clover.components.drawer.DrawerViewModel
-
 import com.zyc.clover.route.LocalNavController
+
 import com.zyc.clover.ui.theme.LocalTheme
 
 
@@ -93,6 +93,15 @@ fun MeScreen() {
                         }
 
 
+                        Button(
+                            modifier = Modifier.padding(8.dp),
+                            onClick = {
+        
+                            }
+                        ) {
+                            Text(text = "视频封面测试")
+                        }
+                        
                         Text(modifier = Modifier.padding(pd), text = "我的")
                     }
 

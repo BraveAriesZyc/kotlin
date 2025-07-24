@@ -19,6 +19,7 @@ import com.zyc.clover.pages.layout.message.children.SendMessageScreen
 import com.zyc.clover.pages.start.StartScreen
 import com.zyc.clover.pages.web.WebViewScreen
 
+
 import kotlinx.serialization.Serializable
 
 
@@ -59,6 +60,7 @@ val installRoot: (NavGraphBuilder.() -> Unit) = {
         composableScale<WebViewRoute> { WebViewScreen(it.arguments?.getString("url") ?: "") }
         composableSlide<SendMessageRoute> { SendMessageScreen(it.arguments?.getString("conversationId") ?: "") }
         composableScale<LayoutRoute> { LayoutScreen() }
+
 //        navigation<LayoutRoute>(startDestination = LayoutRoute, builder = installLayout)
     }
 }
