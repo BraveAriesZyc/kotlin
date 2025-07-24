@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -161,76 +162,52 @@ fun VideoPlayer(
         }
     }
 
-    // 自动隐藏控制器
-    LaunchedEffect(showControls) {
-        if (showControls && showCustomControls) {
+    // 自动隐藏控制器 - 拖拽时不隐藏
+    LaunchedEffect(showControls, isDragging) {
+        if (showControls && showCustomControls && !isDragging) {
             delay(3000)
             showControls = false
         }
     }
 
     Box(modifier = modifier) {
-        Column(
-            content = {
-                // 5. 将Player与PlayerView绑定
-                AndroidView(
-                    factory = { ctx ->
-                        PlayerView(ctx).apply {
-                            this.player = player
-                            useController = false // 禁用默认控制栏
-                            // 设置视频缩放模式，避免画面变形
-                            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
-                            // 启用硬件加速和优化设置
-                            setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
-                            // 优化性能设置
-                            setShutterBackgroundColor(android.graphics.Color.BLACK)
-                            setKeepContentOnPlayerReset(true)
-                        }
-                    },
-                    update = { playerView ->
-                        // 确保播放器绑定正确
-                        if (playerView.player != player) {
-                            playerView.player = player
-                        }
+        AndroidView(
+            factory = { ctx ->
+                PlayerView(ctx).apply {
+                    this.player = player
+                    useController = false // 禁用默认控制栏
+                    // 设置视频缩放模式，避免画面变形
+                    resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+                    // 启用硬件加速和优化设置
+                    setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
+                    // 优化性能设置
+                    setShutterBackgroundColor(android.graphics.Color.BLACK)
+                    setKeepContentOnPlayerReset(true)
+                }
+            },
+            update = { playerView ->
+                // 确保播放器绑定正确
+                if (playerView.player != player) {
+                    playerView.player = player
+                }
 
-                        // 根据状态更新UI
-                        playerView.setShowBuffering(
-                            if (isPlayerReady) PlayerView.SHOW_BUFFERING_WHEN_PLAYING
-                            else PlayerView.SHOW_BUFFERING_ALWAYS
-                        )
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(Color.Black)
-                        .clickable {
-                            if (showCustomControls) {
-                                showControls = !showControls
-                            }
-                        }
+                // 根据状态更新UI
+                playerView.setShowBuffering(
+                    if (isPlayerReady) PlayerView.SHOW_BUFFERING_WHEN_PLAYING
+                    else PlayerView.SHOW_BUFFERING_ALWAYS
                 )
-                // 视频下方的进度条区域
-                CustomProgressBar(
-                    progress = if (duration > 0) currentPosition.toFloat() / duration.toFloat() else 0f,
-                    bufferProgress = bufferPercentage / 100f, // 将百分比转换为0-1的浮点数
-                    onProgressChange = { progress ->
-                        val newPosition = (progress * duration).toLong()
-                        player.seekTo(newPosition)
-                        currentPosition = newPosition
-                    },
-                    onDragStart = {
-                        isDragging = true
-                    },
-                    onDragEnd = {
-                        isDragging = false
-                    },
-                    currentTime = formatTime(currentPosition),
-                    totalTime = formatTime(duration),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .clickable {
+                    if (showCustomControls) {
+                        showControls = !showControls
+                    }
+                }
         )
 
-        // 简化的控制器覆盖层 - 只显示播放/暂停按钮
+        // 控制器覆盖层 - 包含播放/暂停按钮和进度条
         if (showCustomControls && showControls) {
             CustomVideoControls(
                 isPlaying = isPlaying,
@@ -238,6 +215,8 @@ fun VideoPlayer(
                 duration = duration,
                 volume = volume,
                 isMuted = isMuted,
+                bufferPercentage = bufferPercentage,
+                isDragging = isDragging,
                 onPlayPause = {
                     if (isPlaying) {
                         player.pause()
@@ -248,6 +227,17 @@ fun VideoPlayer(
                 onSeek = { position ->
                     player.seekTo(position)
                     currentPosition = position
+                },
+                onProgressChange = { progress ->
+                    val newPosition = (progress * duration).toLong()
+                    player.seekTo(newPosition)
+                    currentPosition = newPosition
+                },
+                onDragStart = {
+                    isDragging = true
+                },
+                onDragEnd = {
+                    isDragging = false
                 },
                 onVolumeChange = { newVolume ->
                     volume = newVolume
@@ -271,33 +261,62 @@ fun CustomVideoControls(
     duration: Long,
     volume: Float,
     isMuted: Boolean,
+    bufferPercentage: Int,
+    isDragging: Boolean,
     onPlayPause: () -> Unit,
     onSeek: (Long) -> Unit,
+    onProgressChange: (Float) -> Unit,
+    onDragStart: () -> Unit,
+    onDragEnd: () -> Unit,
     onVolumeChange: (Float) -> Unit,
     onMuteToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
-            .background(Color.Black.copy(alpha = 0.3f))
-    ) {
-        // 中央播放/暂停按钮
-        IconButton(
-            onClick = onPlayPause,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .size(72.dp)
-                .clip(CircleShape)
-                .background(Color.Black.copy(alpha = 0.7f))
-        ) {
-            Icon(
-                imageVector = if (isPlaying) Icons.Default.ArrowDropDown else Icons.Default.PlayArrow,
-                contentDescription = if (isPlaying) "暂停" else "播放",
-                tint = Color.White,
-                modifier = Modifier.size(36.dp)
+            .background(Color.Black.copy(alpha = 0.2f)),
+        content = {
+            // 中央播放/暂停按钮
+            IconButton(
+                onClick = onPlayPause,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(72.dp)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.7f)),
+                content = {
+                    Icon(
+                        imageVector = if (isPlaying) Icons.Default.ArrowDropDown else Icons.Default.PlayArrow,
+                        contentDescription = if (isPlaying) "暂停" else "播放",
+                        tint = Color.White,
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
             )
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                content = {
+                    CustomProgressBar(
+                        progress = if (duration > 0) currentPosition.toFloat() / duration.toFloat() else 0f,
+                        bufferProgress = bufferPercentage / 100f,
+                        onProgressChange = onProgressChange,
+                        onDragStart = onDragStart,
+                        onDragEnd = onDragEnd,
+                        currentTime = formatTime(currentPosition),
+                        totalTime = formatTime(duration),
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .fillMaxWidth()
+                    )
+
+                }
+            )
+
         }
-    }
+    )
 }
 
 // 格式化时间显示
