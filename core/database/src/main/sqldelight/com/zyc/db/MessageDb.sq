@@ -1,19 +1,65 @@
 CREATE TABLE MessageTable (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  userId TEXT NOT NULL,
-  type TEXT NOT NULL,
-  content TEXT,
-  imageUrl TEXT,
-  videoUrl TEXT,  -- 保持非空约束
-  audioUrl TEXT,
-  fileUrl TEXT,  -- 移除NOT NULL，允许为NULL
-  role TEXT NOT NULL,
-  sessionId TEXT NOT NULL,
-  timestamp INTEGER NOT NULL
+  message_id TEXT NOT NULL UNIQUE,
+  chat_id INTEGER NOT NULL,
+  session_id TEXT NOT NULL,
+  sender_id INTEGER NOT NULL,
+  sender_user_id TEXT NOT NULL,
+  receiver_id INTEGER,
+  receiver_user_id TEXT,
+  content TEXT NOT NULL,
+  type INTEGER NOT NULL,  -- 消息类型枚举值
+  status INTEGER DEFAULT 1,  -- 消息状态枚举值，默认为发送中
+  timestamp INTEGER NOT NULL,
+  reply_to_message_id INTEGER,
+  -- 媒体元数据字段
+  image_url TEXT,
+  video_url TEXT,
+  audio_url TEXT,
+  file_url TEXT,
+  file_name TEXT,
+  file_size INTEGER,
+  file_path TEXT,
+  thumbnail_path TEXT,
+  thumbnail_url TEXT,
+  duration INTEGER,  -- 音频/视频时长（秒）
+  width INTEGER,     -- 图片/视频宽度
+  height INTEGER,    -- 图片/视频高度
+  latitude REAL,     -- 位置纬度
+  longitude REAL,    -- 位置经度
+  address TEXT,      -- 位置地址
+  mime_type TEXT,    -- MIME类型
+  is_deleted INTEGER DEFAULT 0,
+  edited_at INTEGER
 );
 insertMessage:
-INSERT INTO MessageTable (userId, type, content, imageUrl, videoUrl, audioUrl, fileUrl, role, sessionId, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO MessageTable (
+  message_id, chat_id, session_id, sender_id, sender_user_id,
+  receiver_id, receiver_user_id, content, type, status, timestamp,
+  reply_to_message_id, image_url, video_url, audio_url, file_url,
+  file_name, file_size, file_path, thumbnail_path, thumbnail_url,
+  duration, width, height, latitude, longitude, address, mime_type,
+  is_deleted, edited_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 
 selectAllMessages:
-SELECT * FROM MessageTable;
+SELECT * FROM MessageTable WHERE is_deleted = 0 ORDER BY timestamp DESC;
+
+selectMessagesBySessionId:
+SELECT * FROM MessageTable WHERE session_id = ? AND is_deleted = 0 ORDER BY timestamp ASC;
+
+selectMessagesByChatId:
+SELECT * FROM MessageTable WHERE chat_id = ? AND is_deleted = 0 ORDER BY timestamp ASC;
+
+selectMessageById:
+SELECT * FROM MessageTable WHERE message_id = ? AND is_deleted = 0;
+
+updateMessageStatus:
+UPDATE MessageTable SET status = ? WHERE message_id = ?;
+
+deleteMessage:
+UPDATE MessageTable SET is_deleted = 1 WHERE message_id = ?;
+
+editMessage:
+UPDATE MessageTable SET content = ?, edited_at = ? WHERE message_id = ?;

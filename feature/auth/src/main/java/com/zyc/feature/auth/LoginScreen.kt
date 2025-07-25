@@ -1,7 +1,6 @@
 package com.zyc.feature.auth
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,14 +18,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.zyc.core.ui.R
 
 import com.zyc.core.ui.components.element.components.button.FormButton
-import com.zyc.core.ui.components.element.components.input.FormInput
 import com.zyc.core.ui.components.element.components.input.NoBorderFormInput
-import com.zyc.core.ui.navigation.LocalNavController
+import com.zyc.core.ui.route.LocalNavController
 import com.zyc.core.ui.route.LoginRoute
 import com.zyc.core.ui.route.RegisterRoute
 

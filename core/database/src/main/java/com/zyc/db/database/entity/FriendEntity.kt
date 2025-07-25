@@ -1,84 +1,57 @@
 package com.zyc.db.database.entity
 
 import kotlinx.serialization.Serializable
+import com.zyc.core.model.entity.Friend
+import com.zyc.core.model.entity.FriendStatus
 
 @Serializable
 data class FriendEntity(
-    var id: Long? = null,
-    /**
-     * 用户唯一标识
-     */
-    var userId: String? = null,
+    val id: Long = 0,
+    val userId: Long,
+    val friendUserId: Long,
+    val friendUserIdStr: String,
+    val nickname: String?, // 好友备注名
+    val groupId: Long?,
+    val groupName: String?,
+    val status: Int = 0, // 对应 FriendStatus.value
+    val isBlocked: Boolean = false,
+    val isStarred: Boolean = false,
+    val addTime: Long,
+    val updateTime: Long
+) {
+    fun toFriend(): Friend {
+        return Friend(
+            id = id,
+            userId = userId,
+            friendUserId = friendUserId,
+            friendUserIdStr = friendUserIdStr,
+            nickname = nickname,
+            groupId = groupId,
+            groupName = groupName,
+            status = FriendStatus.values().find { it.value == status } ?: FriendStatus.NORMAL,
+            isBlocked = isBlocked,
+            isStarred = isStarred,
+            addTime = addTime,
+            updateTime = updateTime
+        )
+    }
 
-    /**
-     * 用户昵称
-     */
-    var nickname: String? = null,
-
-    /**
-     * 手机号码
-     */
-    var phone: String? = null,
-
-    /**
-     * 邮箱地址
-     */
-    var email: String? = null,
-
-    /**
-     * 用户头像URL
-     */
-    var avatar: String? = null,
-
-    /**
-     * 背景图URL
-     */
-    var background: String? = null,
-
-    /**
-     * 性别：0-未知，1-男，2-女
-     */
-    var gender: Int? = null,
-
-    /**
-     * 生日
-     */
-    var birthday: String? = null,
-
-    /**
-     * 个人简介
-     */
-    var bio: String? = null,
-
-    /**
-     * 用户状态：0-正常，1-禁用，2-锁定
-     */
-    var status: Int? = null,
-
-    /**
-     * 最后登录时间
-     */
-    var lastLoginTime: String? = null,
-
-    /**
-     * 最后登录IP
-     */
-    var lastLoginIp: String? = null,
-
-    /**
-     * 用户密码（加密存储）
-     * 使用加密算法存储的用户登录密码，不会在JSON序列化时返回
-     */
-    var password: String? = null,
-    /**
-     * 创建时间
-     * 记录数据创建的时间，在插入时自动填充
-     */
-    var createTime: String? = null,
-    /**
-     * 更新时间
-     * 记录数据最后更新的时间，在插入和更新时自动填充
-     */
-
-    var updateTime: String? = null
-)
+    companion object {
+        fun fromFriend(friend: Friend): FriendEntity {
+            return FriendEntity(
+                id = friend.id,
+                userId = friend.userId,
+                friendUserId = friend.friendUserId,
+                friendUserIdStr = friend.friendUserIdStr,
+                nickname = friend.nickname,
+                groupId = friend.groupId,
+                groupName = friend.groupName,
+                status = friend.status.value,
+                isBlocked = friend.isBlocked,
+                isStarred = friend.isStarred,
+                addTime = friend.addTime,
+                updateTime = friend.updateTime
+            )
+        }
+    }
+}

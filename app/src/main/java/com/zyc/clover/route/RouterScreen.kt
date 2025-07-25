@@ -6,13 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.zyc.core.ui.navigation.LocalNavController
-import com.zyc.core.ui.navigation.composableScale
-import com.zyc.core.ui.navigation.composableSlide
+import com.zyc.core.ui.route.LocalNavController
 import com.zyc.feature.auth.LoginScreen
 import com.zyc.feature.auth.RegisterScreen
 import com.zyc.feature.layout.components.LayoutScreen
@@ -20,6 +17,8 @@ import com.zyc.feature.message.MessageScreen
 import com.zyc.feature.message.SendMessageScreen
 import com.zyc.clover.pages.start.StartScreen
 import com.zyc.core.ui.components.WebViewScreen
+import com.zyc.core.ui.route.composableScale
+import com.zyc.core.ui.route.composableSlide
 
 
 import kotlinx.serialization.Serializable

@@ -1,4 +1,4 @@
-package com.zyc.core.ui.navigation
+package com.zyc.core.ui.route
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController

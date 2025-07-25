@@ -10,6 +10,11 @@ import kotlinx.coroutines.flow.Flow
 interface MessageRepository {
     
     /**
+     * 初始化应用数据
+     */
+    suspend fun initApp()
+    
+    /**
      * 发送消息
      */
     suspend fun sendMessage(message: Message): Long

@@ -36,11 +36,11 @@ import coil3.compose.AsyncImage
 
 import com.zyc.core.ui.route.SendMessageRoute
 import com.zyc.core.ui.components.ZAppBar
-import com.zyc.core.ui.navigation.LocalNavController
+import com.zyc.core.ui.route.LocalNavController
 
 import com.zyc.core.common.utils.event.GlobalAntiShake.debounceClick
 import com.zyc.core.ui.utils.refresh.CustomOverscrollEffect
-import com.zyc.data.models.SessionMemberModel
+import com.zyc.core.model.entity.SessionMember
 
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -75,24 +75,6 @@ fun MessageScreen() {
                     .wrapContentHeight(),
                 overscrollEffect = verticalLazyOverscroll,
                 content = {
-
-//                    repeat(40){
-//                        item {
-//                            UserItem(
-//                                modifier = Modifier,
-//                                user = UserModel(
-//                                    userName = "用户$it",
-//                                    uid = "uid$it",
-//                                    avatar = "https://picsum.photos/200/300?random=$it",
-//                                    age = it,
-//                                    sex = "男",
-//                                ),
-//                                onClick = {
-//                                    navController.navigate("${RouterName.SendMessageScreen.route}/$it")
-//                                }
-//                            )
-//                        }
-//                    }
                     items(
                         items = conversationList,
                         itemContent = { it ->
@@ -116,7 +98,7 @@ fun MessageScreen() {
 @Composable
 fun UserItem(
     modifier: Modifier = Modifier,
-    user: SessionMemberModel,
+    user: SessionMember,
     onClick: () -> Unit
 ) {
     Row(

@@ -5,23 +5,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 
-import com.zyc.data.repository.ChatRepository
-import com.zyc.data.models.SessionMemberModel
-import com.zyc.data.models.UserModel
+import com.zyc.core.data.repository.impl.ChatRepositoryImpl
+import com.zyc.core.model.entity.SessionMember
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MessageViewModel(
-    private val chatRepository: ChatRepository
+    private val chatRepository: ChatRepositoryImpl
 ) : ViewModel() {
-    val conversationList: StateFlow<List<SessionMemberModel>> = chatRepository.conversationList
+    val conversationList: StateFlow<List<SessionMember>> = chatRepository.conversationList
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
 
-    fun getUser(userId: String): UserModel? {
+    fun getUser(userId: String): SessionMember? {
         Log.d("getUser", "userId: $userId")
         return chatRepository.getUser(userId)
     }

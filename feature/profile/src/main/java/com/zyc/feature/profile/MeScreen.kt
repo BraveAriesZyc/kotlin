@@ -24,8 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.zyc.core.ui.components.ZAppBar
 import com.zyc.core.ui.components.drawer.DrawerViewModel
-import com.zyc.feature.profile.MeViewModel
-import com.zyc.core.ui.navigation.LocalNavController
+import com.zyc.core.ui.route.LocalNavController
 
 import com.zyc.core.ui.theme.LocalTheme
 

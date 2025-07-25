@@ -38,13 +38,12 @@ import com.zyc.core.ui.components.keyboard.InputArea
 
 
 import com.zyc.core.ui.components.ZAppBar
-import com.zyc.core.ui.navigation.LocalNavController
+import com.zyc.core.ui.route.LocalNavController
 
 import com.zyc.core.common.utils.event.GlobalAntiShake.debounceClick
-import com.zyc.data.models.MessageModel
-import com.zyc.data.models.UserModel
-import com.zyc.data.models.enums.MessageType
-import com.zyc.data.models.enums.Role
+import com.zyc.core.model.entity.Message
+import com.zyc.core.model.entity.SessionMember
+import com.zyc.core.model.entity.MessageType
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -64,7 +63,7 @@ fun SendMessageScreen(conversationId: String) {
     Scaffold(
         topBar = {
             ZAppBar(
-                title = friend.nickname ?: "未知",
+                title = friend?.nickname ?: "未知",
                 onBack = {
                     navController.popBackStack()
                     keyboardController?.hide()
@@ -91,21 +90,25 @@ fun SendMessageScreen(conversationId: String) {
                     state = scrollState,
                     verticalArrangement = Arrangement.Top,
                 ) {
-                    items(messageList.size, key = { it -> it }) { it ->
-                        MessageItem(messageList[it], friend, user)
+                    items(messageList.size, key = { index -> index }) { index ->
+                        MessageItem(messageList[index], friend, user)
                     }
                 }
-                InputArea(onSend = { it ->
-                    if (it.isNotEmpty()) {
+                InputArea(onSend = { message: String ->
+                    if (message.isNotEmpty()) {
                         // 在协程作用域中调用挂起函数
 
                         sendMessageViewModel.sendMessage(
-                            MessageModel(
-                                userId = "${user.userId}",
-                                type = MessageType.TEXT.value,
-                                content = it,
+                            Message(
+                                id = System.currentTimeMillis(),
+                                messageId = "msg_${System.currentTimeMillis()}",
+                                chatId = conversationId.toLongOrNull() ?: 1L,
                                 sessionId = conversationId,
-                                role = Role.USER.value,
+                                senderId = user?.userId?.toLongOrNull() ?: 1L,
+                                senderUserId = user?.userId ?: "user1",
+                                content = message,
+                                type = MessageType.TEXT,
+                                timestamp = System.currentTimeMillis()
                             )
                         )
                     }
@@ -117,8 +120,8 @@ fun SendMessageScreen(conversationId: String) {
 }
 
 @Composable
-fun MessageItem(item: MessageModel, friend: UserModel, user: UserModel) {
-    val isSelf = item.role == Role.USER.value
+fun MessageItem(item: Message, friend: SessionMember?, user: SessionMember?) {
+    val isSelf = item.senderUserId == user?.userId
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -137,7 +140,7 @@ fun MessageItem(item: MessageModel, friend: UserModel, user: UserModel) {
                 horizontalAlignment = if (isSelf) Alignment.End else Alignment.Start,
                 content = {
                     Text(
-                        text = "${user.nickname}", style = TextStyle(
+                        text = user?.nickname ?: user?.userName ?: "", style = TextStyle(
                             fontSize = 12.sp
                         )
                     )
@@ -156,11 +159,11 @@ fun MessageItem(item: MessageModel, friend: UserModel, user: UserModel) {
                         content = {
 
                             when (item.type) {
-                                MessageType.TEXT.value -> MessageItemText(item)
-                                MessageType.IMAGE.value -> MessageItemImage(item)
-                                MessageType.VIDEO.value -> MessageItemVideo(item)
-                                MessageType.AUDIO.value -> MessageItemAudio(item)
-                                MessageType.FILE.value -> MessageItemFile(item)
+                                MessageType.TEXT -> MessageItemText(item)
+                                MessageType.IMAGE -> MessageItemImage(item)
+                                MessageType.VIDEO -> MessageItemVideo(item)
+                                MessageType.AUDIO -> MessageItemAudio(item)
+                                MessageType.FILE -> MessageItemFile(item)
                                 else -> MessageItemText(item)
                             }
                         }
@@ -177,7 +180,7 @@ fun MessageItem(item: MessageModel, friend: UserModel, user: UserModel) {
 }
 
 @Composable
-fun MessageItemText(item: MessageModel) {
+fun MessageItemText(item: Message) {
     Text(
         text = item.content ?: "", style = TextStyle(
             fontSize = 12.sp
@@ -186,37 +189,37 @@ fun MessageItemText(item: MessageModel) {
 }
 
 @Composable
-fun MessageItemImage(item: MessageModel) {
+fun MessageItemImage(item: Message) {
     val context = LocalContext.current
-    Text(item.imageUrl ?: "")
+    Text(item.metadata?.imageUrl ?: "")
 }
 
 @Composable
-fun MessageItemVideo(item: MessageModel) {
+fun MessageItemVideo(item: Message) {
     val context = LocalContext.current
-    Text(item.videoUrl ?: "")
+    Text(item.metadata?.videoUrl ?: "")
 }
 
 @Composable
-fun MessageItemAudio(item: MessageModel) {
+fun MessageItemAudio(item: Message) {
     val context = LocalContext.current
-    Text(item.audioUrl ?: "")
+    Text(item.metadata?.audioUrl ?: "")
 }
 
 @Composable
-fun MessageItemFile(item: MessageModel) {
+fun MessageItemFile(item: Message) {
     val context = LocalContext.current
-    Text(item.fileUrl ?: "")
+    Text(item.metadata?.fileUrl ?: "")
 }
 
 
 @Composable
-fun BuildAvatar(user: UserModel) {
+fun BuildAvatar(user: SessionMember?) {
     Column {
         Spacer(modifier = Modifier.height(10.dp))
         AsyncImage(
             modifier = Modifier.size(45.dp).clip(RoundedCornerShape(10.dp)),
-            model = user.avatar, contentDescription = null
+            model = user?.avatar, contentDescription = null
         )
     }
 }

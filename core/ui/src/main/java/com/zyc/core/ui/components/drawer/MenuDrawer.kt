@@ -4,12 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -34,191 +36,142 @@ val ICON_SIZE = 24.sp
 @Composable
 fun MenuDrawer(
     drawerList: List<NavigationDrawerItemType>,
-    onClose: () -> Unit = {},
+    onClose: () -> Unit = {}, // 添加关闭回调
     content: @Composable () -> Unit,
     layout: Boolean = true
 ) {
-
-
     val drawerViewModel = viewModel<DrawerViewModel>()
+
     val showDrawer by drawerViewModel.drawerState.collectAsState()
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    // 跟踪抽屉状态的变化
     var lastDrawerValue by remember { mutableStateOf(drawerState.currentValue) }
 
-    // 抽屉状态与外部状态同步（打开/关闭）
-    LaunchedEffect(showDrawer, drawerState) {
-        if (showDrawer && drawerState.currentValue == DrawerValue.Closed) {
+    // 当外部状态变化时，更新抽屉状态
+    LaunchedEffect(showDrawer) {
+        if (showDrawer) {
             drawerState.open()
-        } else if (!showDrawer && drawerState.currentValue == DrawerValue.Open) {
+        } else {
             drawerState.close()
         }
     }
 
-    // 监听抽屉关闭事件，触发外部回调
+    // 当抽屉状态变化时，检查是否已关闭
     LaunchedEffect(drawerState) {
         snapshotFlow { drawerState.currentValue }
-            .collect { currentValue ->
-                if (lastDrawerValue == DrawerValue.Open && currentValue == DrawerValue.Closed) {
+            .collect { value ->
+                // 如果抽屉从打开变为关闭，触发关闭回调
+                if (lastDrawerValue == DrawerValue.Open && value == DrawerValue.Closed) {
                     onClose()
                 }
-                lastDrawerValue = currentValue
+                lastDrawerValue = value
             }
     }
 
-    // 计算顶部安全区域（状态栏高度）
+    val insets = WindowInsets.systemBars
+    // 计算顶部安全距离（状态栏高度）
     val topInset = with(LocalDensity.current) {
-        WindowInsets.systemBars.getTop(this).toDp()
+        insets.getTop(
+            this
+        ).toDp()
     }
 
-    // 布局方向：根据参数切换（默认LTR）
-    val layoutDirection = remember(layout) {
+    val layout = remember(layout) {
         if (layout) LayoutDirection.Rtl else LayoutDirection.Ltr
     }
-
-    // 独立组件：抽屉列表项（提取重复UI）
-    @Composable
-    fun DrawerItem(
-        item: NavigationDrawerItemType
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(horizontal = 12.dp, vertical = 8.dp)
-                .clickable(
-                    onClick = {
-                        item.onClick()
-                        scope.launch {
-                            drawerState.close()
-                        }
-                    }
-                )
-                .debounceClick(
-                    onClick = {
-                        item.onClick()
-                        scope.launch {
-                            drawerState.close()
-                        }
-                    }
-                ),
-            content = {
-                Box(
-                    modifier = Modifier.wrapContentSize(),
-                    content = {
-                        Box(
-                            modifier = Modifier
-                                .size(44.dp)
-                                .padding(4.dp)
-                                .drawBehind {
-                                    drawIntoCanvas { canvas ->
-                                        val paint = Paint().apply {
-                                            color = item.color.copy(alpha = 0.3f)
-                                            asFrameworkPaint().maskFilter =
-                                                android.graphics.BlurMaskFilter(
-                                                    60f,
-                                                    android.graphics.BlurMaskFilter.Blur.NORMAL
-                                                )
-                                        }
-                                        canvas.drawCircle(
-                                            center = Offset(size.width / 2, size.height / 2),
-                                            radius = size.minDimension / 2.5f,
-                                            paint
-                                        )
-                                    }
-                                },
-                            contentAlignment = Alignment.Center,
-                            content = {}
-                        )
-                        // 图标层
-                        Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .align(Alignment.Center),
-                            contentAlignment = Alignment.Center,
-                            content = {
-                                Text(
-                                    text = item.icon,
-                                    color = item.color,
-                                    fontSize = ICON_SIZE,
-                                    fontFamily = FontFamily(Font(R.font.icons))
-                                )
-                            }
-                        )
-                    }
-                )
-
-                Box(
-                    modifier = Modifier.weight(1f),
-                    content = {
-                        Text(
-                            text = item.title,
-                            modifier = Modifier.padding(start = 12.dp),
-                            color = item.color,
-                        )
-                    }
-                )
-            })
-    }
-
-    CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+    CompositionLocalProvider(LocalLayoutDirection provides layout) {
         ModalNavigationDrawer(
             drawerState = drawerState,
-            gesturesEnabled = false, // 禁用手势滑动（保持原有逻辑）
-            scrimColor = Color.Transparent, // 无遮罩色
+            gesturesEnabled = false,
+            scrimColor = Color.Transparent,
             drawerContent = {
-                // 强制抽屉内容使用LTR布局（避免文字方向混乱）
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                     ModalDrawerSheet(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize(),
                         drawerContainerColor = Color.Transparent,
                         drawerTonalElevation = 0.dp,
-                        windowInsets = WindowInsets(0.dp), // 移除默认内边距
-                        drawerShape = RoundedCornerShape(0.dp)
-                    ) {
-                        // 点击空白区域关闭抽屉
-                        Row {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .weight(2f)
-                                    .background(Color.Transparent)
-                                    .debounceClick { drawerViewModel.toggleDrawer() }
-                            )
-
-                            // 抽屉内容列表
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .background(
-                                        MaterialTheme.colorScheme.onPrimary
+                        windowInsets = WindowInsets(0),
+                        drawerShape = RoundedCornerShape(0.dp),
+                        content = {
+                            // 创建一个可点击的背景，点击时关闭抽屉
+                            Row(
+                                content = {
+                                    Spacer(
+                                        modifier = Modifier.fillMaxHeight().weight(2f).background(Color.Transparent)
+                                            .debounceClick {
+                                                drawerViewModel.toggleDrawer()
+                                            },
                                     )
-                                    .weight(3f)
-                                    .padding(top = topInset)
-                                    .verticalScroll(rememberScrollState())
-                            ) {
-                                drawerList.forEach { DrawerItem(item = it) }
-                            }
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                            .background(MaterialTheme.colorScheme.onPrimary)
+                                            .weight(3f)
+                                            .padding(top = topInset)
+                                            .verticalScroll(rememberScrollState()),
+                                        content = {
+                                            drawerList.map {
+                                                NavigationDrawerItem(
+                                                    modifier = Modifier.wrapContentWidth(),
+                                                    shape = RoundedCornerShape(2.dp),
+                                                    label = { Text(it.title) },
+                                                    icon = {
+                                                        Box(
+                                                            content = {
+                                                                // 上层清晰图标（使用 BoxScope 的 align 扩展函数居中对齐）
+                                                                Text(
+                                                                    text = it.icon,
+                                                                    color = MaterialTheme.colorScheme.primary,
+                                                                    fontSize = 24.sp,
+                                                                    fontFamily = FontFamily(Font(R.font.icons)),
+                                                                    modifier = Modifier.align(Alignment.Center)
+                                                                )
+                                                            },
+                                                            modifier = Modifier
+                                                                .wrapContentSize()
+                                                                .clip(CircleShape)
+                                                                .background(
+                                                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                                                                )
+                                                                .padding(5.dp)
+                                                        )
+                                                    },
+                                                    selected = it.selected,
+                                                    onClick = {
+                                                        scope.launch { drawerState.close() }
+                                                        it.onClick()
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    )
+
+                                }
+                            )
                         }
-                    }
+                    )
                 }
+
+
             },
             content = {
-                // 主内容区域强制LTR布局
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                     content()
                 }
             }
         )
     }
+
+
 }
 
 // 数据类保持不变
 class NavigationDrawerItemType(
     val title: String,
     val icon: String,
-    val color: Color,
+    val selected: Boolean = false,
     val onClick: () -> Unit = {}
 )

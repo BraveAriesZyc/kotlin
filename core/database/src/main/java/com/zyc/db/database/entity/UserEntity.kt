@@ -1,86 +1,75 @@
 package com.zyc.db.database.entity
 
 import kotlinx.serialization.Serializable
-import java.time.LocalDateTime
+import com.zyc.core.model.entity.User
+import com.zyc.core.model.entity.Gender
+import com.zyc.core.model.entity.UserStatus
 
-// 实体
 @Serializable
 data class UserEntity(
-    var id : Long? = null,
-    /**
-     * 用户唯一标识
-     */
-    var userId: String? = null,
+    val id: Long = 0,
+    val userId: String,
+    val username: String,
+    val email: String?,
+    val phone: String?,
+    val avatar: String?,
+    val nickname: String?,
+    val gender: Int = 0, // 对应 Gender.value
+    val birthday: String?,
+    val signature: String?,
+    val background: String?,
+    val status: Int = 0, // 对应 UserStatus.value
+    val isOnline: Boolean = false,
+    val lastLoginTime: Long?,
+    val lastLoginIp: String?,
+    val password: String?, // 本地可能不存储密码
+    val createTime: Long,
+    val updateTime: Long
+) {
+    fun toUser(): User {
+        return User(
+            id = id,
+            userId = userId,
+            username = username,
+            email = email,
+            phone = phone,
+            avatar = avatar,
+            nickname = nickname,
+            gender = Gender.values().find { it.value == gender } ?: Gender.UNKNOWN,
+            birthday = birthday,
+            signature = signature,
+            background = background,
+            status = UserStatus.values().find { it.value == status } ?: UserStatus.NORMAL,
+            isOnline = isOnline,
+            lastLoginTime = lastLoginTime,
+            lastLoginIp = lastLoginIp,
+            createTime = createTime,
+            updateTime = updateTime
+        )
+    }
 
-    /**
-     * 用户昵称
-     */
-    var nickname: String? = null,
-
-    /**
-     * 手机号码
-     */
-    var phone: String? = null,
-
-    /**
-     * 邮箱地址
-     */
-    var email: String? = null,
-
-    /**
-     * 用户头像URL
-     */
-    var avatar: String? = null,
-
-    /**
-     * 背景图URL
-     */
-    var background: String? = null,
-
-    /**
-     * 性别：0-未知，1-男，2-女
-     */
-    var gender: Int? = null,
-
-    /**
-     * 生日
-     */
-    var birthday: String? = null,
-
-    /**
-     * 个人简介
-     */
-    var bio: String? = null,
-
-    /**
-     * 用户状态：0-正常，1-禁用，2-锁定
-     */
-    var status: Int? = null,
-
-    /**
-     * 最后登录时间
-     */
-    var lastLoginTime: String? = null,
-
-    /**
-     * 最后登录IP
-     */
-    var lastLoginIp: String? = null,
-
-    /**
-     * 用户密码（加密存储）
-     * 使用加密算法存储的用户登录密码，不会在JSON序列化时返回
-     */
-    var password: String? = null,
-    /**
-     * 创建时间
-     * 记录数据创建的时间，在插入时自动填充
-     */
-    var createTime: String? = null,
-    /**
-     * 更新时间
-     * 记录数据最后更新的时间，在插入和更新时自动填充
-     */
-
-    var updateTime: String? = null
-)
+    companion object {
+        fun fromUser(user: User): UserEntity {
+            return UserEntity(
+                id = user.id,
+                userId = user.userId,
+                username = user.username,
+                email = user.email,
+                phone = user.phone,
+                avatar = user.avatar,
+                nickname = user.nickname,
+                gender = user.gender.value,
+                birthday = user.birthday,
+                signature = user.signature,
+                background = user.background,
+                status = user.status.value,
+                isOnline = user.isOnline,
+                lastLoginTime = user.lastLoginTime,
+                lastLoginIp = user.lastLoginIp,
+                password = null, // 不存储密码
+                createTime = user.createTime,
+                updateTime = user.updateTime
+            )
+        }
+    }
+}
