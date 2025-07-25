@@ -1,7 +1,6 @@
 plugins {
     id("android-library-convention")
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.serialization)
 }
 
 android {
@@ -17,6 +16,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:model"))
     implementation(project(":core:ui"))
+    implementation(project(":core:network"))
     
     // Feature modules - direct dependencies
     implementation(project(":feature:home"))
@@ -41,9 +41,6 @@ dependencies {
     
     // Lifecycle
     implementation(libs.lifecycle.runtime.ktx)
-    
-    // Serialization
-    implementation(libs.kotlinx.serialization.json)
     
     // Test dependencies
     testImplementation(libs.junit)

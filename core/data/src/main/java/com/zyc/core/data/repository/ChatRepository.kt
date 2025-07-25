@@ -10,6 +10,11 @@ import kotlinx.coroutines.flow.Flow
 interface ChatRepository {
     
     /**
+     * 初始化应用数据
+     */
+    suspend fun initApp()
+    
+    /**
      * 获取所有聊天会话
      */
     suspend fun getAllChats(): Flow<List<Chat>>
