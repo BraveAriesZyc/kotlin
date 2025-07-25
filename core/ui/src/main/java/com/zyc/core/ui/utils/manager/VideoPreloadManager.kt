@@ -50,8 +50,8 @@ class VideoPreloadManager(private val context: Context) {
     /** 读写锁，保护accessOrder的线程安全 */
     private val accessOrderLock = ReentrantReadWriteLock()
 
-    /** 播放器池的最大容量 - 进一步优化：降低到2个以减少内存使用 */
-    private val maxPoolSize = 2
+    /** 播放器池的最大容量 - 优化：设置为3个，平衡性能和内存使用 */
+    private val maxPoolSize = 3
 
     /** 当前正在播放的视频URL */
     private var currentPlayingUrl: String? = null
@@ -73,7 +73,7 @@ class VideoPreloadManager(private val context: Context) {
         if (!cacheDir.exists()) {
             cacheDir.mkdirs()
         }
-        val cacheEvictor = LeastRecentlyUsedCacheEvictor(30 * 1024 * 1024L) // 30MB缓存，进一步减少内存使用
+        val cacheEvictor = LeastRecentlyUsedCacheEvictor(50 * 1024 * 1024L) // 50MB缓存，平衡缓存效果和内存使用
         SimpleCache(cacheDir, cacheEvictor,databaseProvider)
     }
 
@@ -622,17 +622,23 @@ class VideoPreloadManager(private val context: Context) {
 
         Log.d("内存监控", "内存使用率: ${(usedMemoryPercent * 100).toInt()}%")
 
-        // 如果内存使用率超过80%，进行清理
-        if (usedMemoryPercent > 0.8f) {
-            Log.w("内存监控", "内存使用率过高，开始清理")
+        // 如果内存使用率超过85%，进行强制清理
+        if (usedMemoryPercent > 0.85f) {
+            Log.w("内存监控", "内存使用率过高，开始强制清理")
             onMemoryPressure()
             return false
         }
 
-        // 如果内存使用率超过70%且播放器池不为空，清理非当前播放的视频
-        if (usedMemoryPercent > 0.7f && playerPool.size > 1) {
+        // 如果内存使用率超过75%且播放器池不为空，清理非当前播放的视频
+        if (usedMemoryPercent > 0.75f && playerPool.size > 1) {
             Log.w("内存监控", "内存使用率较高，清理部分缓存")
             cleanupNonCurrentPlayers()
+        }
+        
+        // 如果内存使用率超过65%，触发垃圾回收
+        if (usedMemoryPercent > 0.65f) {
+            Log.d("内存监控", "内存使用率达到65%，建议垃圾回收")
+            System.gc()
         }
 
         return true

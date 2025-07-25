@@ -10,6 +10,11 @@ import kotlinx.coroutines.flow.Flow
 interface UserRepository {
     
     /**
+     * 初始化应用数据
+     */
+    suspend fun initApp()
+    
+    /**
      * 根据ID获取用户信息
      */
     suspend fun getUserById(userId: Long): User?
