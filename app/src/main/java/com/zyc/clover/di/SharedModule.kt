@@ -1,14 +1,15 @@
 package com.zyc.clover.di
 
-import com.zyc.clover.InitAppViewModel
-import com.zyc.clover.pages.layout.message.MessageViewModel
-import com.zyc.clover.pages.layout.message.children.SendMessageViewModel
-import com.zyc.clover.repository.ChatRepository
-import com.zyc.clover.repository.MessageRepository
-import com.zyc.clover.repository.UserRepository
-import com.zyc.clover.repository.impl.ChatRepositoryImpl
-import com.zyc.clover.repository.impl.MessageRepositoryImpl
-import com.zyc.clover.repository.impl.UserRepositoryImpl
+import com.zyc.clover.viewmodel.InitAppViewModel
+import com.zyc.clover.manager.AppInitializationManager
+import com.zyc.feature.message.MessageViewModel
+import com.zyc.feature.message.SendMessageViewModel
+import com.zyc.data.repository.ChatRepository
+import com.zyc.data.repository.MessageRepository
+import com.zyc.data.repository.UserRepository
+import com.zyc.data.repository.impl.ChatRepositoryImpl
+import com.zyc.data.repository.impl.MessageRepositoryImpl
+import com.zyc.data.repository.impl.UserRepositoryImpl
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -32,6 +33,15 @@ val sharedModule = module {
 
         )
     }
+    
+    // 定义 AppInitializationManager 为单例
+    single<AppInitializationManager> {
+        AppInitializationManager(
+            userRepository = get(),
+            messageRepository = get(),
+            chatRepository = get()
+        )
+    }
     viewModel {
         MessageViewModel(
             chatRepository = get(),
@@ -44,7 +54,7 @@ val sharedModule = module {
     }
     viewModel {
         InitAppViewModel(
-            chatRepository = get(),
+            initializationManager = get(),
         )
     }
 }

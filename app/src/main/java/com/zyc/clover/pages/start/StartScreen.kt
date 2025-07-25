@@ -38,12 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 
-import com.zyc.clover.components.loading.Loading
+import com.zyc.core.ui.components.loading.Loading
 import com.zyc.clover.route.LayoutRoute
-import com.zyc.clover.route.LocalNavController
+import com.zyc.core.ui.navigation.LocalNavController
 import com.zyc.clover.route.StartRoute
 
-import com.zyc.clover.utils.event.GlobalAntiShake
+import com.zyc.core.ui.utils.event.GlobalAntiShake
 import kotlinx.coroutines.delay
 
 @Composable

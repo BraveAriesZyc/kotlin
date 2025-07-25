@@ -4,29 +4,28 @@ import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.zyc.clover.pages.auth.LoginScreen
-import com.zyc.clover.pages.auth.RegisterScreen
-import com.zyc.clover.pages.layout.LayoutScreen
-import com.zyc.clover.pages.layout.message.MessageScreen
-import com.zyc.clover.pages.layout.message.children.SendMessageScreen
+import com.zyc.core.ui.navigation.LocalNavController
+import com.zyc.core.ui.navigation.composableScale
+import com.zyc.core.ui.navigation.composableSlide
+import com.zyc.feature.auth.LoginScreen
+import com.zyc.feature.auth.RegisterScreen
+import com.zyc.feature.layout.components.LayoutScreen
+import com.zyc.feature.message.MessageScreen
+import com.zyc.feature.message.SendMessageScreen
 import com.zyc.clover.pages.start.StartScreen
-import com.zyc.clover.pages.web.WebViewScreen
+import com.zyc.core.ui.components.WebViewScreen
 
 
 import kotlinx.serialization.Serializable
 
 
-// 定义导航控制器的 CompositionLocal
-val LocalNavController = staticCompositionLocalOf<NavHostController> {
-    error("No NavController provided")
-}
+
 
 
 @Composable

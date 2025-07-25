@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.zyc.clover"
-    
+
     defaultConfig {
         applicationId = "com.zyc.clover"
         versionCode = 110
@@ -18,9 +18,23 @@ android {
 
 
 dependencies {
-    implementation(project(":db"))
-    implementation(project(":data"))
-    implementation(project(":common"))
+    // 功能模块
+    implementation(project(":feature:auth"))
+    implementation(project(":feature:home"))
+    implementation(project(":feature:message"))
+    implementation(project(":feature:friend"))
+    implementation(project(":feature:profile"))
+    implementation(project(":feature:layout"))
+
+    // 核心模块
+    implementation(project(":core:common"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:network"))
+    implementation(project(":core:database"))
+    implementation(project(":core:model"))
+
+    // 核心数据层
+    implementation(project(":core:data"))
 
 
     implementation(libs.androidx.core.ktx)
@@ -60,12 +74,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // 视屏播放exoplayer
 
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.exoplayer.dash)
-    implementation(libs.androidx.media3.ui)
-    implementation(libs.androidx.media3.ui.compose)
 
 
     implementation(platform("androidx.compose:compose-bom:2024.09.00"))

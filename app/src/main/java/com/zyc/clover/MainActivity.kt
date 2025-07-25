@@ -14,8 +14,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import com.zyc.clover.route.NavigationRouterScreen
-import com.zyc.clover.ui.theme.CloverAppTheme
-import com.zyc.clover.utils.event.GlobalAntiShake
+import com.zyc.core.ui.theme.CloverAppTheme
+import com.zyc.core.ui.utils.event.GlobalAntiShake
 
 /**
  * 应用主Activity，负责初始化应用环境和管理导航

@@ -1,7 +1,7 @@
 pluginManagement {
     repositories {
         maven { url = uri("https://maven.aliyun.com/repository/google") }
-        maven { 
+        maven {
             url = uri("https://maven.aliyun.com/repository/central")
             content {
                 // 确保 SQLDelight 相关依赖从阿里云镜像下载
@@ -43,8 +43,22 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "clover_app"
+
+// 应用模块
 include(":app")
-include(":db")
-include(":common")
-include(":data")
-include(":clover-home")
+
+// 功能模块
+include(":feature:auth")
+include(":feature:home")
+include(":feature:message")
+include(":feature:friend")
+include(":feature:profile")
+include(":feature:layout")
+
+// 核心模块
+include(":core:common")
+include(":core:ui")
+include(":core:network")
+include(":core:database")
+include(":core:model")
+include(":core:data")

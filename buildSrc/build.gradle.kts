@@ -64,5 +64,9 @@ gradlePlugin {
             id = "android-library-convention"
             implementationClass = "AndroidLibraryConventionPlugin"
         }
+        register("android-feature-convention") {
+            id = "android-feature-convention"
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
     }
 }
