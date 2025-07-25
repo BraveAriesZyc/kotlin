@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.sqlDelight)
 }
 
+// SQLDelight 依赖将从 settings.gradle.kts 中配置的仓库下载
+
 android {
     namespace = "com.zyc.db"
 }

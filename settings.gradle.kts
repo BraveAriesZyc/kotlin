@@ -1,11 +1,17 @@
 pluginManagement {
     repositories {
-
-        // 优先添加 Square 仓库
-        maven { url = uri("https://maven.squareup.com") }
-        mavenCentral()
         maven { url = uri("https://maven.aliyun.com/repository/google") }
-        maven { url = uri("https://maven.aliyun.com/repository/central") }
+        maven { 
+            url = uri("https://maven.aliyun.com/repository/central")
+            content {
+                // 确保 SQLDelight 相关依赖从阿里云镜像下载
+                includeGroup("app.cash.sqldelight")
+                includeGroup("com.squareup.sqldelight")
+                // 其他常用依赖
+                includeGroupByRegex("org\\.jetbrains.*")
+                includeGroupByRegex("com\\.squareup.*")
+            }
+        }
         maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
         // 官方仓库
         maven { url = uri("https://dl.google.com/dl/android/maven2/") }
@@ -17,20 +23,20 @@ pluginManagement {
                 includeGroupByRegex("androidx.*")
             }
         }
+        mavenCentral()
         gradlePluginPortal()
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        // 优先添加 Square 仓库
-        maven { url = uri("https://maven.squareup.com") }
-        mavenCentral()
+
         maven { url = uri("https://maven.aliyun.com/repository/google") }
         maven { url = uri("https://maven.aliyun.com/repository/central") }
         // 官方仓库
         maven { url = uri("https://dl.google.com/dl/android/maven2/") }
         maven { url = uri("https://jcenter.bintray.com") }
+        mavenCentral()
         google()
 
     }
