@@ -14,7 +14,7 @@ import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
-
+import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentHashMap
@@ -39,6 +39,7 @@ import android.os.Debug
  * - 播放器状态回调机制
  * - 协程支持的异步操作
  */
+@UnstableApi
 class VideoPreloadManager(private val context: Context) {
     /** 播放器实例池，使用线程安全的ConcurrentHashMap */
     private val playerPool = ConcurrentHashMap<String, ExoPlayer>()
@@ -57,12 +58,15 @@ class VideoPreloadManager(private val context: Context) {
 
     /** 协程作用域，用于异步操作 */
     private val managerScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-    
+
     /** 内存监控相关 */
     private val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     private var lastMemoryCheckTime = 0L
     private val memoryCheckInterval = 10000L // 10秒检查一次内存
-    
+
+    /** 数据库提供者 */
+    private val databaseProvider = StandaloneDatabaseProvider(context)
+
     /** 缓存配置 - 简化：降低缓存大小避免内存问题 */
     private val cache: SimpleCache by lazy {
         val cacheDir = File(context.cacheDir, "video_preload_cache")
@@ -70,9 +74,9 @@ class VideoPreloadManager(private val context: Context) {
             cacheDir.mkdirs()
         }
         val cacheEvictor = LeastRecentlyUsedCacheEvictor(30 * 1024 * 1024L) // 30MB缓存，进一步减少内存使用
-        SimpleCache(cacheDir, cacheEvictor)
+        SimpleCache(cacheDir, cacheEvictor,databaseProvider)
     }
-    
+
     /** 缓存数据源工厂 - 简化配置 */
     private val cacheDataSourceFactory: CacheDataSource.Factory by lazy {
         val dataSourceFactory = DefaultDataSource.Factory(context)
@@ -153,16 +157,16 @@ class VideoPreloadManager(private val context: Context) {
                  800     // 播放后继续缓冲：0.8秒
              )
              .build()
-         
+
          // 音频属性配置
          val audioAttributes = AudioAttributes.Builder()
              .setUsage(C.USAGE_MEDIA)
              .setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
              .build()
-         
+
          // 创建媒体源工厂
          val mediaSourceFactory = DefaultMediaSourceFactory(cacheDataSourceFactory)
-         
+
          // 构建ExoPlayer实例
          val player = ExoPlayer.Builder(context)
              .setMediaSourceFactory(mediaSourceFactory)
@@ -232,7 +236,7 @@ class VideoPreloadManager(private val context: Context) {
                     // 关键修复9: 增强播放错误处理和恢复机制
                     override fun onPlayerError(error: PlaybackException) {
                         Log.e("视频预加载", "播放器错误 ($videoUrl): ${error.message}", error)
-                        
+
                         // 根据错误类型进行不同处理
                         when (error.errorCode) {
                             PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED,
@@ -455,13 +459,11 @@ class VideoPreloadManager(private val context: Context) {
             pauseAllExcept(videoUrl)
             setCurrentPlaying(videoUrl)
 
-            if (player.playbackState == androidx.media3.common.Player.STATE_READY ||
-                player.playbackState == androidx.media3.common.Player.STATE_BUFFERING) {
-                player.playWhenReady = true
-                player.play()
-            } else {
-                player.playWhenReady = true
+            player.playWhenReady = true
+            if (player.playbackState == Player.STATE_IDLE) {
+                player.prepare()
             }
+            player.play()
         }
     }
 
@@ -611,38 +613,38 @@ class VideoPreloadManager(private val context: Context) {
             return true // 间隔时间内不重复检查
         }
         lastMemoryCheckTime = currentTime
-        
+
         val memoryInfo = ActivityManager.MemoryInfo()
         activityManager.getMemoryInfo(memoryInfo)
-        
+
         // 计算内存使用率
         val usedMemoryPercent = (memoryInfo.totalMem - memoryInfo.availMem).toFloat() / memoryInfo.totalMem
-        
+
         Log.d("内存监控", "内存使用率: ${(usedMemoryPercent * 100).toInt()}%")
-        
+
         // 如果内存使用率超过80%，进行清理
         if (usedMemoryPercent > 0.8f) {
             Log.w("内存监控", "内存使用率过高，开始清理")
             onMemoryPressure()
             return false
         }
-        
+
         // 如果内存使用率超过70%且播放器池不为空，清理非当前播放的视频
         if (usedMemoryPercent > 0.7f && playerPool.size > 1) {
             Log.w("内存监控", "内存使用率较高，清理部分缓存")
             cleanupNonCurrentPlayers()
         }
-        
+
         return true
     }
-    
+
     /**
      * 清理非当前播放的播放器
      */
     private fun cleanupNonCurrentPlayers() {
         val currentPlaying = currentPlayingUrl
         val toRemove = mutableListOf<String>()
-        
+
         playerPool.forEach { (url, player) ->
             if (url != currentPlaying) {
                 player.stop()
@@ -650,7 +652,7 @@ class VideoPreloadManager(private val context: Context) {
                 toRemove.add(url)
             }
         }
-        
+
         toRemove.forEach { url ->
             playerPool.remove(url)
             accessOrderLock.write {
@@ -659,7 +661,7 @@ class VideoPreloadManager(private val context: Context) {
             Log.d("内存清理", "清理播放器: $url")
         }
     }
-    
+
     /**
      * 销毁管理器，释放所有资源
      */

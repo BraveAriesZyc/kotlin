@@ -125,7 +125,7 @@ fun TopicItem(
         if (videoUrl.isNotEmpty()) {
             try {
                 if (isCurrentPage) {
-                    delay(100) // 确保播放器准备就绪
+                    delay(300) // 增加延迟以确保播放器准备就绪
                     preloadManager.playVideo(videoUrl)
                 } else {
                     preloadManager.pauseVideo(videoUrl)
