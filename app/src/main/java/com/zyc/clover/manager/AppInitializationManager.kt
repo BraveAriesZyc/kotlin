@@ -1,9 +1,9 @@
 package com.zyc.clover.manager
 
 import com.zyc.core.common.manager.InitializationState
-import com.zyc.data.repository.ChatRepository
-import com.zyc.data.repository.MessageRepository
-import com.zyc.data.repository.UserRepository
+import com.zyc.core.data.repository.ChatRepository
+import com.zyc.core.data.repository.MessageRepository
+import com.zyc.core.data.repository.UserRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

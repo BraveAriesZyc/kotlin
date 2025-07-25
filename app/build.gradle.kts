@@ -29,12 +29,9 @@ dependencies {
     // 核心模块
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
-    implementation(project(":core:network"))
-    implementation(project(":core:database"))
     implementation(project(":core:model"))
-
-    // 核心数据层
     implementation(project(":core:data"))
+    implementation(project(":core:database"))
 
 
     implementation(libs.androidx.core.ktx)

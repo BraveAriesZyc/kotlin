@@ -34,7 +34,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             // 应用必要的插件
             with(pluginManager) {
                 apply("android-library-convention") // Android 库插件
-                apply("org.jetbrains.kotlin.plugin.serialization") // Kotlin 序列化插件
+                // 注意：序列化插件应该在需要的模块中单独应用，而不是在这里统一应用
             }
 
             // 配置 Android 扩展
@@ -47,20 +47,19 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             
             // 添加通用依赖
             dependencies {
-                // 核心模块依赖
+                // 核心模块依赖 - 优化后的依赖架构
                 "implementation"(project(":core:common"))
                 "implementation"(project(":core:ui"))
                 "implementation"(project(":core:model"))
-                "implementation"(project(":core:network"))
-                "implementation"(project(":core:database"))
+                "implementation"(project(":core:data")) // 通过data层访问network和database
                 
-                // 测试依赖
+                // 测试依赖 - 使用字符串形式的依赖
                 "testImplementation"("junit:junit:4.13.2")
                 "androidTestImplementation"("androidx.test.ext:junit:1.1.5")
                 "androidTestImplementation"("androidx.test.espresso:espresso-core:3.5.1")
-                "androidTestImplementation"("androidx.compose.ui:ui-test-junit4:1.5.8")
-                "debugImplementation"("androidx.compose.ui:ui-tooling:1.5.8")
-                "debugImplementation"("androidx.compose.ui:ui-test-manifest:1.5.8")
+                "androidTestImplementation"("androidx.compose.ui:ui-test-junit4")
+                "debugImplementation"("androidx.compose.ui:ui-tooling")
+                "debugImplementation"("androidx.compose.ui:ui-test-manifest")
             }
         }
     }

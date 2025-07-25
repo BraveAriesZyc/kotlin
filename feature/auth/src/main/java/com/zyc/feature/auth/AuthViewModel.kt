@@ -3,14 +3,14 @@ package com.zyc.feature.auth
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zyc.core.network.api.LoginApi
-import com.zyc.core.network.ResponseData
-import com.zyc.data.models.UserModel
+import com.zyc.core.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel(
+    private val authRepository: AuthRepository
+) : ViewModel() {
     private val _phone = MutableStateFlow("")
     private val _password = MutableStateFlow("")
     // 确认密码
@@ -33,24 +33,29 @@ class AuthViewModel : ViewModel() {
 
     fun loginSubmit() {
         viewModelScope.launch {
-            LoginApi.login(
-                UserModel(
+            try {
+                val result = authRepository.login(
                     phone = phone.value,
                     password = password.value
                 )
-            )
+                Log.d("login", result.toString())
+            } catch (e: Exception) {
+                Log.e("login", "Login failed", e)
+            }
         }
     }
 
     fun registerSubmit() {
         viewModelScope.launch {
-        val res:  ResponseData<String> = LoginApi.register(
-                UserModel(
+            try {
+                val result = authRepository.register(
                     phone = phone.value,
                     password = password.value
                 )
-            )
-            Log.d("register", res.toString())
+                Log.d("register", result.toString())
+            } catch (e: Exception) {
+                Log.e("register", "Register failed", e)
+            }
         }
     }
 }
