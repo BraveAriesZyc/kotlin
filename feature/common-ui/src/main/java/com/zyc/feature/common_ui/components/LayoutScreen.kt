@@ -1,4 +1,4 @@
-package com.zyc.feature.layout.components
+package com.zyc.feature.common_ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -48,8 +48,8 @@ import com.zyc.core.ui.components.drawer.MenuDrawer
 import com.zyc.core.ui.components.page.PageScreen
 import com.zyc.core.ui.components.page.PageScreenData
 import com.zyc.core.ui.route.LocalNavController
-import com.zyc.feature.layout.model.NavItem
-import com.zyc.feature.layout.viewmodel.LayoutScreenViewModel
+import com.zyc.feature.common_ui.model.NavItem
+import com.zyc.feature.common_ui.viewmodel.LayoutScreenViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel

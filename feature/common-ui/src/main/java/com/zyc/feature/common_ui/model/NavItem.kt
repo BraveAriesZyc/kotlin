@@ -1,4 +1,4 @@
-package com.zyc.feature.layout.model
+package com.zyc.feature.common_ui.model
 
 import androidx.compose.runtime.Composable
 

@@ -9,9 +9,6 @@ data object StartRoute
 data object LayoutRoute
 
 @Serializable
-data object HomeRoute
-
-@Serializable
 data class WebViewRoute(val url: String)
 
 @Serializable

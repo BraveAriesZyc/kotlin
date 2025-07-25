@@ -1,4 +1,4 @@
-package com.zyc.feature.layout.viewmodel
+package com.zyc.feature.common_ui.viewmodel
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -15,7 +15,7 @@ import com.zyc.feature.profile.MeScreen
 import com.zyc.core.ui.R
 import com.zyc.core.ui.components.drawer.NavigationDrawerItemType
 import com.zyc.core.ui.route.WebViewRoute
-import com.zyc.feature.layout.model.NavItem
+import com.zyc.feature.common_ui.model.NavItem
 
 
 class LayoutScreenViewModel(navController: NavController) : ViewModel() {

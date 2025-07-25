@@ -1,4 +1,4 @@
-package com.zyc.clover.pages.start
+package com.zyc.feature.common_ui.pages
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -32,12 +32,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-
 import com.zyc.core.ui.components.loading.Loading
-import com.zyc.clover.route.LayoutRoute
+import com.zyc.core.ui.route.LayoutRoute
 import com.zyc.core.ui.route.LocalNavController
-import com.zyc.clover.route.StartRoute
+import com.zyc.core.ui.route.StartRoute
 
 import com.zyc.core.ui.utils.event.GlobalAntiShake
 import kotlinx.coroutines.delay

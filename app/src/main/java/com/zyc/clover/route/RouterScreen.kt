@@ -12,11 +12,18 @@ import androidx.navigation.compose.rememberNavController
 import com.zyc.core.ui.route.LocalNavController
 import com.zyc.feature.auth.LoginScreen
 import com.zyc.feature.auth.RegisterScreen
-import com.zyc.feature.layout.components.LayoutScreen
+import com.zyc.feature.common_ui.components.LayoutScreen
 import com.zyc.feature.message.MessageScreen
 import com.zyc.feature.message.SendMessageScreen
-import com.zyc.clover.pages.start.StartScreen
+import com.zyc.feature.common_ui.pages.StartScreen
 import com.zyc.core.ui.components.WebViewScreen
+import com.zyc.core.ui.route.LayoutRoute
+import com.zyc.core.ui.route.LoginRoute
+import com.zyc.core.ui.route.MessageRoute
+import com.zyc.core.ui.route.RegisterRoute
+import com.zyc.core.ui.route.SendMessageRoute
+import com.zyc.core.ui.route.StartRoute
+import com.zyc.core.ui.route.WebViewRoute
 import com.zyc.core.ui.route.composableScale
 import com.zyc.core.ui.route.composableSlide
 
