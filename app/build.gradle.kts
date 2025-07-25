@@ -1,39 +1,16 @@
 plugins {
-    alias(libs.plugins.androidApplication)
+    id("android-application-convention")
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.serialization)
 }
 
 android {
     namespace = "com.zyc.clover"
-    compileSdk = 35
-
+    
     defaultConfig {
         applicationId = "com.zyc.clover"
-        minSdk = 34
-        targetSdk = 35
         versionCode = 110
         versionName = "1.0.5"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-    buildFeatures {
-        compose = true
     }
 }
 
