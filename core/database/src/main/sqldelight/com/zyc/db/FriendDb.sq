@@ -1,0 +1,87 @@
+-- 好友信息表：存储所有好友的基本资料、状态及关联信息
+CREATE TABLE FriendTable (
+  -- 主键ID（自增）：唯一标识一条好友记录，无需手动插入
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  -- 用户唯一标识：好友的系统内唯一ID（如用户UUID），关联用户表
+  user_id TEXT,
+  -- 用户昵称：好友的显示名称，用于界面展示
+  nickname TEXT,
+  -- 手机号码：好友的联系电话，可为空（用户可能未提供）
+  phone TEXT,
+  -- 邮箱地址：好友的电子邮箱，可为空
+  email TEXT,
+  -- 用户头像URL：好友头像的网络地址，用于显示头像图片
+  avatar TEXT,
+  -- 背景图URL：好友个人主页背景图的网络地址，可为空
+  background TEXT,
+  -- 性别：0-未知，1-男，2-女，用数字枚举表示
+  gender INTEGER,
+  -- 生日：好友的出生日期，格式通常为"yyyy-MM-dd"
+  birthday TEXT,
+  -- 是否正在聊天：0-不在聊天状态，1-正在聊天中，用于标记会话状态
+  isChat INTEGER NOT NULL,
+  -- 个人简介：好友的自我介绍内容，可为空
+  bio TEXT,
+  -- 用户状态：0-正常，1-禁用，2-锁定，标记账号状态
+  status INTEGER,
+  -- 最后登录时间：好友最近一次登录系统的时间，存储为LocalDateTime字符串（如"2024-07-14T10:30:00"）
+  last_login_time TEXT,
+  -- 最后登录IP：好友最近一次登录使用的IP地址
+  last_login_ip TEXT,
+  -- 创建时间：该好友记录添加到系统的时间，通常为首次添加时自动生成
+  create_time TEXT,
+  -- 更新时间：该好友记录最后一次修改的时间，修改时需同步更新
+  update_time TEXT
+);
+-- 新增好友记录：向FriendTable插入一条完整的好友信息
+-- 注意：id为自增主键，无需在插入字段中包含
+INSERT INTO FriendTable (
+  user_id,               -- 好友唯一标识
+  nickname,              -- 好友昵称
+  phone,                 -- 手机号码
+  email,                 -- 邮箱地址
+  avatar,                -- 头像URL
+  background,            -- 背景图URL
+  gender,                -- 性别（0/1/2）
+  birthday,              -- 生日
+  isChat,                -- 是否正在聊天（0/1）
+  bio,                   -- 个人简介
+  status,                -- 账号状态（0/1/2）
+  last_login_time,       -- 最后登录时间
+  last_login_ip,         -- 最后登录IP
+  create_time,           -- 记录创建时间
+  update_time            -- 记录更新时间（首次插入时与create_time一致）
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);  -- 占位符按顺序对应上述字段
+-- 删除好友记录：根据user_id彻底移除一条好友记录
+-- 适用于"删除好友"功能，删除后该好友将从列表中移除
+DELETE FROM FriendTable WHERE user_id = ?;  -- ?替换为目标好友的user_id
+-- 更新好友记录：根据user_id修改指定好友的信息
+-- 可灵活修改任意字段（根据业务需求选择需要更新的字段，无需全量更新）
+UPDATE FriendTable
+SET user_id = ?,               -- 好友唯一标识（一般不修改，除非用户ID变更）
+    nickname = ?,              -- 更新昵称
+    phone = ?,                 -- 更新手机号码
+    email = ?,                 -- 更新邮箱
+    avatar = ?,                -- 更新头像URL（如用户更换头像）
+    background = ?,            -- 更新背景图URL
+    gender = ?,                -- 更新性别
+    birthday = ?,              -- 更新生日
+    bio = ?,                   -- 更新个人简介
+    status = ?,                -- 更新账号状态（如从正常变为禁用）
+    last_login_time = ?,       -- 更新最后登录时间（用户登录时触发）
+    last_login_ip = ?,         -- 更新最后登录IP
+    create_time = ?,           -- 通常不修改，除非有特殊业务需求
+    update_time = ?,           -- 更新记录的最后修改时间（每次修改时同步）
+    isChat = ?                 -- 更新聊天状态（如从"不在聊天"变为"正在聊天"）
+WHERE user_id = ?;             -- 筛选条件：仅更新指定user_id的好友记录
+-- 查询正在聊天的好友：筛选isChat=1的记录，获取当前处于聊天状态的好友
+-- 适用于展示"正在聊天"的会话列表
+SELECT * FROM FriendTable WHERE isChat = 1;
+-- 按用户唯一标识查询好友：根据user_id精确匹配一条好友记录
+-- 适用于查看指定好友的详细信息（如点击好友头像进入详情页）
+selectFrindByUserId:
+SELECT * FROM FriendTable WHERE user_id = ?;  -- ?替换为目标好友的user_id
+
+selectFrinds:
+SELECT * FROM FriendTable;
