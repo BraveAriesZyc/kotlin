@@ -1,7 +1,6 @@
 package com.zyc.core.ui.components.refreshview
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,14 +8,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.overscroll
+
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,34 +27,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Velocity
+
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zyc.core.ui.components.loading.TextLoaderImp
-import com.zyc.core.ui.utils.refresh.CustomOverscrollEffect
 import kotlinx.coroutines.launch
-
-// 创建弹性滚动效果
-@Composable
-fun rememberBounceOverscrollEffect(): CustomOverscrollEffect {
-    val coroutineScope = rememberCoroutineScope()
-    return remember {
-        CustomOverscrollEffect(coroutineScope, Orientation.Vertical)
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -68,23 +49,12 @@ fun ZRefreshView(
     enableLoadMore: Boolean = true,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     listState: LazyListState = rememberLazyListState(),
-    bgColor: Color = MaterialTheme.colorScheme.background,
     content: LazyListScope.() -> Unit,
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
     val coroutineScope = rememberCoroutineScope()
     val refreshingTips = getRefreshingTips(isRefreshing, pullToRefreshState)
-    // 创建弹性滚动效果
-    val bounceOverscrollEffect = rememberBounceOverscrollEffect()
-    
-    // 创建加载更多状态
-    val loadMoreState = rememberLoadMoreState(
-        enabled = { enableLoadMore && !isLoadingMore },
-        onReachBottom = {
-            onLoadMore?.invoke()
-        }
-    )
-    
+
     // 监听滚动到底部
     val shouldLoadMore by remember {
         derivedStateOf {
@@ -92,7 +62,7 @@ fun ZRefreshView(
             lastVisibleItem?.index == listState.layoutInfo.totalItemsCount - 1
         }
     }
-    
+
     LaunchedEffect(shouldLoadMore) {
         if (shouldLoadMore && enableLoadMore && !isLoadingMore && !isRefreshing) {
             onLoadMore?.invoke()
@@ -101,7 +71,7 @@ fun ZRefreshView(
 
     // 定义下拉刷新的触发阈值
     val refreshThreshold = 0.8f // 需要下拉到80%才能触发刷新
-    
+
     val handleRefresh: () -> Unit = {
         // 只有当下拉距离达到阈值时才触发刷新
         if (pullToRefreshState.distanceFraction >= refreshThreshold) {
@@ -116,9 +86,7 @@ fun ZRefreshView(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .overscroll(bounceOverscrollEffect)
                 .pullToRefresh(isRefreshing, pullToRefreshState, onRefresh = handleRefresh)
-                .nestedScroll(loadMoreState.nestedScrollConnection)
                 .graphicsLayer {
                     // 让列表内容跟随下拉手势移动，使用更平滑的曲线
                     val positionalThreshold = PullToRefreshDefaults.PositionalThreshold.roundToPx()
@@ -137,15 +105,26 @@ fun ZRefreshView(
             contentPadding = contentPadding
         ) {
             // 下拉刷新指示器 - 显示在列表上方
-            if (isRefreshing || pullToRefreshState.distanceFraction > 0.1f) {
+            if (isRefreshing || pullToRefreshState.distanceFraction > 0.05f) {
                 item {
                     val progress = pullToRefreshState.distanceFraction
                     val canRefresh = progress >= refreshThreshold
                     
+                    // 计算指示器的高度，从0开始根据下拉距离增加
+                    val indicatorHeight = when {
+                        isRefreshing -> 48.dp // 刷新时固定高度
+                        else -> {
+                            val maxHeight = 48.dp
+                            val heightProgress = (progress * 2f).coerceIn(0f, 1f) // 加速显示
+                            maxHeight * heightProgress
+                        }
+                    }
+                    
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 12.dp, horizontal = 16.dp)
+                            .height(indicatorHeight)
+                            .padding(horizontal = 16.dp)
                             .graphicsLayer {
                                 // 根据阈值调整透明度动画效果
                                 alpha = when {
@@ -160,18 +139,23 @@ fun ZRefreshView(
                     ) {
                         Box(
                             modifier = Modifier.graphicsLayer {
-                                // 优化旋转缩放效果，与阈值联动
-                                val scale = when {
-                                    isRefreshing -> 1f
-                                    canRefresh -> 1f
-                                    progress >= 0.5f -> (progress * 0.8f + 0.4f).coerceIn(0.4f, 1f)
-                                    else -> (progress * 1.2f + 0.2f).coerceIn(0.2f, 0.8f)
+                                // 根据下拉距离进行缩放，设置合理的最大值
+                                val baseScale = when {
+                                    isRefreshing -> 1.2f // 刷新时保持较大尺寸
+                                    else -> {
+                                        // 基础缩放：从0.6开始，随下拉距离增加到最大1.5倍
+                                        val minScale = 0.6f
+                                        val maxScale = 1.5f
+                                        val scaleFactor = progress.coerceIn(0f, 1.2f) // 限制进度范围
+                                        (minScale + scaleFactor * (maxScale - minScale)).coerceIn(minScale, maxScale)
+                                    }
                                 }
-                                scaleX = scale
-                                scaleY = scale
+                                scaleX = baseScale
+                                scaleY = baseScale
+                                
                                 // 当接近阈值时添加轻微的脉冲效果
                                 if (canRefresh && !isRefreshing) {
-                                    val pulse = kotlin.math.sin(System.currentTimeMillis() * 0.01f) * 0.05f + 1f
+                                    val pulse = kotlin.math.sin(System.currentTimeMillis() * 0.008f) * 0.08f + 1f
                                     scaleX *= pulse
                                     scaleY *= pulse
                                 }
@@ -192,7 +176,21 @@ fun ZRefreshView(
                             ),
                             fontSize = 14.sp,
                             modifier = Modifier.graphicsLayer {
-                                // 优化文字淡入效果
+                                // 文字缩放效果，与指示器保持一致
+                                val textScale = when {
+                                    isRefreshing -> 1.1f // 刷新时稍微放大
+                                    else -> {
+                                        // 基础缩放：从0.8开始，随下拉距离增加到最大1.2倍
+                                        val minScale = 0.8f
+                                        val maxScale = 1.2f
+                                        val scaleFactor = progress.coerceIn(0f, 1.2f)
+                                        (minScale + scaleFactor * (maxScale - minScale)).coerceIn(minScale, maxScale)
+                                    }
+                                }
+                                scaleX = textScale
+                                scaleY = textScale
+                                
+                                // 优化文字透明度效果
                                 alpha = when {
                                     isRefreshing -> 1f
                                     canRefresh -> 1f
@@ -204,9 +202,9 @@ fun ZRefreshView(
                     }
                 }
             }
-            
+
             content()
-            
+
             // 加载更多指示器
             if (isLoadingMore) {
                 item {
