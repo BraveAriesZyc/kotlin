@@ -279,6 +279,7 @@ class FriendRepositoryImpl : FriendRepository {
             FriendRequest(
                 id = 1L,
                 fromUserId = 7L,
+                fromUserAvatar = "https://picsum.photos/200/200?random=10",
                 fromUserIdStr = "user_7",
                 toUserId = 1L,
                 toUserIdStr = "user_1",
@@ -286,19 +287,20 @@ class FriendRepositoryImpl : FriendRepository {
                 status = FriendRequestStatus.PENDING,
                 createTime = System.currentTimeMillis() - 3600000,
                 updateTime = System.currentTimeMillis() - 3600000,
-                fromUserName = "TODO()"
+                fromUserName = "小周"
             ),
             FriendRequest(
                 id = 2L,
                 fromUserId = 8L,
                 fromUserIdStr = "user_8",
+                fromUserAvatar = "https://picsum.photos/200/200?random=11",
                 toUserId = 1L,
                 toUserIdStr = "user_1",
                 message = "我们是同事，加个好友吧",
                 status = FriendRequestStatus.PENDING,
                 createTime = System.currentTimeMillis() - 7200000,
                 updateTime = System.currentTimeMillis() - 7200000,
-                fromUserName = "TODO()"
+                fromUserName = "小王"
             )
         )
     }

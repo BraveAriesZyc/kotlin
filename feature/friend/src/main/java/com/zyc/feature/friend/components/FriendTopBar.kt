@@ -14,6 +14,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.zyc.core.ui.components.element.components.input.FormInput
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,13 +41,13 @@ fun FriendTopBar(
     TopAppBar(
         title = {
             if (showSearch) {
-                OutlinedTextField(
+                FormInput(
                     value = searchKeyword,
                     onValueChange = onSearchChange,
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
-                    placeholder = { Text("搜索朋友") },
+                    placeholder = "搜索朋友",
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(

@@ -13,12 +13,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 import com.zyc.core.model.entity.FriendRequest
+import com.zyc.core.ui.R
 
 @Composable
 fun FriendRequestsDialog(
@@ -40,6 +43,7 @@ fun FriendRequestsDialog(
                 Text(
                     text = "朋友请求",
                     style = MaterialTheme.typography.headlineSmall,
+                    fontFamily = FontFamily(Font(R.font.we_chat)),
                     fontWeight = FontWeight.Bold
                 )
 
