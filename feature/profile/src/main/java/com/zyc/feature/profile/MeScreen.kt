@@ -82,7 +82,7 @@ fun MeScreen() {
                 content = {
                     BounceListView(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp)
+                        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 8.dp)
                     ) {
                         themeMap.forEach { entry ->
                             item(

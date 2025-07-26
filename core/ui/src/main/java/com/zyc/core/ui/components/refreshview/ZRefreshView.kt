@@ -38,6 +38,19 @@ import androidx.compose.ui.unit.sp
 import com.zyc.core.ui.components.loading.TextLoaderImp
 import kotlinx.coroutines.launch
 
+/**
+ * 封装下拉刷新和加载更多的列表
+ *
+ * @param modifier 修饰符
+ * @param onRefresh 刷新回调
+ * @param onLoadMore 加载更多回调
+ * @param isRefreshing 是否正在刷新
+ * @param isLoadingMore 是否正在加载更多
+ * @param enableLoadMore 是否启用加载更多
+ * @param contentPadding 列表内容填充
+ * @param listState 列表状态
+ * @param content 列表内容
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ZRefreshView(
@@ -109,7 +122,7 @@ fun ZRefreshView(
                 item {
                     val progress = pullToRefreshState.distanceFraction
                     val canRefresh = progress >= refreshThreshold
-                    
+
                     // 计算指示器的高度，从0开始根据下拉距离增加
                     val indicatorHeight = when {
                         isRefreshing -> 48.dp // 刷新时固定高度
@@ -119,7 +132,7 @@ fun ZRefreshView(
                             maxHeight * heightProgress
                         }
                     }
-                    
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -152,7 +165,7 @@ fun ZRefreshView(
                                 }
                                 scaleX = baseScale
                                 scaleY = baseScale
-                                
+
                                 // 当接近阈值时添加轻微的脉冲效果
                                 if (canRefresh && !isRefreshing) {
                                     val pulse = kotlin.math.sin(System.currentTimeMillis() * 0.008f) * 0.08f + 1f
@@ -189,7 +202,7 @@ fun ZRefreshView(
                                 }
                                 scaleX = textScale
                                 scaleY = textScale
-                                
+
                                 // 优化文字透明度效果
                                 alpha = when {
                                     isRefreshing -> 1f

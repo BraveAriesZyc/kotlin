@@ -19,6 +19,14 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.Velocity
 import kotlinx.coroutines.launch
 
+/**
+ * 带回弹效果的列表
+ *
+ * @param modifier 修饰符
+ * @param contentPadding 内边距
+ * @param listState 列表状态
+ * @param content 列表内容
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BounceListView(
@@ -28,10 +36,10 @@ fun BounceListView(
     content: LazyListScope.() -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    
+
     // 回弹偏移量动画
     val bounceOffset = remember { Animatable(0f) }
-    
+
     // 嵌套滚动连接器
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
@@ -46,7 +54,7 @@ fun BounceListView(
                 }
                 return Offset.Zero
             }
-            
+
             override fun onPostScroll(
                 consumed: Offset,
                 available: Offset,
@@ -54,7 +62,7 @@ fun BounceListView(
             ): Offset {
                 // 当列表已经滚动到顶部且还有向下的滚动量时，产生回弹效果
                 if (available.y > 0) {
-                    val isAtTop = listState.firstVisibleItemIndex == 0 && 
+                    val isAtTop = listState.firstVisibleItemIndex == 0 &&
                                  listState.firstVisibleItemScrollOffset == 0
                     if (isAtTop) {
                         val resistance = 0.3f
@@ -67,7 +75,7 @@ fun BounceListView(
                 }
                 return Offset.Zero
             }
-            
+
             override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
                 // 松手时回弹到原位置
                 if (bounceOffset.value > 0) {
@@ -83,7 +91,7 @@ fun BounceListView(
             }
         }
     }
-    
+
     LazyColumn(
         state = listState,
         modifier = modifier

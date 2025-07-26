@@ -1,5 +1,6 @@
 package com.zyc.feature.friend.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,12 +20,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.zyc.core.common.utils.event.GlobalAntiShake.debounceClick
 import com.zyc.core.model.entity.Friend
 import com.zyc.core.model.entity.User
 
 /**
  * 朋友列表项组件
  */
+@SuppressLint("ModifierParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FriendItem(
@@ -33,29 +36,29 @@ fun FriendItem(
     onItemClick: () -> Unit = {},
     onStarClick: (Boolean) -> Unit = {},
     onMoreClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+     modifier: Modifier = Modifier
 ) {
-    Card(
+    Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-            .clickable { onItemClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // 头像
+
+            .padding(bottom = 8.dp)
+            .clip(
+                shape = RoundedCornerShape(8.dp)
+            )
+            .background(Color.White)
+            .padding(16.dp)
+
+            .debounceClick {
+                onItemClick()
+            },
+        content = {
             Box {
                 AsyncImage(
                     model = user.avatar ?: "https://picsum.photos/200/200?random=${user.id}",
                     contentDescription = "头像",
                     modifier = Modifier
-                        .size(50.dp)
+                        .size(40.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentScale = ContentScale.Crop
@@ -72,9 +75,7 @@ fun FriendItem(
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
+            Spacer(modifier = Modifier.width(8.dp))
             // 用户信息
             Column(
                 modifier = Modifier.weight(1f)
@@ -143,7 +144,7 @@ fun FriendItem(
                 }
             }
         }
-    }
+    )
 }
 
 /**

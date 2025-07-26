@@ -1,26 +1,15 @@
 package com.zyc.feature.friend
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zyc.core.ui.components.refreshview.ZRefreshView
-import com.zyc.feature.friend.components.FriendItem
-import com.zyc.feature.friend.components.FriendRequestItem
-import com.zyc.feature.friend.components.EmptyFriendsState
-import com.zyc.feature.friend.components.FriendTopBar
-import com.zyc.feature.friend.components.FriendRequestsDialog
-import com.zyc.feature.friend.components.FriendActionDialog
+import com.zyc.feature.friend.components.*
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -60,40 +49,42 @@ fun FriendScreen(
         ZRefreshView(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(top = paddingValues.calculateTopPadding())
+                .padding(vertical = 8.dp, horizontal = 8.dp),
             onRefresh = viewModel::refreshFriends,
             onLoadMore = viewModel::loadMoreFriends,
             isRefreshing = uiState.isRefreshing,
             isLoadingMore = uiState.isLoadingMore,
-            enableLoadMore = true
-        ) {
-            if (friendsWithUserInfo.isEmpty()) {
-                item {
-                    EmptyFriendsState(
-                        message = if (searchKeyword.isNotBlank()) "未找到相关朋友" else "暂无朋友"
-                    )
-                }
-            } else {
-                items(
-                    items = friendsWithUserInfo,
-                    key = { (friend, _) -> friend.id }
-                ) { (friend, user) ->
-                    FriendItem(
-                        friend = friend,
-                        user = user,
-                        onItemClick = {
-                            // 点击朋友项，可以导航到聊天页面或朋友详情页面
-                        },
-                        onStarClick = { isStarred ->
-                            viewModel.toggleStarFriend(friend.id, isStarred)
-                        },
-                        onMoreClick = {
-                            selectedFriendId = friend.id
-                        }
-                    )
+            enableLoadMore = true,
+            content = {
+                if (friendsWithUserInfo.isEmpty()) {
+                    item {
+                        EmptyFriendsState(
+                            message = if (searchKeyword.isNotBlank()) "未找到相关朋友" else "暂无朋友"
+                        )
+                    }
+                } else {
+                    items(
+                        items = friendsWithUserInfo,
+                        key = { (friend, _) -> friend.id }
+                    ) { (friend, user) ->
+                        FriendItem(
+                            friend = friend,
+                            user = user,
+                            onItemClick = {
+                                // 点击朋友项，可以导航到聊天页面或朋友详情页面
+                            },
+                            onStarClick = { isStarred ->
+                                viewModel.toggleStarFriend(friend.id, isStarred)
+                            },
+                            onMoreClick = {
+                                selectedFriendId = friend.id
+                            }
+                        )
+                    }
                 }
             }
-        }
+        )
     }
 
     // 朋友请求弹窗
