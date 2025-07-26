@@ -41,7 +41,7 @@ class CustomOverscrollEffect(val scope: CoroutineScope, val orientation: Orienta
 
         val scrollDelta = if (orientation == Orientation.Vertical) delta.y else delta.x
         val sameDirection = sign(scrollDelta) == sign(overscrollOffset.value)
-        val consumedByPreScroll = if (abs(overscrollOffset.value) > 0.5 && !sameDirection) {
+        val consumedByPreScroll = if (abs(overscrollOffset.value) > 0.1 && !sameDirection) {
             val prevOverscrollValue = overscrollOffset.value
             val newOverscrollValue = overscrollOffset.value + scrollDelta
             //if sign changes, coerce to start scrolling and exit
@@ -68,10 +68,16 @@ class CustomOverscrollEffect(val scope: CoroutineScope, val orientation: Orienta
         // if it is a drag, not a fling, add the delta left to our over scroll value
         val overscrollToAdd =
             if (orientation == Orientation.Vertical) overscrollDelta.y else overscrollDelta.x
-        if (abs(overscrollToAdd) > 0.5 && source.equals(MutatePriority.UserInput)) {
+        if (abs(overscrollToAdd) > 0.05) {
             scope.launch {
-                // multiply by 0.1 for the sake of parallax effect
-                overscrollOffset.snapTo(overscrollOffset.value + overscrollToAdd * 0.1f)
+                // 使用更精细的弹性系数，根据滚动距离动态调整
+                val currentOffset = abs(overscrollOffset.value)
+                val dampingFactor = when {
+                    currentOffset < 50f -> 0.9f  // 初始阶段更灵敏
+                    currentOffset < 150f -> 0.7f // 中等距离适中阻尼
+                    else -> 0.4f                 // 远距离更大阻尼
+                }
+                overscrollOffset.snapTo(overscrollOffset.value + overscrollToAdd * dampingFactor)
             }
         }
         return consumedByPreScroll + consumedByScroll
@@ -83,9 +89,14 @@ class CustomOverscrollEffect(val scope: CoroutineScope, val orientation: Orienta
         val consumed = performFling(velocity)
         val remaining = velocity - consumed
         val scrollVelocity = if (orientation == Orientation.Vertical) remaining.y else remaining.x
-        // when the fling happens, we just gradually animate our overscroll to 0
+        // 当惯性滑动发生时，使用更自然的弹簧动画回到原位
         overscrollOffset.animateTo(
-            targetValue = 0f, initialVelocity = scrollVelocity, animationSpec = spring()
+            targetValue = 0f, 
+            initialVelocity = scrollVelocity,
+            animationSpec = spring(
+                dampingRatio = 0.8f,  // 适中的阻尼比，避免过度震荡
+                stiffness = 300f      // 适中的刚度，平衡速度和平滑度
+            )
         )
     }
 

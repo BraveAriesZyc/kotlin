@@ -19,7 +19,7 @@ object ModelMapper {
      * 根据消息类型判断是否为媒体消息
      */
     fun MessageType.isMediaType(): Boolean {
-        return this in listOf(MessageType.IMAGE, MessageType.VIDEO, MessageType.AUDIO, MessageType.FILE)
+        return this in listOf(MessageType.IMAGE, MessageType.AUDIO, MessageType.FILE)
     }
 
     /**

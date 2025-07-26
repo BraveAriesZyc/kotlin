@@ -161,7 +161,6 @@ fun MessageItem(item: Message, friend: SessionMember?, user: SessionMember?) {
                             when (item.type) {
                                 MessageType.TEXT -> MessageItemText(item)
                                 MessageType.IMAGE -> MessageItemImage(item)
-                                MessageType.VIDEO -> MessageItemVideo(item)
                                 MessageType.AUDIO -> MessageItemAudio(item)
                                 MessageType.FILE -> MessageItemFile(item)
                                 else -> MessageItemText(item)
@@ -194,11 +193,7 @@ fun MessageItemImage(item: Message) {
     Text(item.metadata?.imageUrl ?: "")
 }
 
-@Composable
-fun MessageItemVideo(item: Message) {
-    val context = LocalContext.current
-    Text(item.metadata?.videoUrl ?: "")
-}
+
 
 @Composable
 fun MessageItemAudio(item: Message) {

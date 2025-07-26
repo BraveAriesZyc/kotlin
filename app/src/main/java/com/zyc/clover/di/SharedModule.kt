@@ -5,14 +5,18 @@ import com.zyc.clover.manager.AppInitializationManager
 import com.zyc.feature.auth.AuthViewModel
 import com.zyc.feature.message.MessageViewModel
 import com.zyc.feature.message.SendMessageViewModel
+import com.zyc.feature.friend.FriendViewModel
 import com.zyc.core.data.repository.AuthRepository
 import com.zyc.core.data.repository.impl.AuthRepositoryImpl
 import com.zyc.core.data.repository.ChatRepository
 import com.zyc.core.data.repository.MessageRepository
 import com.zyc.core.data.repository.UserRepository
+import com.zyc.core.data.repository.FriendRepository
 import com.zyc.core.data.repository.impl.ChatRepositoryImpl
 import com.zyc.core.data.repository.impl.MessageRepositoryImpl
 import com.zyc.core.data.repository.impl.UserRepositoryImpl
+import com.zyc.core.data.repository.impl.FriendRepositoryImpl
+
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -29,6 +33,9 @@ val sharedModule = module {
 
     // 定义 ChatRepository 为单例
     single<ChatRepository> { ChatRepositoryImpl() }
+    
+    // 定义 FriendRepository 为单例
+    single<FriendRepository> { FriendRepositoryImpl() }
     
     // 定义 AppInitializationManager 为单例
     single<AppInitializationManager> {
@@ -58,4 +65,10 @@ val sharedModule = module {
             authRepository = get()
         )
     }
+    viewModel {
+        FriendViewModel(
+            friendRepository = get()
+        )
+    }
+
 }

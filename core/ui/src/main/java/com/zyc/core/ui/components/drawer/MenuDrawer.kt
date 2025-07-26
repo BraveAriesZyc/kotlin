@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -121,22 +122,52 @@ fun MenuDrawer(
                                                     icon = {
                                                         Box(
                                                             content = {
-                                                                // 上层清晰图标（使用 BoxScope 的 align 扩展函数居中对齐）
-                                                                Text(
-                                                                    text = it.icon,
-                                                                    color = MaterialTheme.colorScheme.primary,
-                                                                    fontSize = 24.sp,
-                                                                    fontFamily = FontFamily(Font(R.font.icons)),
-                                                                    modifier = Modifier.align(Alignment.Center)
+                                                                // 下层的模糊圆形Box
+                                                                Box(
+                                                                    modifier = Modifier
+                                                                        .size(60.dp)
+                                                                        .padding(16.dp)
+                                                                        .drawBehind {
+                                                                            drawIntoCanvas { canvas ->
+                                                                                val paint = Paint().apply {
+                                                                                    color = it.color.copy(alpha = 0.3f)
+                                                                                    asFrameworkPaint().maskFilter =
+                                                                                        android.graphics.BlurMaskFilter(
+                                                                                            60f,
+                                                                                            android.graphics.BlurMaskFilter.Blur.NORMAL
+                                                                                        )
+                                                                                }
+                                                                                canvas.drawCircle(
+                                                                                    center = Offset(
+                                                                                        size.width / 2,
+                                                                                        size.height / 2
+                                                                                    ),
+                                                                                    radius = size.minDimension / 2.5f,
+                                                                                    paint
+                                                                                )
+                                                                            }
+                                                                        },
+                                                                    contentAlignment = Alignment.Center,
+                                                                    content = {}
                                                                 )
-                                                            },
-                                                            modifier = Modifier
-                                                                .wrapContentSize()
-                                                                .clip(CircleShape)
-                                                                .background(
-                                                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                                                                )
-                                                                .padding(5.dp)
+
+                                                                // 上层的文本Box（会重叠在下层Box上）
+                                                                Box(
+                                                                    modifier = Modifier
+                                                                        .size(60.dp) // 与下层保持相同大小，确保居中重叠
+                                                                        .padding(16.dp)
+                                                                        .blur(0.2.dp)
+                                                                    , // 保持一致的内边距，对齐位置
+                                                                    contentAlignment = Alignment.Center
+                                                                ) {
+                                                                    Text(
+                                                                        text = it.icon,
+                                                                        color = it.color,
+                                                                        fontSize = 24.sp,
+                                                                        fontFamily = FontFamily(Font(R.font.icons)),
+                                                                    )
+                                                                }
+                                                            }
                                                         )
                                                     },
                                                     selected = it.selected,
@@ -154,8 +185,6 @@ fun MenuDrawer(
                         }
                     )
                 }
-
-
             },
             content = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -172,6 +201,7 @@ fun MenuDrawer(
 class NavigationDrawerItemType(
     val title: String,
     val icon: String,
+    val color: Color,
     val selected: Boolean = false,
     val onClick: () -> Unit = {}
 )

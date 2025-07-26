@@ -43,9 +43,11 @@ data class FriendRequest(
     val id: Long,
     val fromUserId: Long,
     val fromUserIdStr: String,
+    val fromUserName: String,
+    val fromUserAvatar: String? = null,
     val toUserId: Long,
     val toUserIdStr: String,
-    val message: String? = null, // 申请消息
+    val message: String = "", // 申请消息
     val status: FriendRequestStatus = FriendRequestStatus.PENDING,
     val createTime: Long,
     val updateTime: Long

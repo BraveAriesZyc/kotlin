@@ -14,7 +14,6 @@ CREATE TABLE MessageTable (
   reply_to_message_id INTEGER,
   -- 媒体元数据字段
   image_url TEXT,
-  video_url TEXT,
   audio_url TEXT,
   file_url TEXT,
   file_name TEXT,
@@ -22,9 +21,9 @@ CREATE TABLE MessageTable (
   file_path TEXT,
   thumbnail_path TEXT,
   thumbnail_url TEXT,
-  duration INTEGER,  -- 音频/视频时长（秒）
-  width INTEGER,     -- 图片/视频宽度
-  height INTEGER,    -- 图片/视频高度
+  duration INTEGER,  -- 音频时长（秒）
+  width INTEGER,     -- 图片宽度
+  height INTEGER,    -- 图片高度
   latitude REAL,     -- 位置纬度
   longitude REAL,    -- 位置经度
   address TEXT,      -- 位置地址
@@ -36,11 +35,11 @@ insertMessage:
 INSERT INTO MessageTable (
   message_id, chat_id, session_id, sender_id, sender_user_id,
   receiver_id, receiver_user_id, content, type, status, timestamp,
-  reply_to_message_id, image_url, video_url, audio_url, file_url,
+  reply_to_message_id, image_url, audio_url, file_url,
   file_name, file_size, file_path, thumbnail_path, thumbnail_url,
   duration, width, height, latitude, longitude, address, mime_type,
   is_deleted, edited_at
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 
 selectAllMessages:

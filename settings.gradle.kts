@@ -49,9 +49,9 @@ include(":app")
 
 // 功能模块
 include(":feature:auth")
+include(":feature:friend")
 include(":feature:home")
 include(":feature:message")
-include(":feature:friend")
 include(":feature:profile")
 include(":feature:common-ui")
 

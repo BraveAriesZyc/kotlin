@@ -30,7 +30,7 @@ data class Message(
         get() = editedAt != null
 
     val isMedia: Boolean
-        get() = type in listOf(MessageType.IMAGE, MessageType.VIDEO, MessageType.AUDIO, MessageType.FILE)
+        get() = type in listOf(MessageType.IMAGE, MessageType.AUDIO, MessageType.FILE)
 }
 
 /**
@@ -40,13 +40,12 @@ data class Message(
 enum class MessageType(val value: Int, val displayName: String) {
     TEXT(0, "文本"),
     IMAGE(1, "图片"),
-    VIDEO(2, "视频"),
-    AUDIO(3, "语音"),
-    FILE(4, "文件"),
-    LOCATION(5, "位置"),
-    EMOJI(6, "表情"),
-    STICKER(7, "贴纸"),
-    SYSTEM(8, "系统消息")
+    AUDIO(2, "语音"),
+    FILE(3, "文件"),
+    LOCATION(4, "位置"),
+    EMOJI(5, "表情"),
+    STICKER(6, "贴纸"),
+    SYSTEM(7, "系统消息")
 }
 
 /**
@@ -70,7 +69,6 @@ enum class MessageStatus(val value: Int, val displayName: String) {
 @Serializable
 data class MessageMetadata(
     val imageUrl: String? = null,
-    val videoUrl: String? = null,
     val audioUrl: String? = null,
     val fileUrl: String? = null,
     val fileName: String? = null,
@@ -78,16 +76,16 @@ data class MessageMetadata(
     val filePath: String? = null,
     val thumbnailPath: String? = null,
     val thumbnailUrl: String? = null, // 缩略图URL
-    val duration: Long? = null, // 音频/视频时长（秒）
-    val width: Int? = null, // 图片/视频宽度
-    val height: Int? = null, // 图片/视频高度
+    val duration: Long? = null, // 音频时长（秒）
+    val width: Int? = null, // 图片宽度
+    val height: Int? = null, // 图片高度
     val latitude: Double? = null,
     val longitude: Double? = null,
     val address: String? = null,
     val mimeType: String? = null // MIME类型
 ) {
     val hasMedia: Boolean
-        get() = imageUrl != null || videoUrl != null || audioUrl != null || fileUrl != null
+        get() = imageUrl != null || audioUrl != null || fileUrl != null
 }
 
 /**

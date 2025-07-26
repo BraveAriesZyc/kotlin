@@ -19,7 +19,6 @@ data class MessageEntity(
     val type: Int, // 对应 MessageType.value
     val content: String?,
     val imageUrl: String?,
-    val videoUrl: String?,
     val audioUrl: String?,
     val fileUrl: String?,
     val fileName: String?,
@@ -49,7 +48,6 @@ data class MessageEntity(
             content = content ?: "",
             metadata = MessageMetadata(
                 imageUrl = imageUrl,
-                videoUrl = videoUrl,
                 audioUrl = audioUrl,
                 fileUrl = fileUrl,
                 fileName = fileName,
@@ -81,7 +79,6 @@ data class MessageEntity(
                 type = message.type.value,
                 content = message.content,
                 imageUrl = message.metadata?.imageUrl,
-                videoUrl = message.metadata?.videoUrl,
                 audioUrl = message.metadata?.audioUrl,
                 fileUrl = message.metadata?.fileUrl,
                 fileName = message.metadata?.fileName,

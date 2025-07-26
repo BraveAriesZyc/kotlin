@@ -56,20 +56,22 @@ data class UserBrief(
     val username: String,
     val nickname: String?,
     val avatar: String?,
-    val isOnline: Boolean = false
+    val isOnline: Boolean = false,
+    val isFollowed: Boolean = false
 ) {
     val displayName: String
         get() = nickname?.takeIf { it.isNotBlank() } ?: username
 
     companion object {
-        fun fromUser(user: User): UserBrief {
+        fun fromUser(user: User, isFollowed: Boolean = false): UserBrief {
             return UserBrief(
                 id = user.id,
                 userId = user.userId,
                 username = user.username,
                 nickname = user.nickname,
                 avatar = user.avatar,
-                isOnline = user.isOnline
+                isOnline = user.isOnline,
+                isFollowed = isFollowed
             )
         }
     }
