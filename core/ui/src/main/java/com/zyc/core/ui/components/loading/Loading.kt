@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 
 object Loading {
@@ -17,5 +18,5 @@ object Loading {
     fun AnimatedBallLoader() = AnimatedBallLoaderImp()
 
     @Composable
-    fun TextLoader(isRotating: Boolean) = TextLoaderImp(size = 16.dp, color = Color.Unspecified, isRotating = true)
+    fun TextLoader(isRotating: Boolean) = TextLoaderImp(size = 16.sp, color = Color.Unspecified, isRotating = true)
 }

@@ -36,7 +36,7 @@ fun FriendItem(
     onItemClick: () -> Unit = {},
     onStarClick: (Boolean) -> Unit = {},
     onMoreClick: () -> Unit = {},
-     modifier: Modifier = Modifier
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
@@ -148,104 +148,9 @@ fun FriendItem(
 }
 
 /**
- * 朋友请求列表项组件
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FriendRequestItem(
-    request: com.zyc.core.model.entity.FriendRequest,
-    onAccept: () -> Unit,
-    onReject: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // 头像
-                AsyncImage(
-                    model = "https://picsum.photos/200/200?random=${request.fromUserId}",
-                    contentDescription = "头像",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                    contentScale = ContentScale.Crop
-                )
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = request.fromUserIdStr,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    if (!request.message.isNullOrBlank()) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = request.message,
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // 操作按钮
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                OutlinedButton(
-                    onClick = onReject,
-                    modifier = Modifier.height(32.dp)
-                ) {
-                    Text(
-                        text = "拒绝",
-                        fontSize = 12.sp
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Button(
-                    onClick = onAccept,
-                    modifier = Modifier.height(32.dp)
-                ) {
-                    Text(
-                        text = "接受",
-                        fontSize = 12.sp
-                    )
-                }
-            }
-        }
-    }
-}
-
-/**
  * 空状态组件
  */
+@SuppressLint("ModifierParameter")
 @Composable
 fun EmptyFriendsState(
     message: String = "暂无朋友",

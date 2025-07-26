@@ -140,62 +140,12 @@ fun ZRefreshView(
                             .height(indicatorHeight)
                             .padding(horizontal = 16.dp)
                             .graphicsLayer {
-                                // 根据阈值调整透明度动画效果
-                                alpha = when {
-                                    isRefreshing -> 1f
-                                    progress >= refreshThreshold -> 1f
-                                    progress >= 0.3f -> (progress * 1.5f).coerceIn(0.7f, 1f)
-                                    else -> (progress * 3f).coerceIn(0.3f, 0.7f)
-                                }
-                            },
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Box(
-                            modifier = Modifier.graphicsLayer {
-                                // 根据下拉距离进行缩放，设置合理的最大值
-                                val baseScale = when {
-                                    isRefreshing -> 1.2f // 刷新时保持较大尺寸
-                                    else -> {
-                                        // 基础缩放：从0.6开始，随下拉距离增加到最大1.5倍
-                                        val minScale = 0.6f
-                                        val maxScale = 1.5f
-                                        val scaleFactor = progress.coerceIn(0f, 1.2f) // 限制进度范围
-                                        (minScale + scaleFactor * (maxScale - minScale)).coerceIn(minScale, maxScale)
-                                    }
-                                }
-                                scaleX = baseScale
-                                scaleY = baseScale
-
-                                // 当接近阈值时添加轻微的脉冲效果
-                                if (canRefresh && !isRefreshing) {
-                                    val pulse = kotlin.math.sin(System.currentTimeMillis() * 0.008f) * 0.08f + 1f
-                                    scaleX *= pulse
-                                    scaleY *= pulse
-                                }
-                            }
-                        ) {
-                            TextLoaderImp(isRotating = isRefreshing || canRefresh)
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = refreshingTips,
-                            color = MaterialTheme.colorScheme.onSurface.copy(
-                                alpha = when {
-                                    isRefreshing -> 1f
-                                    canRefresh -> 1f
-                                    progress >= 0.3f -> (progress * 1.2f).coerceIn(0.7f, 1f)
-                                    else -> (progress * 2f).coerceIn(0.5f, 0.8f)
-                                }
-                            ),
-                            fontSize = 14.sp,
-                            modifier = Modifier.graphicsLayer {
                                 // 文字缩放效果，与指示器保持一致
                                 val textScale = when {
-                                    isRefreshing -> 1.1f // 刷新时稍微放大
+                                    isRefreshing -> 1.0f // 刷新时稍微放大
                                     else -> {
                                         // 基础缩放：从0.8开始，随下拉距离增加到最大1.2倍
-                                        val minScale = 0.8f
+                                        val minScale = 0.2f
                                         val maxScale = 1.2f
                                         val scaleFactor = progress.coerceIn(0f, 1.2f)
                                         (minScale + scaleFactor * (maxScale - minScale)).coerceIn(minScale, maxScale)
@@ -211,7 +161,30 @@ fun ZRefreshView(
                                     progress >= 0.2f -> (progress * 1.5f).coerceIn(0.6f, 1f)
                                     else -> (progress * 4f).coerceIn(0.3f, 0.8f)
                                 }
+                            },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+
+                        val fontColor = MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = when {
+                                isRefreshing -> 0.8f
+                                canRefresh -> 0.8f
+                                progress >= 0.3f -> (progress * 1.2f).coerceIn(0.7f, 1f)
+                                else -> (progress * 2f).coerceIn(0.5f, 0.8f)
                             }
+                        )
+                        TextLoaderImp(
+                            color = fontColor,
+                            isRotating = isRefreshing || canRefresh,
+                            size = 20.sp
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = refreshingTips,
+                            color = fontColor,
+                            fontSize = 14.sp,
+                            modifier = Modifier
                         )
                     }
                 }
@@ -233,14 +206,10 @@ fun ZRefreshView(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier.graphicsLayer {
-                                scaleX = 0.9f
-                                scaleY = 0.9f
-                            }
-                        ) {
-                            TextLoaderImp(isRotating = true)
-                        }
+                        TextLoaderImp(
+                            isRotating = true,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                        )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "加载更多...",
@@ -250,7 +219,7 @@ fun ZRefreshView(
                     }
                 }
             }
-         }
+        }
     }
 }
 
@@ -260,8 +229,8 @@ private fun getRefreshingTips(isRefreshing: Boolean, state: PullToRefreshState):
     return when {
         isRefreshing -> "刷新中..."
         state.distanceFraction >= refreshThreshold -> "释放立即刷新"
-        state.distanceFraction >= 0.6f -> "继续下拉到${(refreshThreshold * 100).toInt()}%"
-        state.distanceFraction >= 0.4f -> "下拉刷新 ${(state.distanceFraction * 100).toInt()}%"
+        state.distanceFraction >= 0.6f -> "继续下拉到"
+        state.distanceFraction >= 0.4f -> "下拉刷新"
         state.distanceFraction >= 0.2f -> "轻拉刷新"
         state.distanceFraction > 0f -> "下拉刷新"
         else -> "刷新中..."

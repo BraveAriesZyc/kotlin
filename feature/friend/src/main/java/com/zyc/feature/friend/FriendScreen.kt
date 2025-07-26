@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zyc.core.ui.components.refreshview.ZRefreshView
+import com.zyc.core.ui.route.AddFriendRoute
+import com.zyc.core.ui.route.LocalNavController
 import com.zyc.feature.friend.components.*
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -20,10 +22,10 @@ fun FriendScreen(
     val friendsWithUserInfo by viewModel.filteredFriends.collectAsStateWithLifecycle()
     val friendRequests by viewModel.friendRequests.collectAsStateWithLifecycle()
     val searchKeyword by viewModel.searchKeyword.collectAsStateWithLifecycle()
-
-    var showSearch by remember { mutableStateOf(false) }
     var showFriendRequests by remember { mutableStateOf(false) }
     var selectedFriendId by remember { mutableStateOf<Long?>(null) }
+
+    val navController = LocalNavController.current
 
     // 错误提示
     uiState.error?.let { error ->
@@ -36,12 +38,10 @@ fun FriendScreen(
     Scaffold(
         topBar = {
             FriendTopBar(
-                showSearch = showSearch,
-                searchKeyword = searchKeyword,
                 friendRequestCount = friendRequests.size,
-                onSearchToggle = { showSearch = !showSearch },
-                onSearchChange = viewModel::searchFriends,
-                onClearSearch = viewModel::clearSearch,
+                onAdd = {
+                    navController.navigate(AddFriendRoute)
+                },
                 onShowFriendRequests = { showFriendRequests = true }
             )
         }

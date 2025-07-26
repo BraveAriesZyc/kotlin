@@ -41,9 +41,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.zyc.core.ui.R
 
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -57,7 +61,7 @@ import kotlin.math.sin
  * @param isRotating 是否旋转
  */
 @Composable
-fun TextLoaderImp(size: Dp = 16.dp, color: Color = Color.Unspecified, isRotating: Boolean = true) {
+fun TextLoaderImp(size: TextUnit = 16.sp, color: Color = Color.Unspecified, isRotating: Boolean = true) {
     val angle by if (isRotating) {
         val transition = rememberInfiniteTransition(label = "")
         transition.animateFloat(
@@ -72,14 +76,13 @@ fun TextLoaderImp(size: Dp = 16.dp, color: Color = Color.Unspecified, isRotating
     } else {
         remember { mutableFloatStateOf(0f) }
     }
-
-    Icon(
-        imageVector = Icons.Default.KeyboardArrowUp,
-        contentDescription = "loading",
+    Text(
         modifier = Modifier
-            .size(size)
             .rotate(angle),
-        tint = color
+        text = "\uEEBC",
+        fontFamily = FontFamily(Font(R.font.icons)),
+        color = color,
+        fontSize = size
     )
 }
 
