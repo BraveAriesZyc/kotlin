@@ -1,29 +1,41 @@
 package com.zyc.feature.profile
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.zyc.core.common.utils.event.GlobalAntiShake.debounceClick
 
 import com.zyc.core.ui.components.ZAppBar
 import com.zyc.core.ui.components.drawer.DrawerViewModel
+import com.zyc.core.ui.components.refreshview.BounceListView
 import com.zyc.core.ui.route.LocalNavController
 
 import com.zyc.core.ui.theme.LocalTheme
@@ -68,39 +80,38 @@ fun MeScreen() {
                     .fillMaxSize()
                     .padding(top = pd.calculateTopPadding()),
                 content = {
-
-                    Column(
-                        modifier = Modifier.padding(pd),
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    BounceListView(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp)
                     ) {
-                        Text(text = "主题选择")
-                        Text(text = "${themeMap.size}")
-                        // 添加垂直间距
                         themeMap.forEach { entry ->
-                            Button(
-                                modifier = Modifier.padding(8.dp),
-                                onClick = {
-                                    themeModel.updateTheme(entry.key)
+                            item(
+                                key = entry.key,
+                                content = {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+
+                                            .padding(bottom = 8.dp)
+                                            .clip(
+                                                shape = RoundedCornerShape(8.dp)
+                                            )
+                                            .background(Color.White)
+                                            .padding(16.dp)
+
+                                            .debounceClick {
+                                                themeModel.updateTheme(entry.key)
+                                            },
+                                        content = {
+                                            Text(text = entry.key.name, color = MaterialTheme.colorScheme.onSurface)
+                                        }
+                                    )
+
                                 }
-                            ) {
-                                Text(text = entry.key.name)
-                            }
+                            )
                         }
 
-
-                        Button(
-                            modifier = Modifier.padding(8.dp),
-                            onClick = {
-
-                            }
-                        ) {
-                            Text(text = "视频封面测试")
-                        }
-
-                        Text(modifier = Modifier.padding(pd), text = "我的")
                     }
-
                 }
             )
 

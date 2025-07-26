@@ -43,7 +43,7 @@ fun ZAppBar(
     actions: @Composable () -> Unit? = {},
     navigationIcon: ImageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
     isNavigationIcon: Boolean = false,
-    background: Color = MaterialTheme.colorScheme.background,
+    background: Color = MaterialTheme.colorScheme.surface,
     onBack: () -> Unit = {},
     navController: Any? = null,
     routeClass: Any? = null
@@ -57,7 +57,7 @@ fun ZAppBar(
         ).toDp()
     }
     val routeListSize = remember { mutableIntStateOf(0) }
-    
+
     Row(
         modifier.background(background).padding(top = topInset),
         verticalAlignment = Alignment.CenterVertically,

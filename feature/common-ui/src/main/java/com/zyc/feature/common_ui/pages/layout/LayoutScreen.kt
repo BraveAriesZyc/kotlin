@@ -1,4 +1,4 @@
-package com.zyc.feature.common_ui.components
+package com.zyc.feature.common_ui.pages.layout
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,25 +8,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,23 +27,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zyc.core.ui.components.drawer.MenuDrawer
 import com.zyc.core.ui.components.page.PageScreen
 import com.zyc.core.ui.components.page.PageScreenData
 import com.zyc.core.ui.route.LocalNavController
 import com.zyc.feature.common_ui.model.NavItem
-import com.zyc.feature.common_ui.viewmodel.LayoutScreenViewModel
+import com.zyc.feature.common_ui.pages.layout.LayoutScreenViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LayoutScreen() {
@@ -118,7 +103,7 @@ private fun BottomNavigationBar(
     Row(
         Modifier
             .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.background),
+            .background(color = MaterialTheme.colorScheme.surface),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
         content = {
@@ -137,7 +122,7 @@ private fun BottomNavigationBar(
                         )
                         .padding(bottom = bottomInset)
                         .padding(top = 15.dp, bottom = 15.dp)
-                        .background(color = MaterialTheme.colorScheme.background),
+                        .background(color = MaterialTheme.colorScheme.surface),
                     icon = if (pagerState.currentPage == index) item.selectIcon else item.icon,
 
                     )

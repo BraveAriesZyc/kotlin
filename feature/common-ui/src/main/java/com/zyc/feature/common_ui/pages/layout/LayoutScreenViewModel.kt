@@ -1,6 +1,5 @@
-package com.zyc.feature.common_ui.viewmodel
+package com.zyc.feature.common_ui.pages.layout
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -9,15 +8,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import com.zyc.feature.home.HomeScreen
-import com.zyc.feature.message.MessageScreen
-import com.zyc.feature.friend.FriendScreen
-import com.zyc.feature.profile.MeScreen
 import com.zyc.core.ui.R
 import com.zyc.core.ui.components.drawer.NavigationDrawerItemType
 import com.zyc.core.ui.route.WebViewRoute
 import com.zyc.feature.common_ui.model.NavItem
-
+import com.zyc.feature.friend.FriendScreen
+import com.zyc.feature.home.HomeScreen
+import com.zyc.feature.message.MessageScreen
+import com.zyc.feature.profile.MeScreen
 
 class LayoutScreenViewModel(navController: NavController) : ViewModel() {
     // 当前页面状态
@@ -61,7 +59,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
         NavigationDrawerItemType(
             title = "华为应用市场",
             icon = "\uEA20",
-            color = Color.Green,
+            color = Color.Companion.Green,
             onClick = {
                 navController.navigate(WebViewRoute("https://developer.huawei.com/consumer/cn/service/josp/agc/index.html#/myApp?menuId=97458334310914199"))
             }
@@ -69,7 +67,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
         NavigationDrawerItemType(
             title = "百度",
             icon = "\uEE64",
-            color = Color.Blue,
+            color = Color.Companion.Blue,
             onClick = {
                 navController.navigate(WebViewRoute("https://www.iconfont.cn/home/index?spm=a313x.collections_index.1998910419.2.44b63a81zIc8sP"))
             }
@@ -77,7 +75,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
         NavigationDrawerItemType(
             title = "精彩",
             icon = "\uEE65",
-            color = Color.Blue,
+            color = Color.Companion.Blue,
             onClick = {
                 navController.navigate(WebViewRoute("https://d3gbed2ley04jq.ldmnusfm.com/archives/136196"))
             }
