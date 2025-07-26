@@ -67,18 +67,7 @@ fun FriendScreen(
             isLoadingMore = uiState.isLoadingMore,
             enableLoadMore = true
         ) {
-            if (uiState.isLoading && friendsWithUserInfo.isEmpty()) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(32.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-            } else if (friendsWithUserInfo.isEmpty()) {
+            if (friendsWithUserInfo.isEmpty()) {
                 item {
                     EmptyFriendsState(
                         message = if (searchKeyword.isNotBlank()) "未找到相关朋友" else "暂无朋友"
