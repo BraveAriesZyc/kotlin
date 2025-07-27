@@ -1,11 +1,13 @@
 package com.zyc.feature.friend.components
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -48,12 +50,19 @@ fun FriendItem(
     // 创建菜单项
     val menuItems = remember {
         listOf(
-            createMenuAction("发消息", Icons.AutoMirrored.Filled.Send, FriendMenuAction.SEND_MESSAGE),
-            createMenuAction("编辑备注", Icons.Default.Edit, FriendMenuAction.EDIT_NICKNAME),
-            createMenuAction("查看资料", Icons.Default.Person, FriendMenuAction.VIEW_PROFILE),
-            createMenuAction("特别关注", Icons.Default.Star, FriendMenuAction.TOGGLE_STAR),
-            createMenuAction("屏蔽/解除屏蔽", Icons.Default.Settings, FriendMenuAction.TOGGLE_BLOCK),
-            createMenuAction("删除朋友", Icons.Default.Delete, FriendMenuAction.DELETE_FRIEND)
+            createMenuAction(if (friend.isStarred) "取消顶置" else "顶置", if (friend.isStarred) "\uEC15" else "\uEC14", FriendMenuAction.SEND_MESSAGE) {
+                onStarClick(
+                    !friend.isStarred
+                )
+            },
+            createMenuAction("更多操作", "\uEBD3", FriendMenuAction.EDIT_NICKNAME) {
+                println("更多操作")
+                onMoreClick()
+            },
+//            createMenuAction("查看资料", Icons.Default.Person, FriendMenuAction.VIEW_PROFILE,{}),
+//            createMenuAction("特别关注", Icons.Default.Star, FriendMenuAction.TOGGLE_STAR,{}),
+//            createMenuAction("屏蔽/解除屏蔽", Icons.Default.Settings, FriendMenuAction.TOGGLE_BLOCK,{}),
+//            createMenuAction("删除朋友", Icons.Default.Delete, FriendMenuAction.DELETE_FRIEND,{})
         )
     }
 
@@ -143,32 +152,6 @@ fun FriendItem(
                         )
                     }
                 )
-
-                Row {
-                    // 特别关注按钮
-                    IconButton(
-                        onClick = { onStarClick(!friend.isStarred) },
-                        content = {
-                            Icon(
-                                imageVector = if (friend.isStarred) Icons.Default.Star else Icons.Default.Done,
-                                contentDescription = if (friend.isStarred) "取消特别关注" else "特别关注",
-                                tint = if (friend.isStarred) Color(0xFFFFD700) else MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    )
-
-                    // 更多操作按钮
-                    IconButton(
-                        onClick = onMoreClick,
-                        content = {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "更多操作",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    )
-                }
             }
         )
     }

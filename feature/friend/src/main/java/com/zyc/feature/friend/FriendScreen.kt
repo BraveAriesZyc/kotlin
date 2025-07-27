@@ -1,5 +1,6 @@
 package com.zyc.feature.friend
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
@@ -75,6 +76,7 @@ fun FriendScreen(
                                 },
                                 onMoreClick = {
                                     selectedFriendId = friend.id
+                                    Log.d("FriendScreen", "点击了顶置的成员${friend.id}")
                                 }
                             )
                         }
@@ -118,7 +120,9 @@ fun FriendScreen(
 
     // 朋友操作菜单
     selectedFriendId?.let { friendId ->
-        val friendPair = friendsWithUserInfo.find { it.first.id == friendId }
+        val list = listOf(friendsWithUserInfo, topFriends).flatten()
+        val friendPair = list.find { it.first.id == friendId }
+
         if (friendPair != null) {
             FriendActionDialog(
                 friend = friendPair.first,
