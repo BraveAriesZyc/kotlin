@@ -14,8 +14,8 @@ import com.zyc.core.ui.components.WebViewScreen
 import com.zyc.core.ui.route.*
 import com.zyc.feature.auth.LoginScreen
 import com.zyc.feature.auth.RegisterScreen
-import com.zyc.feature.common_ui.pages.layout.LayoutScreen
-import com.zyc.feature.common_ui.pages.start.StartScreen
+import com.zyc.feature.common_page.pages.layout.LayoutScreen
+import com.zyc.feature.common_page.pages.start.StartScreen
 import com.zyc.feature.friend.components.AddFriendScreen
 import com.zyc.feature.message.MessageScreen
 import com.zyc.feature.message.SendMessageScreen

@@ -1,4 +1,4 @@
-package com.zyc.feature.common_ui.model
+package com.zyc.feature.common_page.model
 
 import androidx.compose.runtime.Composable
 

@@ -53,7 +53,7 @@ include(":feature:friend")
 include(":feature:home")
 include(":feature:message")
 include(":feature:profile")
-include(":feature:common-ui")
+include(":feature:common-page")
 
 // 核心模块
 include(":core:common")

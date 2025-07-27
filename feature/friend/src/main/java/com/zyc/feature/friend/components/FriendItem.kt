@@ -1,11 +1,7 @@
 package com.zyc.feature.friend.components
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,22 +13,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.zyc.core.ui.components.menu.LongPressMenuContainer
+import com.zyc.core.ui.components.menu.createMenuAction
 import coil3.compose.AsyncImage
-import com.zyc.core.common.utils.event.GlobalAntiShake.debounceClick
 import com.zyc.core.model.entity.Friend
 import com.zyc.core.model.entity.User
 import com.zyc.core.ui.R
@@ -42,7 +33,7 @@ import com.zyc.core.ui.utils.dateUtil.DateUtil
  * 朋友列表项组件
  */
 @SuppressLint("ModifierParameter")
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class )
 @Composable
 fun FriendItem(
     friend: Friend,
@@ -54,39 +45,30 @@ fun FriendItem(
     color: Color = MaterialTheme.colorScheme.surface,
     modifier: Modifier = Modifier
 ) {
-    var showMenu by remember { mutableStateOf(false) }
-    var menuOffset by remember { mutableStateOf(DpOffset.Zero) }
-    var componentSize by remember { mutableStateOf(IntSize.Zero) }
-    val density = LocalDensity.current
-    Box {
+    // 创建菜单项
+    val menuItems = remember {
+        listOf(
+            createMenuAction("发消息", Icons.AutoMirrored.Filled.Send, FriendMenuAction.SEND_MESSAGE),
+            createMenuAction("编辑备注", Icons.Default.Edit, FriendMenuAction.EDIT_NICKNAME),
+            createMenuAction("查看资料", Icons.Default.Person, FriendMenuAction.VIEW_PROFILE),
+            createMenuAction("特别关注", Icons.Default.Star, FriendMenuAction.TOGGLE_STAR),
+            createMenuAction("屏蔽/解除屏蔽", Icons.Default.Settings, FriendMenuAction.TOGGLE_BLOCK),
+            createMenuAction("删除朋友", Icons.Default.Delete, FriendMenuAction.DELETE_FRIEND)
+        )
+    }
+
+    LongPressMenuContainer(
+        onTap = { onItemClick() },
+        onLongPressMenu = { action -> onLongPressMenu(action) },
+        menuItems = menuItems,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp)
+            .clip(shape = RoundedCornerShape(8.dp))
+            .background(color)
+            .padding(8.dp)
+    ) {
         Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-                .clip(
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .background(color)
-                .padding(8.dp)
-                .onSizeChanged { componentSize = it }
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onTap = { onItemClick() },
-                        onLongPress = { offset ->
-                            with(density) {
-                                // 计算菜单位置，让菜单显示在长按位置的右下方
-                                val x = (offset.x + 8.dp.toPx()).toDp()
-                                val y = (offset.y - 40.dp.toPx()).toDp()
-                                
-                                menuOffset = DpOffset(
-                                    x = x,
-                                    y = y
-                                )
-                            }
-                            showMenu = true
-                        }
-                    )
-                },
             content = {
                 Box {
                     AsyncImage(
@@ -189,36 +171,6 @@ fun FriendItem(
                 }
             }
         )
-
-        // 长按菜单
-        DropdownMenu(
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false },
-            offset = menuOffset,
-            modifier = Modifier.wrapContentWidth()
-        ) {
-            FriendMenuAction.entries.forEach { action ->
-                DropdownMenuItem(
-                    text = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = action.icon,
-                                contentDescription = action.title,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = action.title)
-                        }
-                    },
-                    onClick = {
-                        showMenu = false
-                        onLongPressMenu(action)
-                    }
-                )
-            }
-        }
     }
 }
 

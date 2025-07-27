@@ -1,4 +1,4 @@
-package com.zyc.feature.common_ui.pages.layout
+package com.zyc.feature.common_page.pages.layout
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -11,7 +11,7 @@ import androidx.navigation.NavController
 import com.zyc.core.ui.R
 import com.zyc.core.ui.components.drawer.NavigationDrawerItemType
 import com.zyc.core.ui.route.WebViewRoute
-import com.zyc.feature.common_ui.model.NavItem
+import com.zyc.feature.common_page.model.NavItem
 import com.zyc.feature.friend.FriendScreen
 import com.zyc.feature.home.HomeScreen
 import com.zyc.feature.message.MessageScreen

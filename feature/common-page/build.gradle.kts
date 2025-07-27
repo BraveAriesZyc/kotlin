@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.zyc.feature.common_ui"
+    namespace = "com.zyc.feature.common_page"
 
     buildFeatures {
         compose = true

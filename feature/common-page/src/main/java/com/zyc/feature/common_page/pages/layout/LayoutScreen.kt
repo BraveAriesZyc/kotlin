@@ -1,4 +1,4 @@
-package com.zyc.feature.common_ui.pages.layout
+package com.zyc.feature.common_page.pages.layout
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,8 +34,8 @@ import com.zyc.core.ui.components.drawer.MenuDrawer
 import com.zyc.core.ui.components.page.PageScreen
 import com.zyc.core.ui.components.page.PageScreenData
 import com.zyc.core.ui.route.LocalNavController
-import com.zyc.feature.common_ui.model.NavItem
-import com.zyc.feature.common_ui.pages.layout.LayoutScreenViewModel
+import com.zyc.feature.common_page.model.NavItem
+import com.zyc.feature.common_page.pages.layout.LayoutScreenViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 

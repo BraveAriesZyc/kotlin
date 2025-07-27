@@ -1,4 +1,4 @@
-package com.zyc.feature.common_ui.pages.start
+package com.zyc.feature.common_page.pages.start
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween

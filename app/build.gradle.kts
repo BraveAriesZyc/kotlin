@@ -24,7 +24,7 @@ dependencies {
     implementation(project(":feature:message"))
     implementation(project(":feature:friend"))
     implementation(project(":feature:profile"))
-    implementation(project(":feature:common-ui"))
+    implementation(project(":feature:common-page"))
 
     // 核心模块
     implementation(project(":core:common"))
