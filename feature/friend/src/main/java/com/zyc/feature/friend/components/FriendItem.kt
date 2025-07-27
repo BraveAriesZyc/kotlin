@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -23,6 +25,7 @@ import coil3.compose.AsyncImage
 import com.zyc.core.common.utils.event.GlobalAntiShake.debounceClick
 import com.zyc.core.model.entity.Friend
 import com.zyc.core.model.entity.User
+import com.zyc.core.ui.R
 
 /**
  * 朋友列表项组件
@@ -162,15 +165,14 @@ fun EmptyFriendsState(
             .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            imageVector = Icons.Default.Call,
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+        Text(
+            text = "\uEC96",
+            fontSize = 100.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            fontWeight  = FontWeight(600),
+            fontFamily = FontFamily(Font(R.font.icons)),
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Text(
             text = message,
             fontSize = 16.sp,

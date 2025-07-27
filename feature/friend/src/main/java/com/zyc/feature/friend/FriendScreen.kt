@@ -19,7 +19,7 @@ fun FriendScreen(
     viewModel: FriendViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val friendsWithUserInfo by viewModel.filteredFriends.collectAsStateWithLifecycle()
+    val friendsWithUserInfo by viewModel.friendsWithUserInfo.collectAsStateWithLifecycle()
     val friendRequests by viewModel.friendRequests.collectAsStateWithLifecycle()
     val searchKeyword by viewModel.searchKeyword.collectAsStateWithLifecycle()
     var showFriendRequests by remember { mutableStateOf(false) }
@@ -57,31 +57,23 @@ fun FriendScreen(
             isLoadingMore = uiState.isLoadingMore,
             enableLoadMore = true,
             content = {
-                if (friendsWithUserInfo.isEmpty()) {
-                    item {
-                        EmptyFriendsState(
-                            message = if (searchKeyword.isNotBlank()) "未找到相关朋友" else "暂无朋友"
-                        )
-                    }
-                } else {
-                    items(
-                        items = friendsWithUserInfo,
-                        key = { (friend, _) -> friend.id }
-                    ) { (friend, user) ->
-                        FriendItem(
-                            friend = friend,
-                            user = user,
-                            onItemClick = {
-                                // 点击朋友项，可以导航到聊天页面或朋友详情页面
-                            },
-                            onStarClick = { isStarred ->
-                                viewModel.toggleStarFriend(friend.id, isStarred)
-                            },
-                            onMoreClick = {
-                                selectedFriendId = friend.id
-                            }
-                        )
-                    }
+                items(
+                    items = friendsWithUserInfo,
+                    key = { (friend, _) -> friend.id }
+                ) { (friend, user) ->
+                    FriendItem(
+                        friend = friend,
+                        user = user,
+                        onItemClick = {
+                            // 点击朋友项，可以导航到聊天页面或朋友详情页面
+                        },
+                        onStarClick = { isStarred ->
+                            viewModel.toggleStarFriend(friend.id, isStarred)
+                        },
+                        onMoreClick = {
+                            selectedFriendId = friend.id
+                        }
+                    )
                 }
             }
         )

@@ -3,17 +3,15 @@ package com.zyc.feature.friend.components
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -23,9 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zyc.core.ui.components.ZAppBar
 import com.zyc.core.ui.components.element.components.input.FormInput
-import com.zyc.core.ui.components.input.Input
-import com.zyc.core.ui.components.keyboard.ZAInput
-import com.zyc.core.ui.components.refreshview.ZRefreshView
+import com.zyc.core.ui.components.refreshview.BounceListView
 import com.zyc.core.ui.route.LocalNavController
 import com.zyc.feature.friend.FriendViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -34,10 +30,12 @@ import org.koin.compose.viewmodel.koinViewModel
 fun AddFriendScreen(
     viewModel: FriendViewModel = koinViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val searchKeyword by viewModel.searchKeyword.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
+    val addFriendState by viewModel.addFriendState.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
+    var selectedFriendId by remember { mutableStateOf<Long?>(null) }
+
     val focusRequester = remember { FocusRequester() }
     Scaffold(
         topBar = {
@@ -45,9 +43,11 @@ fun AddFriendScreen(
                 actions = {
                     FormInput(
                         value = searchKeyword,
-                        onValueChange = { viewModel.searchFriends(
-                             it
-                        ) },
+                        onValueChange = {
+                            viewModel.searchFriends(
+                                it
+                            )
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .focusRequester(focusRequester),
@@ -79,21 +79,37 @@ fun AddFriendScreen(
             )
         },
         content = { paddingValues ->
-            ZRefreshView(
+            BounceListView(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = paddingValues.calculateTopPadding())
                     .padding(vertical = 8.dp, horizontal = 8.dp),
-                onRefresh = viewModel::refreshFriends,
-                onLoadMore = viewModel::loadMoreFriends,
-                isRefreshing = uiState.isRefreshing,
-                isLoadingMore = uiState.isLoadingMore,
-                enableLoadMore = true,
                 content = {
-                    item {
-                        EmptyFriendsState(
-                            message = if (searchKeyword.isNotBlank()) "未找到相关朋友" else "暂无朋友"
-                        )
+                    if (addFriendState.isEmpty()) {
+                        item {
+                            EmptyFriendsState(
+                                message = if (searchKeyword.isNotBlank()) "未找到相关朋友" else "暂无朋友"
+                            )
+                        }
+                    } else {
+                        items(
+                            items = addFriendState,
+                            key = { (friend, _) -> friend.id }
+                        ) { (friend, user) ->
+                            FriendItem(
+                                friend = friend,
+                                user = user,
+                                onItemClick = {
+                                    // 点击朋友项，可以导航到聊天页面或朋友详情页面
+                                },
+                                onStarClick = { isStarred ->
+                                    viewModel.toggleStarFriend(friend.id, isStarred)
+                                },
+                                onMoreClick = {
+                                    selectedFriendId = friend.id
+                                }
+                            )
+                        }
                     }
                 }
             )

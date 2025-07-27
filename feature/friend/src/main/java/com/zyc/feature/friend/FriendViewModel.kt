@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.zyc.core.data.repository.FriendRepository
 import com.zyc.core.model.entity.Friend
 import com.zyc.core.model.entity.FriendRequest
+import com.zyc.core.model.entity.FriendStatus
+import com.zyc.core.model.entity.Gender
 import com.zyc.core.model.entity.User
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -15,48 +17,33 @@ import kotlinx.coroutines.launch
 class FriendViewModel(
     private val friendRepository: FriendRepository
 ) : ViewModel() {
-    
+
     // UI 状态
     private val _uiState = MutableStateFlow(FriendUiState())
     val uiState: StateFlow<FriendUiState> = _uiState.asStateFlow()
-    
+
+    // 添加好友
+    private val _addFriendState = MutableStateFlow<List<Pair<Friend, User>>>(emptyList())
+    val addFriendState: StateFlow<List<Pair<Friend, User>>> = _addFriendState.asStateFlow()
+
     // 朋友列表（包含用户信息）
     private val _friendsWithUserInfo = MutableStateFlow<List<Pair<Friend, User>>>(emptyList())
     val friendsWithUserInfo: StateFlow<List<Pair<Friend, User>>> = _friendsWithUserInfo.asStateFlow()
-    
+
     // 朋友请求列表
     private val _friendRequests = MutableStateFlow<List<FriendRequest>>(emptyList())
     val friendRequests: StateFlow<List<FriendRequest>> = _friendRequests.asStateFlow()
-    
+
     // 搜索关键词
     private val _searchKeyword = MutableStateFlow("")
     val searchKeyword: StateFlow<String> = _searchKeyword.asStateFlow()
-    
-    // 过滤后的朋友列表
-    val filteredFriends: StateFlow<List<Pair<Friend, User>>> = combine(
-        _friendsWithUserInfo,
-        _searchKeyword
-    ) { friends, keyword ->
-        if (keyword.isBlank()) {
-            friends
-        } else {
-            friends.filter { (friend, user) ->
-                friend.nickname?.contains(keyword, ignoreCase = true) == true ||
-                user.nickname?.contains(keyword, ignoreCase = true) == true ||
-                user.username.contains(keyword, ignoreCase = true)
-            }
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
-    
+
+
     init {
         loadFriends()
         loadFriendRequests()
     }
-    
+
     /**
      * 加载朋友列表
      */
@@ -79,7 +66,7 @@ class FriendViewModel(
             }
         }
     }
-    
+
     /**
      * 刷新朋友列表
      */
@@ -102,7 +89,7 @@ class FriendViewModel(
             }
         }
     }
-    
+
     /**
      * 加载更多朋友
      */
@@ -124,21 +111,50 @@ class FriendViewModel(
             }
         }
     }
-    
+
     /**
      * 搜索朋友
      */
     fun searchFriends(keyword: String) {
         _searchKeyword.value = keyword
+        _addFriendState.value = listOf(
+            Pair(
+                Friend(
+                    id = 11L,
+                    userId = 1L,
+                    friendUserId = 6L,
+                    friendUserIdStr = "user_11",
+                    nickname = "张三",
+                    groupId = 1L,
+                    groupName = "同事",
+                    status = FriendStatus.NORMAL,
+                    addTime = System.currentTimeMillis() - 432000000,
+                    updateTime = System.currentTimeMillis()
+                ),
+                User(
+                    id = 11L,
+                    userId = "user_11",
+                    username = "newuser1",
+                    nickname = "新用户1",
+                    avatar = "https://picsum.photos/200/200?random=23",
+                    gender = Gender.UNKNOWN,
+                    signature = "刚刚注册",
+                    isOnline = true,
+                    createTime = System.currentTimeMillis() - 3600000,
+                    updateTime = System.currentTimeMillis()
+                ),
+            )
+        )
     }
-    
+
     /**
      * 清除搜索
      */
     fun clearSearch() {
         _searchKeyword.value = ""
+        _addFriendState.value = emptyList()
     }
-    
+
     /**
      * 删除朋友
      */
@@ -159,7 +175,7 @@ class FriendViewModel(
             }
         }
     }
-    
+
     /**
      * 更新朋友备注
      */
@@ -179,7 +195,7 @@ class FriendViewModel(
             }
         }
     }
-    
+
     /**
      * 特别关注/取消特别关注
      */
@@ -199,7 +215,7 @@ class FriendViewModel(
             }
         }
     }
-    
+
     /**
      * 屏蔽/取消屏蔽朋友
      */
@@ -219,7 +235,7 @@ class FriendViewModel(
             }
         }
     }
-    
+
     /**
      * 加载朋友请求
      */
@@ -236,7 +252,7 @@ class FriendViewModel(
             }
         }
     }
-    
+
     /**
      * 处理朋友请求
      */
@@ -259,7 +275,7 @@ class FriendViewModel(
             }
         }
     }
-    
+
     /**
      * 清除错误信息
      */
