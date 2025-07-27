@@ -1,5 +1,6 @@
 package com.zyc.feature.friend
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zyc.core.data.repository.FriendRepository
@@ -29,10 +30,14 @@ class FriendViewModel(
     // 朋友列表（包含用户信息）
     private val _friendsWithUserInfo = MutableStateFlow<List<Pair<Friend, User>>>(emptyList())
     val friendsWithUserInfo: StateFlow<List<Pair<Friend, User>>> = _friendsWithUserInfo.asStateFlow()
+    // 顶置列表
+    private val _topFriends = MutableStateFlow<List<Pair<Friend, User>>>(emptyList())
+    val topFriends: StateFlow<List<Pair<Friend, User>>> = _topFriends.asStateFlow()
 
     // 朋友请求列表
     private val _friendRequests = MutableStateFlow<List<FriendRequest>>(emptyList())
     val friendRequests: StateFlow<List<FriendRequest>> = _friendRequests.asStateFlow()
+
 
     // 搜索关键词
     private val _searchKeyword = MutableStateFlow("")
@@ -40,8 +45,53 @@ class FriendViewModel(
 
 
     init {
-        loadFriends()
-        loadFriendRequests()
+        // 设置初始加载状态
+        _uiState.value = _uiState.value.copy(isLoading = true)
+        
+        // 订阅朋友列表数据流
+        viewModelScope.launch {
+            try {
+                friendRepository.getFriendsWithUserInfo().collect { friends ->
+                    _friendsWithUserInfo.value = friends
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = null
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = e.message ?: "加载朋友列表失败"
+                )
+            }
+        }
+        
+        // 订阅顶置朋友列表数据流
+        viewModelScope.launch {
+            try {
+                friendRepository.getTopFriends().collect { friends ->
+                    Log.d("FriendViewModel", "topFriends: $friends")
+                    _topFriends.value = friends
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = e.message ?: "加载顶置朋友失败"
+                )
+            }
+        }
+        
+        // 订阅朋友请求数据流
+        viewModelScope.launch {
+            try {
+                friendRepository.getFriendRequests().collect { requests ->
+                    _friendRequests.value = requests
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = e.message ?: "加载朋友请求失败"
+                )
+            }
+        }
     }
 
     /**
@@ -51,13 +101,14 @@ class FriendViewModel(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {
-                friendRepository.getFriendsWithUserInfo().collect { friends ->
-                    _friendsWithUserInfo.value = friends
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        error = null
-                    )
-                }
+                // 这里应该调用 repository 的刷新方法来触发数据更新
+                // Flow 的订阅已经在 init 中完成，这里只需要触发数据刷新
+                // 如果 repository 有刷新方法，应该调用它
+                // 暂时设置加载完成状态
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = null
+                )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -74,13 +125,14 @@ class FriendViewModel(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isRefreshing = true)
             try {
-                friendRepository.getFriendsWithUserInfo().collect { friends ->
-                    _friendsWithUserInfo.value = friends
-                    _uiState.value = _uiState.value.copy(
-                        isRefreshing = false,
-                        error = null
-                    )
-                }
+                // 这里应该调用 repository 的刷新方法来触发数据更新
+                // Flow 的订阅已经在 init 中完成，这里只需要触发数据刷新
+                // 如果 repository 有刷新方法，应该调用它
+                // 暂时设置刷新完成状态
+                _uiState.value = _uiState.value.copy(
+                    isRefreshing = false,
+                    error = null
+                )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isRefreshing = false,
@@ -163,8 +215,7 @@ class FriendViewModel(
             try {
                 val success = friendRepository.removeFriend(friendId)
                 if (success) {
-                    // 刷新列表
-                    loadFriends()
+                    // 数据会通过 Flow 自动更新，不需要手动调用 loadFriends()
                 } else {
                     _uiState.value = _uiState.value.copy(error = "删除朋友失败")
                 }
@@ -184,7 +235,7 @@ class FriendViewModel(
             try {
                 val success = friendRepository.updateFriendNickname(friendId, nickname)
                 if (success) {
-                    loadFriends()
+                    // 数据会通过 Flow 自动更新，不需要手动调用 loadFriends()
                 } else {
                     _uiState.value = _uiState.value.copy(error = "更新备注失败")
                 }
@@ -204,7 +255,7 @@ class FriendViewModel(
             try {
                 val success = friendRepository.starFriend(friendId, isStarred)
                 if (success) {
-                    loadFriends()
+                    // 数据会通过 Flow 自动更新，不需要手动调用 loadFriends()
                 } else {
                     _uiState.value = _uiState.value.copy(error = "操作失败")
                 }
@@ -224,7 +275,7 @@ class FriendViewModel(
             try {
                 val success = friendRepository.blockFriend(friendId, isBlocked)
                 if (success) {
-                    loadFriends()
+                    // 数据会通过 Flow 自动更新，不需要手动调用 loadFriends()
                 } else {
                     _uiState.value = _uiState.value.copy(error = "操作失败")
                 }
@@ -240,17 +291,8 @@ class FriendViewModel(
      * 加载朋友请求
      */
     private fun loadFriendRequests() {
-        viewModelScope.launch {
-            try {
-                friendRepository.getFriendRequests().collect { requests ->
-                    _friendRequests.value = requests
-                }
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    error = e.message ?: "加载朋友请求失败"
-                )
-            }
-        }
+        // Flow 的订阅已经在 init 中完成
+        // 这里可以添加触发数据刷新的逻辑（如果 repository 支持的话）
     }
 
     /**
@@ -261,10 +303,8 @@ class FriendViewModel(
             try {
                 val success = friendRepository.handleFriendRequest(requestId, accept)
                 if (success) {
-                    loadFriendRequests()
-                    if (accept) {
-                        loadFriends() // 如果接受请求，刷新朋友列表
-                    }
+                    // 数据会通过 Flow 自动更新，不需要手动调用 load 方法
+                    // loadFriendRequests() 和 loadFriends() 已经通过 Flow 自动处理
                 } else {
                     _uiState.value = _uiState.value.copy(error = "处理请求失败")
                 }

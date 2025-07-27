@@ -3,6 +3,7 @@ package com.zyc.feature.friend
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -21,6 +22,7 @@ fun FriendScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val friendsWithUserInfo by viewModel.friendsWithUserInfo.collectAsStateWithLifecycle()
     val friendRequests by viewModel.friendRequests.collectAsStateWithLifecycle()
+    val topFriends by viewModel.topFriends.collectAsStateWithLifecycle()
     val searchKeyword by viewModel.searchKeyword.collectAsStateWithLifecycle()
     var showFriendRequests by remember { mutableStateOf(false) }
     var selectedFriendId by remember { mutableStateOf<Long?>(null) }
@@ -57,6 +59,27 @@ fun FriendScreen(
             isLoadingMore = uiState.isLoadingMore,
             enableLoadMore = true,
             content = {
+                // 添加顶置
+                if (topFriends.isNotEmpty()) {
+                    topFriends.forEach { (friend, user) ->
+                        item {
+                            FriendItem(
+                                friend = friend,
+                                user = user,
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                                onItemClick = {
+                                    // 点击朋友项，可以导航到聊天页面或朋友详情页面
+                                },
+                                onStarClick = { isStarred ->
+                                    viewModel.toggleStarFriend(friend.id, isStarred)
+                                },
+                                onMoreClick = {
+                                    selectedFriendId = friend.id
+                                }
+                            )
+                        }
+                    }
+                }
                 items(
                     items = friendsWithUserInfo,
                     key = { (friend, _) -> friend.id }

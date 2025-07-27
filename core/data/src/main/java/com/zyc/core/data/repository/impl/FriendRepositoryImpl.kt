@@ -200,7 +200,19 @@ class FriendRepositoryImpl : FriendRepository {
         delay(500)
         return _friends.map { friends ->
             friends.mapNotNull { friend ->
-                val user = _users.value.find { it.id == friend.friendUserId }
+                val user = _users.value.find { it.id == friend.friendUserId  &&  !friend.isStarred}
+                if (user != null) Pair(friend, user) else null
+            }
+        }
+    }
+
+    override suspend fun getTopFriends(): Flow<List<Pair<Friend, User>>> {
+        delay(500)
+        return _friends.map { friends ->
+            friends.mapNotNull { friend ->
+                val user = _users.value.find {
+                    it.id == friend.friendUserId  && friend.isStarred
+                }
                 if (user != null) Pair(friend, user) else null
             }
         }
@@ -315,7 +327,7 @@ class FriendRepositoryImpl : FriendRepository {
                 nickname = "小明同学",
                 avatar = "https://picsum.photos/200/200?random=2",
                 gender = Gender.MALE,
-                signature = "努力工作，快乐生活",
+                signature = "努力工作，快乐生活,生活很美好,生活很美好,生活很美好,生活很美好,生活很美好,生活很美好",
                 isOnline = true,
                 createTime = System.currentTimeMillis() - 86400000,
                 updateTime = System.currentTimeMillis()

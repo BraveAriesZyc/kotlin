@@ -75,7 +75,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
         NavigationDrawerItemType(
             title = "春天",
             icon = "\uECB4",
-            color = Color.Companion.Blue,
+            color = Color.Companion.Red,
             onClick = {
                 navController.navigate(WebViewRoute("https://d3gbed2ley04jq.ldmnusfm.com/archives/136196"))
             }

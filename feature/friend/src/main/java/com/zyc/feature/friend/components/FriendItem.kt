@@ -1,24 +1,34 @@
 package com.zyc.feature.friend.components
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -26,12 +36,13 @@ import com.zyc.core.common.utils.event.GlobalAntiShake.debounceClick
 import com.zyc.core.model.entity.Friend
 import com.zyc.core.model.entity.User
 import com.zyc.core.ui.R
+import com.zyc.core.ui.utils.dateUtil.DateUtil
 
 /**
  * 朋友列表项组件
  */
 @SuppressLint("ModifierParameter")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun FriendItem(
     friend: Friend,
@@ -39,115 +50,176 @@ fun FriendItem(
     onItemClick: () -> Unit = {},
     onStarClick: (Boolean) -> Unit = {},
     onMoreClick: () -> Unit = {},
+    onLongPressMenu: (FriendMenuAction) -> Unit = {},
+    color: Color = MaterialTheme.colorScheme.surface,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-
-            .padding(bottom = 8.dp)
-            .clip(
-                shape = RoundedCornerShape(8.dp)
-            )
-            .background(Color.White)
-            .padding(16.dp)
-
-            .debounceClick {
-                onItemClick()
-            },
-        content = {
-            Box {
-                AsyncImage(
-                    model = user.avatar ?: "https://picsum.photos/200/200?random=${user.id}",
-                    contentDescription = "头像",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                    contentScale = ContentScale.Crop
+    var showMenu by remember { mutableStateOf(false) }
+    var menuOffset by remember { mutableStateOf(DpOffset.Zero) }
+    var componentSize by remember { mutableStateOf(IntSize.Zero) }
+    val density = LocalDensity.current
+    Box {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+                .clip(
+                    shape = RoundedCornerShape(8.dp)
                 )
-
-                // 在线状态指示器
-                if (user.isOnline) {
-                    Box(
+                .background(color)
+                .padding(8.dp)
+                .onSizeChanged { componentSize = it }
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onTap = { onItemClick() },
+                        onLongPress = { offset ->
+                            with(density) {
+                                // 计算菜单位置，让菜单显示在长按位置的右下方
+                                val x = (offset.x + 8.dp.toPx()).toDp()
+                                val y = (offset.y - 40.dp.toPx()).toDp()
+                                
+                                menuOffset = DpOffset(
+                                    x = x,
+                                    y = y
+                                )
+                            }
+                            showMenu = true
+                        }
+                    )
+                },
+            content = {
+                Box {
+                    AsyncImage(
+                        model = user.avatar ?: "https://picsum.photos/200/200?random=${user.id}",
+                        contentDescription = "头像",
                         modifier = Modifier
-                            .size(14.dp)
-                            .clip(CircleShape)
-                            .background(Color.Green)
-                            .align(Alignment.BottomEnd)
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            // 用户信息
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // 显示名称（备注名或昵称）
-                    Text(
-                        text = friend.nickname ?: user.nickname ?: user.username,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                            .size(50.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                        contentScale = ContentScale.Crop
                     )
 
-                    // 特别关注标识
-                    if (friend.isStarred) {
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = "特别关注",
-                            tint = Color(0xFFFFD700),
-                            modifier = Modifier.size(16.dp)
+                    // 在线状态指示器
+                    if (user.isOnline) {
+                        Box(
+                            modifier = Modifier
+                                .size(14.dp)
+                                .clip(CircleShape)
+                                .background(Color.Green)
+                                .align(Alignment.BottomEnd)
                         )
                     }
                 }
+                Spacer(modifier = Modifier.width(8.dp))
+                // 用户信息
+                Column(
+                    modifier = Modifier.weight(1f).padding(end = 8.dp),
+                    content = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            content = {
+                                // 显示名称（备注名或昵称）
+                                Text(
+                                    text = friend.nickname ?: user.nickname ?: user.username,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                                // 特别关注标识
+                                if (friend.isStarred) {
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Icon(
+                                        imageVector = Icons.Default.Star,
+                                        contentDescription = "特别关注",
+                                        tint = Color(0xFFFFD700),
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier.weight(1f),
+                                    contentAlignment = Alignment.CenterEnd,
+                                    content = {
+                                        Text(
+                                            text = DateUtil.formatTimestamp(friend.updateTime, DateUtil.FORMAT_MM_DD),
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                        // 个性签名或分组信息
+                        Text(
+                            text = user.signature?.takeIf { it.isNotBlank() }
+                                ?: friend.groupName?.let { "分组: $it" }
+                                ?: "暂无签名",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                )
 
-                // 个性签名或分组信息
-                Text(
-                    text = user.signature?.takeIf { it.isNotBlank() }
-                        ?: friend.groupName?.let { "分组: $it" }
-                        ?: "暂无签名",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                Row {
+                    // 特别关注按钮
+                    IconButton(
+                        onClick = { onStarClick(!friend.isStarred) },
+                        content = {
+                            Icon(
+                                imageVector = if (friend.isStarred) Icons.Default.Star else Icons.Default.Done,
+                                contentDescription = if (friend.isStarred) "取消特别关注" else "特别关注",
+                                tint = if (friend.isStarred) Color(0xFFFFD700) else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    )
+
+                    // 更多操作按钮
+                    IconButton(
+                        onClick = onMoreClick,
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "更多操作",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    )
+                }
+            }
+        )
+
+        // 长按菜单
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false },
+            offset = menuOffset,
+            modifier = Modifier.wrapContentWidth()
+        ) {
+            FriendMenuAction.entries.forEach { action ->
+                DropdownMenuItem(
+                    text = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = action.icon,
+                                contentDescription = action.title,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = action.title)
+                        }
+                    },
+                    onClick = {
+                        showMenu = false
+                        onLongPressMenu(action)
+                    }
                 )
             }
-
-            // 操作按钮
-            Row {
-                // 特别关注按钮
-                IconButton(
-                    onClick = { onStarClick(!friend.isStarred) }
-                ) {
-                    Icon(
-                        imageVector = if (friend.isStarred) Icons.Default.Star else Icons.Default.Done,
-                        contentDescription = if (friend.isStarred) "取消特别关注" else "特别关注",
-                        tint = if (friend.isStarred) Color(0xFFFFD700) else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-                // 更多操作按钮
-                IconButton(
-                    onClick = onMoreClick
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "更多操作",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
         }
-    )
+    }
 }
 
 /**
@@ -169,7 +241,7 @@ fun EmptyFriendsState(
             text = "\uEC96",
             fontSize = 100.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-            fontWeight  = FontWeight(600),
+            fontWeight = FontWeight(600),
             fontFamily = FontFamily(Font(R.font.icons)),
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -180,4 +252,19 @@ fun EmptyFriendsState(
             fontWeight = FontWeight.Medium
         )
     }
+}
+
+/**
+ * 朋友菜单操作枚举
+ */
+enum class FriendMenuAction(
+    val title: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector
+) {
+    SEND_MESSAGE("发消息", Icons.AutoMirrored.Filled.Send),
+    EDIT_NICKNAME("编辑备注", Icons.Default.Edit),
+    VIEW_PROFILE("查看资料", Icons.Default.Person),
+    TOGGLE_STAR("特别关注", Icons.Default.Star),
+    TOGGLE_BLOCK("屏蔽/解除屏蔽", Icons.Default.Settings),
+    DELETE_FRIEND("删除朋友", Icons.Default.Delete)
 }

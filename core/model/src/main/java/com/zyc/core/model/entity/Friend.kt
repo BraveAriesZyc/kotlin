@@ -15,7 +15,7 @@ data class Friend(
     val groupId: Long? = null, // 好友分组ID
     val groupName: String? = null, // 好友分组名称
     val status: FriendStatus = FriendStatus.NORMAL,
-    val isBlocked: Boolean = false,
+    val isBlocked: Boolean = false, // 是否被屏蔽
     val isStarred: Boolean = false, // 是否特别关注
     val addTime: Long, // 添加好友时间
     val updateTime: Long
