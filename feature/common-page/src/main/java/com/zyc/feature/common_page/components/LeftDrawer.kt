@@ -28,15 +28,15 @@ fun LeftDrawer(
     isOpen: Boolean,
     drawerList: List<NavigationDrawerItemType>,
     onClose: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    screenWidth: androidx.compose.ui.unit.Dp = LocalConfiguration.current.screenWidthDp.dp,
+    drawerWidthRatio: Float = 0.5f
 ) {
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val drawerWidth = screenWidth * 0.5f
+    val drawerWidth = screenWidth * drawerWidthRatio
 
     // 动画偏移量
     val offsetX by animateFloatAsState(
-        targetValue = if (isOpen) 0f else -drawerWidth.value,
+        targetValue = if (isOpen) 0f else - drawerWidth.value,
         animationSpec = tween(durationMillis = 300),
         label = "leftDrawerOffset"
     )

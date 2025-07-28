@@ -35,6 +35,11 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
+object DrawerConfig {
+    const val DRAWER_WIDTH_RATIO = 0.5f
+    const val SWIPE_THRESHOLD_RATIO = 0.25f
+}
+
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun LayoutScreen() {
@@ -46,9 +51,9 @@ fun LayoutScreen() {
     val screenWidth = configuration.screenWidthDp.dp
     val density = LocalDensity.current
 
-    val drawerWidth = screenWidth * 0.5f
+    val drawerWidth = screenWidth * DrawerConfig.DRAWER_WIDTH_RATIO
 
-    val swipeThreshold = with(density) { (screenWidth * 0.25f).toPx() }
+    val swipeThreshold = with(density) { (screenWidth * DrawerConfig.SWIPE_THRESHOLD_RATIO).toPx() }
     val mainContentOffset by animateFloatAsState(
         targetValue = when {
             layoutViewModel.isLeftDrawerOpen -> drawerWidth.value
@@ -196,13 +201,17 @@ fun LayoutScreen() {
         LeftDrawer(
             isOpen = layoutViewModel.isLeftDrawerOpen,
             drawerList = layoutViewModel.leftDrawerList,
-            onClose = { layoutViewModel.closeLeftDrawer() }
+            onClose = { layoutViewModel.closeLeftDrawer() },
+            screenWidth = screenWidth,
+            drawerWidthRatio = DrawerConfig.DRAWER_WIDTH_RATIO
         )
 
         RightDrawer(
             isOpen = layoutViewModel.isRightDrawerOpen,
             drawerList = layoutViewModel.rightDrawerList,
-            onClose = { layoutViewModel.closeRightDrawer() }
+            onClose = { layoutViewModel.closeRightDrawer() },
+            screenWidth = screenWidth,
+            drawerWidthRatio = DrawerConfig.DRAWER_WIDTH_RATIO
         )
     }
 }
