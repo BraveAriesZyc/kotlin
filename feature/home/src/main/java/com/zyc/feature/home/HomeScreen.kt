@@ -9,9 +9,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.zyc.core.ui.R
 
 /**
  * 首页屏幕 - 空白页面
@@ -32,9 +35,10 @@ fun HomeScreen(
                                     openDrawer()
                                 },
                                 content = {
-                                    Icon(
-                                        imageVector = Icons.Default.Menu,
-                                        contentDescription = "menu",
+                                    Text(
+                                        "\uEBCF",
+                                        fontFamily = FontFamily(Font(R.font.icons)),
+                                        fontSize = 20.sp
                                     )
                                 },
                             )

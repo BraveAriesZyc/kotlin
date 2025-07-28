@@ -124,7 +124,7 @@ fun OnClickFriend(
     FriendItem(
         friend = friend,
         user = user,
-        color = MaterialTheme.colorScheme.surface,
+        color = MaterialTheme.colorScheme.surfaceBright,
         onClick = {
             onClick()
         }

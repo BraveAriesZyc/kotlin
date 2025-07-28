@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zyc.core.ui.R
 import com.zyc.core.ui.components.drawer.NavigationDrawerItemType
+import com.zyc.core.ui.components.refreshview.BounceListView
 import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 
 @SuppressLint("ConfigurationScreenWidthHeight")
@@ -44,21 +45,23 @@ fun LeftDrawer(
         content = {
             Scaffold(
                 content = { pd ->
-                    LazyColumn(
+                    BounceListView(
                         modifier = Modifier
                             .fillMaxHeight()
                             .padding(top = pd.calculateTopPadding())
-                            .padding(horizontal = 8.dp)
                             .background(MaterialTheme.colorScheme.background),
+                        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 8.dp),
                         content = {
                             item {
                                 // 用户信息区域
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
                                     content = {
                                         Row(
                                             modifier = Modifier,
                                             verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceEvenly,
 
                                             content = {
                                                 Column(
@@ -68,25 +71,40 @@ fun LeftDrawer(
                                                         Text(
                                                             text = "32°",
                                                             fontSize = 20.sp,
+                                                            fontWeight = FontWeight.Bold,
                                                             fontFamily = FontFamily(Font(R.font.icons)),
                                                         )
-                                                        Text(
-                                                            text = "合肥",
-                                                            fontFamily = FontFamily(Font(R.font.icons)),
+                                                        Row(
+                                                            horizontalArrangement = Arrangement.SpaceEvenly,
+                                                            verticalAlignment = Alignment.CenterVertically,
+                                                            content = {
+                                                                Text(
+                                                                    text = "合肥",
+                                                                    fontFamily = FontFamily(Font(R.font.icons)),
+                                                                    fontSize = 12.sp,
+                                                                )
+                                                                Box(
+                                                                    content = {
+                                                                        Text(
+                                                                            text = "\uEB3C",
+                                                                            fontFamily = FontFamily(Font(R.font.icons)),
+                                                                            fontSize = 14.sp,
+                                                                        )
+                                                                    }
+                                                                )
+                                                            }
                                                         )
                                                     }
                                                 )
-
-                                                Spacer(modifier = Modifier.width(4.dp))
                                                 Text(
-                                                    "炎热"
+                                                    "炎热",
+                                                    fontSize = 14.sp,
                                                 )
                                             }
                                         )
-                                        Spacer(modifier = Modifier.width(4.dp))
                                         Row(
                                             modifier = Modifier.weight(1f),
-                                            horizontalArrangement = Arrangement.End,
+                                            horizontalArrangement = Arrangement.SpaceEvenly,
                                             content = {
                                                 Button(
                                                     title = "设置",
@@ -95,7 +113,6 @@ fun LeftDrawer(
                                                         onClose()
                                                     }
                                                 )
-                                                Spacer(modifier = Modifier.width(8.dp))
                                                 Button(
                                                     title = "扫一扫",
                                                     icon = "\uEE5B",
@@ -138,12 +155,14 @@ private fun Button(
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(40.dp))
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
+            .background(MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.8f))
             .padding(4.dp)
             .padding(horizontal = 4.dp)
             .debounceClick {
                 onClick()
             },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
         content = {
             // 箭头图标
             Text(
@@ -151,7 +170,6 @@ private fun Button(
                 fontSize = 18.sp,
                 fontFamily = FontFamily(Font(R.font.icons)),
             )
-            Spacer(modifier = Modifier.width(4.dp))
             Text(
                 title,
                 fontSize = 12.sp,

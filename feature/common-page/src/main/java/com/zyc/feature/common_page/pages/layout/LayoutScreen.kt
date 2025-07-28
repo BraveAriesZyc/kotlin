@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlin.math.abs
 
 object DrawerConfig {
-    const val DRAWER_WIDTH_RATIO = 0.65f
+    const val DRAWER_WIDTH_RATIO = 0.7f
     const val SWIPE_THRESHOLD_RATIO = 0.25f
 }
 

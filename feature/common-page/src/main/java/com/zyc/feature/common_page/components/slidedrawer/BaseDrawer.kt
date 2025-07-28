@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -12,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -78,7 +80,13 @@ fun BaseDrawer(
                         modifier = Modifier
                             .fillMaxSize()
                             .background(Color.Black.copy(alpha = overlayAlpha))
-                            .clickable { onClose() }
+                            .clickable(
+                                indication = null, // 关闭波纹
+                                interactionSource = remember { MutableInteractionSource() },
+                                onClick = {
+                                    onClose()
+                                }
+                            )
                             .zIndex(1f)
                     )
                 }
@@ -119,10 +127,9 @@ fun DefaultDrawerItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp)
-
             .clickable { onItemClick() }
             .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.surfaceBright)
         ,
         verticalAlignment = Alignment.CenterVertically
     ) {

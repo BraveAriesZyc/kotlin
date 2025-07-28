@@ -74,7 +74,7 @@ fun FriendScreen(
                             LongPressFriend(
                                 friend,
                                 user,
-                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.2f),
+                                color = MaterialTheme.colorScheme.surfaceVariant,
                                 onMoreClick = { id ->
                                     selectedFriendId = id
                                 },
@@ -159,7 +159,7 @@ fun LongPressFriend(
     onMoreClick: (Long) -> Unit,
     onTopClick: (Long, Boolean) -> Unit,
     onClick: () -> Unit,
-    color: Color = MaterialTheme.colorScheme.surface,
+    color: Color = MaterialTheme.colorScheme.surfaceBright,
 ) {
     // 创建菜单项
     val menuItems = remember {
