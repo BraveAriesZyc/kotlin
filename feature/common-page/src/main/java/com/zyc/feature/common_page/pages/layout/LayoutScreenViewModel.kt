@@ -23,9 +23,24 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
     val currentPage: State<Int> = _currentPage
 
 
-    // 抽屉状态
-    var isDrawerOpen by mutableStateOf(false)
+    // 左侧抽屉状态
+    var isLeftDrawerOpen by mutableStateOf(false)
         private set
+        
+    // 右侧抽屉状态
+    var isRightDrawerOpen by mutableStateOf(false)
+        private set
+        
+    // 抽屉拖拽偏移量
+    private var _leftDrawerOffset by mutableStateOf(0f)
+    val leftDrawerOffset: Float get() = _leftDrawerOffset
+        
+    private var _rightDrawerOffset by mutableStateOf(0f)
+    val rightDrawerOffset: Float get() = _rightDrawerOffset
+        
+    // 兼容旧版本的属性
+    val isDrawerOpen: Boolean
+        get() = isLeftDrawerOpen || isRightDrawerOpen
 
     // 导航项列表
     val navItems = listOf(
@@ -55,7 +70,8 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             screen = { MeScreen() }
         )
     )
-    val drawerList = listOf(
+    // 左侧边栏数据
+    val leftDrawerList = listOf(
         NavigationDrawerItemType(
             title = "华为应用市场",
             icon = "\uEA20",
@@ -81,6 +97,47 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             }
         ),
     )
+    
+    // 右侧边栏数据
+    val rightDrawerList = listOf(
+        NavigationDrawerItemType(
+            title = "个人设置",
+            icon = "\uE8B8",
+            color = Color.Companion.Gray,
+            onClick = {
+                // 个人设置逻辑
+            }
+        ),
+        NavigationDrawerItemType(
+            title = "隐私设置",
+            icon = "\uE8A1",
+            color = Color.Companion.Blue,
+            onClick = {
+                // 隐私设置逻辑
+            }
+        ),
+        NavigationDrawerItemType(
+            title = "帮助与反馈",
+            icon = "\uE8FD",
+            color = Color.Companion.Green,
+            onClick = {
+                // 帮助与反馈逻辑
+            }
+        ),
+        NavigationDrawerItemType(
+            title = "关于我们",
+            icon = "\uE88E",
+            color = Color.Companion.Red,
+            onClick = {
+                // 关于我们逻辑
+            }
+        ),
+    )
+    
+    // 兼容旧版本的属性
+    val drawerList: List<NavigationDrawerItemType>
+        get() = leftDrawerList
+
     // 处理页面切换
     fun setCurrentPage(page: Int) {
         if (page != _currentPage.intValue) {
@@ -97,13 +154,66 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
         selectedIndex = index
     }
 
-    // 切换抽屉状态
+    // 左侧抽屉控制
+    fun openLeftDrawer() {
+        isLeftDrawerOpen = true
+        isRightDrawerOpen = false // 确保只有一个抽屉打开
+    }
+    
+    fun closeLeftDrawer() {
+        isLeftDrawerOpen = false
+    }
+    
+    fun toggleLeftDrawer() {
+        isLeftDrawerOpen = !isLeftDrawerOpen
+        if (isLeftDrawerOpen) {
+            isRightDrawerOpen = false
+        }
+    }
+    
+    // 右侧抽屉控制
+    fun openRightDrawer() {
+        isRightDrawerOpen = true
+        isLeftDrawerOpen = false // 确保只有一个抽屉打开
+    }
+    
+    fun closeRightDrawer() {
+        isRightDrawerOpen = false
+    }
+    
+    fun toggleRightDrawer() {
+        isRightDrawerOpen = !isRightDrawerOpen
+        if (isRightDrawerOpen) {
+            isLeftDrawerOpen = false
+        }
+    }
+    
+    // 关闭所有抽屉
+    fun closeAllDrawers() {
+        isLeftDrawerOpen = false
+        isRightDrawerOpen = false
+    }
+    
+    // 设置左侧抽屉偏移量
+    fun setLeftDrawerOffset(offset: Float) {
+        _leftDrawerOffset = offset
+    }
+    
+    // 设置右侧抽屉偏移量
+    fun setRightDrawerOffset(offset: Float) {
+        _rightDrawerOffset = offset
+    }
+    
+    // 兼容旧版本的方法
     fun toggleDrawer() {
-        isDrawerOpen = !isDrawerOpen
+        toggleLeftDrawer()
     }
 
-    // 关闭抽屉
     fun closeDrawer() {
-        isDrawerOpen = false
+        closeAllDrawers()
+    }
+
+    fun openDrawer() {
+        openLeftDrawer()
     }
 }
