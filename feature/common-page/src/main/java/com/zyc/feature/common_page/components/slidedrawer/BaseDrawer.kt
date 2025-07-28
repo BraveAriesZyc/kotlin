@@ -14,13 +14,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import com.zyc.core.ui.R
 
 enum class DrawerPosition {
     LEFT, RIGHT
@@ -92,10 +100,6 @@ fun BaseDrawer(
                         .width(drawerWidth)
                         .offset(x = drawerOffsetX)
                         .zIndex(2f)
-                        .background(
-                            color = MaterialTheme.colorScheme.surface,
-                            shape = drawerShape
-                        )
                         .clip(drawerShape),
                     content = {
                         content()
@@ -110,59 +114,85 @@ fun BaseDrawer(
 fun DefaultDrawerItem(
     item: DefaultDrawerItemType,
     onItemClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier
+    Row(
+        modifier = Modifier
             .fillMaxWidth()
-            .clickable { onItemClick() },
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-        ),
-        shape = RoundedCornerShape(12.dp)
+            .padding(bottom = 8.dp)
+
+            .clickable { onItemClick() }
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surface)
+        ,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // 图标
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(
-                        color = item.color.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                contentAlignment = Alignment.Center,
-                content = {
+        Box(
+            content = {
+                // 下层的模糊圆形Box
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(16.dp)
+                        .drawBehind {
+                            drawIntoCanvas { canvas ->
+                                val paint = Paint().apply {
+                                    color = item.color.copy(alpha = 0.3f)
+                                    asFrameworkPaint().maskFilter =
+                                        android.graphics.BlurMaskFilter(
+                                            60f,
+                                            android.graphics.BlurMaskFilter.Blur.NORMAL
+                                        )
+                                }
+                                canvas.drawCircle(
+                                    center = Offset(
+                                        size.width / 2,
+                                        size.height / 2
+                                    ),
+                                    radius = size.minDimension / 2.5f,
+                                    paint
+                                )
+                            }
+                        },
+                    contentAlignment = Alignment.Center,
+                    content = {}
+                )
+
+                // 上层的文本Box（会重叠在下层Box上）
+                Box(
+                    modifier = Modifier
+                        .size(60.dp) // 与下层保持相同大小，确保居中重叠
+                        .padding(16.dp)
+                        .blur(0.2.dp), // 保持一致的内边距，对齐位置
+                    contentAlignment = Alignment.Center
+                ) {
                     Text(
                         text = item.icon,
-                        fontSize = 20.sp,
-                        color = item.color
+                        color = item.color,
+                        fontSize = 24.sp,
+                        fontFamily = FontFamily(Font(R.font.icons)),
                     )
                 }
-            )
+            }
+        )
 
-            Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(16.dp))
 
-            // 标题
-            Text(
-                text = item.title,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.weight(1f)
-            )
+        // 标题
+        Text(
+            text = item.title,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(1f)
+        )
 
-            // 箭头图标
-            Text(
-                text = "›",
-                fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            )
-        }
+        // 箭头图标
+        Text(
+            text = "\uEB3C",
+            fontSize = 24.sp,
+            color = item.color,
+            fontFamily = FontFamily(Font(R.font.icons)),
+        )
     }
 }
 

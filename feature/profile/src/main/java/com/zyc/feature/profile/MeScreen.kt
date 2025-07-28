@@ -45,11 +45,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MeScreen() {
+fun MeScreen(
+    openDrawer: () -> Unit,
+) {
     val navController = LocalNavController.current
     val meViewModel = viewModel<MeViewModel>()
-    val drawerViewModel = viewModel<DrawerViewModel>()
-
     val themeModel = LocalTheme.current
     val themeMap by themeModel.themeMap.collectAsState()
     val scope = rememberCoroutineScope()
@@ -61,7 +61,7 @@ fun MeScreen() {
                     IconButton(
                         onClick = {
                             scope.launch {
-                                drawerViewModel.toggleDrawer()
+                                openDrawer()
                             }
                         },
                         content = {

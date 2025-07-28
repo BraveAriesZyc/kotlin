@@ -1,15 +1,10 @@
 package com.zyc.feature.common_page.pages.layout
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.zyc.core.ui.R
-import com.zyc.core.ui.components.drawer.NavigationDrawerItemType
 import com.zyc.core.ui.route.WebViewRoute
 import com.zyc.feature.common_page.components.slidedrawer.DefaultDrawerItemType
 import com.zyc.feature.common_page.model.NavItem
@@ -33,10 +28,10 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
         private set
 
     // 抽屉拖拽偏移量
-    private var _leftDrawerOffset by mutableStateOf(0f)
+    private var _leftDrawerOffset by mutableFloatStateOf(0f)
     val leftDrawerOffset: Float get() = _leftDrawerOffset
 
-    private var _rightDrawerOffset by mutableStateOf(0f)
+    private var _rightDrawerOffset by mutableFloatStateOf(0f)
     val rightDrawerOffset: Float get() = _rightDrawerOffset
 
     // 导航项列表
@@ -45,7 +40,11 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             title = "首页",
             icon = R.drawable.home,
             selectIcon = R.drawable.select_home,
-            screen = { HomeScreen() }
+            screen = { HomeScreen(
+                openDrawer = {
+                    openLeftDrawer()
+                }
+            ) }
         ),
 
         NavItem(
@@ -64,7 +63,11 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             title = "我的",
             icon = R.drawable.my,
             selectIcon = R.drawable.select_my,
-            screen = { MeScreen() }
+            screen = { MeScreen(
+                openDrawer = {
+                    openRightDrawer()
+                }
+            ) }
         )
     )
     // 左侧边栏数据
@@ -99,7 +102,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
     val rightDrawerList = listOf(
         DefaultDrawerItemType(
             title = "个人设置",
-            icon = "\uE8B8",
+            icon = "\uEE6D",
             color = Color.Companion.Gray,
             onClick = {
                 // 个人设置逻辑
@@ -107,7 +110,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
         ),
         DefaultDrawerItemType(
             title = "隐私设置",
-            icon = "\uE8A1",
+            icon = "\uED8c",
             color = Color.Companion.Blue,
             onClick = {
                 // 隐私设置逻辑
@@ -115,7 +118,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
         ),
         DefaultDrawerItemType(
             title = "帮助与反馈",
-            icon = "\uE8FD",
+            icon = "\uEC7F",
             color = Color.Companion.Green,
             onClick = {
                 // 帮助与反馈逻辑
@@ -123,7 +126,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
         ),
         DefaultDrawerItemType(
             title = "关于我们",
-            icon = "\uE88E",
+            icon = "\uEC9A",
             color = Color.Companion.Red,
             onClick = {
                 // 关于我们逻辑

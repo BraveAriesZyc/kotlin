@@ -11,13 +11,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.zyc.core.ui.R
 import com.zyc.core.ui.components.drawer.NavigationDrawerItemType
+import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
@@ -40,60 +45,73 @@ fun LeftDrawer(
             Scaffold(
                 content = { pd ->
                     LazyColumn(
-                        modifier = Modifier.padding(top = pd.calculateTopPadding()),
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(top = pd.calculateTopPadding())
+                            .padding(horizontal = 8.dp)
+                            .background(MaterialTheme.colorScheme.background),
                         content = {
                             item {
                                 // 用户信息区域
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 24.dp),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                                    ),
-                                    shape = RoundedCornerShape(16.dp)
-                                ) {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(20.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        // 头像占位
-                                        Box(
-                                            modifier = Modifier
-                                                .size(60.dp)
-                                                .background(
-                                                    color = MaterialTheme.colorScheme.primary,
-                                                    shape = RoundedCornerShape(30.dp)
-                                                ),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = "👤",
-                                                fontSize = 24.sp,
-                                                color = Color.White
-                                            )
-                                        }
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    content = {
+                                        Row(
+                                            modifier = Modifier,
+                                            verticalAlignment = Alignment.CenterVertically,
 
-                                        Spacer(modifier = Modifier.height(12.dp))
+                                            content = {
+                                                Column(
+                                                    verticalArrangement = Arrangement.Center,
+                                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                                    content = {
+                                                        Text(
+                                                            text = "32°",
+                                                            fontSize = 20.sp,
+                                                            fontFamily = FontFamily(Font(R.font.icons)),
+                                                        )
+                                                        Text(
+                                                            text = "合肥",
+                                                            fontFamily = FontFamily(Font(R.font.icons)),
+                                                        )
+                                                    }
+                                                )
 
-                                        Text(
-                                            text = "用户名",
-                                            fontSize = 18.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text(
+                                                    "炎热"
+                                                )
+                                            }
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Row(
+                                            modifier = Modifier.weight(1f),
+                                            horizontalArrangement = Arrangement.End,
+                                            content = {
+                                                Button(
+                                                    title = "设置",
+                                                    icon = "\uEE6D",
+                                                    onClick = {
+                                                        onClose()
+                                                    }
+                                                )
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Button(
+                                                    title = "扫一扫",
+                                                    icon = "\uEE5B",
+                                                    onClick = {
+
+                                                    }
+                                                )
+                                            }
                                         )
 
-                                        Text(
-                                            text = "点击查看个人资料",
-                                            fontSize = 14.sp,
-                                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                                        )
                                     }
-                                }
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
                             }
                             items(drawerList) { item ->
+
                                 DefaultDrawerItem(
                                     item = item,
                                     onItemClick = {
@@ -107,5 +125,37 @@ fun LeftDrawer(
                 }
             )
         },
+    )
+}
+
+
+@Composable
+private fun Button(
+    title: String,
+    icon: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(40.dp))
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
+            .padding(4.dp)
+            .padding(horizontal = 4.dp)
+            .debounceClick {
+                onClick()
+            },
+        content = {
+            // 箭头图标
+            Text(
+                text = icon,
+                fontSize = 18.sp,
+                fontFamily = FontFamily(Font(R.font.icons)),
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                title,
+                fontSize = 12.sp,
+            )
+        }
     )
 }
