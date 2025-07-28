@@ -1,5 +1,6 @@
 package com.zyc.core.ui.components.menu
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -37,30 +38,20 @@ import com.zyc.core.ui.R
 /**
  * 菜单操作数据类
  */
-data class MenuAction<T>(
+data class MenuAction(
     val title: String,
     val icon: String,
-    val action: T,
-    val onTap: () -> Unit
+    val onClickMenu: () -> Unit
 )
-
-/**
- * 创建菜单操作的辅助函数
- */
-fun <T> createMenuAction(title: String, icon: String, action: T, onTap: () -> Unit): MenuAction<T> {
-    return MenuAction(title, icon, action, onTap)
-}
 
 /**
  * 长按菜单容器组件
  * 支持动画效果、触觉反馈和优化的用户体验
  */
 @Composable
-fun <T> LongPressMenuContainer(
-    modifier: Modifier = Modifier,
-    onTap: () -> Unit = {},
-    onLongPressMenu: (T) -> Unit = {},
-    menuItems: List<MenuAction<T>> = emptyList(),
+fun LongPressMenuContainer(
+    menuItems: List<MenuAction> = emptyList(),
+    onTap: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -70,11 +61,15 @@ fun <T> LongPressMenuContainer(
     val hapticFeedback = LocalHapticFeedback.current
 
     Box(
-        modifier = modifier
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
             .onSizeChanged { containerSize = it }
             .pointerInput(Unit) {
                 detectTapGestures(
-                    onTap = { onTap() },
+                    onTap = {
+                        onTap?.invoke()
+                    },
                     onLongPress = { offset ->
                         // 触觉反馈
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -149,14 +144,14 @@ fun <T> LongPressMenuContainer(
                                         Row(
                                             modifier = Modifier.fillMaxWidth(),
                                             verticalAlignment = Alignment.CenterVertically,
-                                            content =  {
+                                            content = {
                                                 Text(
                                                     text = menuItem.icon,
                                                     fontSize = 24.sp,
-                                                    color =MaterialTheme.colorScheme.onSurface,
+                                                    color = MaterialTheme.colorScheme.onSurface,
                                                     fontFamily = FontFamily(Font(R.font.icons)),
 
-                                                )
+                                                    )
                                                 Spacer(modifier = Modifier.width(12.dp))
                                                 Text(
                                                     text = menuItem.title,
@@ -168,8 +163,7 @@ fun <T> LongPressMenuContainer(
                                     },
                                     onClick = {
                                         hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                        onLongPressMenu(menuItem.action)
-                                        menuItem.onTap()
+                                        menuItem.onClickMenu()
                                         showMenu = false
                                     },
                                     modifier = Modifier

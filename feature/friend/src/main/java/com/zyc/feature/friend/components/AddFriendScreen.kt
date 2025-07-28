@@ -1,8 +1,10 @@
 package com.zyc.feature.friend.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -10,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -19,10 +22,14 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zyc.core.model.entity.Friend
+import com.zyc.core.model.entity.User
 import com.zyc.core.ui.components.ZAppBar
 import com.zyc.core.ui.components.element.components.input.FormInput
 import com.zyc.core.ui.components.refreshview.BounceListView
 import com.zyc.core.ui.route.LocalNavController
+import com.zyc.core.ui.route.SendMessageRoute
+import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 import com.zyc.feature.friend.FriendViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -34,7 +41,6 @@ fun AddFriendScreen(
     val navController = LocalNavController.current
     val addFriendState by viewModel.addFriendState.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
-    var selectedFriendId by remember { mutableStateOf<Long?>(null) }
 
     val focusRequester = remember { FocusRequester() }
     Scaffold(
@@ -96,19 +102,9 @@ fun AddFriendScreen(
                             items = addFriendState,
                             key = { (friend, _) -> friend.id }
                         ) { (friend, user) ->
-                            FriendItem(
-                                friend = friend,
-                                user = user,
-                                onItemClick = {
-                                    // 点击朋友项，可以导航到聊天页面或朋友详情页面
-                                },
-                                onStarClick = { isStarred ->
-                                    viewModel.toggleStarFriend(friend.id, isStarred)
-                                },
-                                onMoreClick = {
-                                    selectedFriendId = friend.id
-                                }
-                            )
+                            OnClickFriend(friend, user, onClick = {
+                                navController.navigate(SendMessageRoute(user.userId))
+                            })
                         }
                     }
                 }
@@ -116,4 +112,21 @@ fun AddFriendScreen(
         }
     )
 
+}
+
+
+@Composable
+fun OnClickFriend(
+    friend: Friend,
+    user: User,
+    onClick: () -> Unit,
+) {
+    FriendItem(
+        friend = friend,
+        user = user,
+        color = MaterialTheme.colorScheme.surface,
+        onClick = {
+            onClick()
+        }
+    )
 }

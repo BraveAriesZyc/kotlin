@@ -4,15 +4,9 @@ import com.zyc.core.common.manager.InitializationState
 import com.zyc.core.data.repository.ChatRepository
 import com.zyc.core.data.repository.MessageRepository
 import com.zyc.core.data.repository.UserRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * 应用初始化管理器

@@ -3,16 +3,13 @@ package com.zyc.clover
 
 
 import android.os.Bundle
-
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.core.view.WindowCompat
-import androidx.navigation.NavHostController
 import com.zyc.clover.route.NavigationRouterScreen
 import com.zyc.core.ui.theme.CloverAppTheme
 import com.zyc.core.ui.utils.event.GlobalAntiShake

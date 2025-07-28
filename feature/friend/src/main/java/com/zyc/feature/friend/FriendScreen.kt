@@ -1,6 +1,5 @@
 package com.zyc.feature.friend
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
@@ -8,12 +7,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zyc.core.model.entity.Friend
+import com.zyc.core.model.entity.User
+import com.zyc.core.ui.components.menu.LongPressMenuContainer
+import com.zyc.core.ui.components.menu.MenuAction
 import com.zyc.core.ui.components.refreshview.ZRefreshView
 import com.zyc.core.ui.route.AddFriendRoute
 import com.zyc.core.ui.route.LocalNavController
-import com.zyc.feature.friend.components.*
+import com.zyc.core.ui.route.SendMessageRoute
+import com.zyc.feature.friend.components.FriendActionDialog
+import com.zyc.feature.friend.components.FriendItem
+import com.zyc.feature.friend.components.FriendRequestsDialog
+import com.zyc.feature.friend.components.FriendTopBar
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -24,7 +32,6 @@ fun FriendScreen(
     val friendsWithUserInfo by viewModel.friendsWithUserInfo.collectAsStateWithLifecycle()
     val friendRequests by viewModel.friendRequests.collectAsStateWithLifecycle()
     val topFriends by viewModel.topFriends.collectAsStateWithLifecycle()
-    val searchKeyword by viewModel.searchKeyword.collectAsStateWithLifecycle()
     var showFriendRequests by remember { mutableStateOf(false) }
     var selectedFriendId by remember { mutableStateOf<Long?>(null) }
 
@@ -64,19 +71,18 @@ fun FriendScreen(
                 if (topFriends.isNotEmpty()) {
                     topFriends.forEach { (friend, user) ->
                         item {
-                            FriendItem(
-                                friend = friend,
-                                user = user,
-                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-                                onItemClick = {
-                                    // 点击朋友项，可以导航到聊天页面或朋友详情页面
+                            LongPressFriend(
+                                friend,
+                                user,
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.2f),
+                                onMoreClick = { id ->
+                                    selectedFriendId = id
                                 },
-                                onStarClick = { isStarred ->
-                                    viewModel.toggleStarFriend(friend.id, isStarred)
+                                onTopClick = { id, isStarred ->
+                                    viewModel.toggleStarFriend(id, isStarred)
                                 },
-                                onMoreClick = {
-                                    selectedFriendId = friend.id
-                                    Log.d("FriendScreen", "点击了顶置的成员${friend.id}")
+                                onClick = {
+                                    navController.navigate(SendMessageRoute(user.userId))
                                 }
                             )
                         }
@@ -86,17 +92,17 @@ fun FriendScreen(
                     items = friendsWithUserInfo,
                     key = { (friend, _) -> friend.id }
                 ) { (friend, user) ->
-                    FriendItem(
-                        friend = friend,
-                        user = user,
-                        onItemClick = {
-                            // 点击朋友项，可以导航到聊天页面或朋友详情页面
+                    LongPressFriend(
+                        friend,
+                        user,
+                        onMoreClick = { id ->
+                            selectedFriendId = id
                         },
-                        onStarClick = { isStarred ->
-                            viewModel.toggleStarFriend(friend.id, isStarred)
+                        onTopClick = { id, isStarred ->
+                            viewModel.toggleStarFriend(id, isStarred)
                         },
-                        onMoreClick = {
-                            selectedFriendId = friend.id
+                        onClick = {
+                            navController.navigate(SendMessageRoute(user.userId))
                         }
                     )
                 }
@@ -143,4 +149,41 @@ fun FriendScreen(
             )
         }
     }
+}
+
+
+@Composable
+fun LongPressFriend(
+    friend: Friend,
+    user: User,
+    onMoreClick: (Long) -> Unit,
+    onTopClick: (Long, Boolean) -> Unit,
+    onClick: () -> Unit,
+    color: Color = MaterialTheme.colorScheme.surface,
+) {
+    // 创建菜单项
+    val menuItems = remember {
+        listOf(
+            MenuAction(
+                if (friend.isStarred) "取消顶置" else "顶置",
+                if (friend.isStarred) "\uEC15" else "\uEC14"
+            ) { onTopClick(friend.id, !friend.isStarred) },
+            MenuAction("更多操作", "\uEBD3") {
+                println("更多操作")
+                onMoreClick(friend.id)
+            },
+        )
+    }
+
+    LongPressMenuContainer(
+        menuItems = menuItems,
+        onTap = onClick,
+        content = {
+            FriendItem(
+                friend = friend,
+                user = user,
+                color = color
+            )
+        }
+    )
 }
