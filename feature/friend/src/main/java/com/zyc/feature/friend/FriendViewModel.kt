@@ -128,7 +128,11 @@ class FriendViewModel(
                 // 这里应该调用 repository 的刷新方法来触发数据更新
                 // Flow 的订阅已经在 init 中完成，这里只需要触发数据刷新
                 // 如果 repository 有刷新方法，应该调用它
-                // 暂时设置刷新完成状态
+                
+                // 模拟短暂延迟以显示刷新状态
+                kotlinx.coroutines.delay(500)
+                
+                // 刷新完成后设置状态
                 _uiState.value = _uiState.value.copy(
                     isRefreshing = false,
                     error = null

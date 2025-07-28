@@ -86,11 +86,9 @@ fun ZRefreshView(
     val refreshThreshold = 0.8f // 需要下拉到80%才能触发刷新
 
     val handleRefresh: () -> Unit = {
-        // 只有当下拉距离达到阈值时才触发刷新
-        if (pullToRefreshState.distanceFraction >= refreshThreshold) {
-            coroutineScope.launch {
-                onRefresh?.invoke()
-            }
+        // 使用协程启动刷新，让Material3的pullToRefresh处理触发逻辑
+        coroutineScope.launch {
+            onRefresh?.invoke()
         }
     }
 
@@ -229,10 +227,10 @@ private fun getRefreshingTips(isRefreshing: Boolean, state: PullToRefreshState):
     return when {
         isRefreshing -> "刷新中..."
         state.distanceFraction >= refreshThreshold -> "释放立即刷新"
-        state.distanceFraction >= 0.6f -> "继续下拉到"
+        state.distanceFraction >= 0.6f -> "继续下拉刷新"
         state.distanceFraction >= 0.4f -> "下拉刷新"
         state.distanceFraction >= 0.2f -> "轻拉刷新"
         state.distanceFraction > 0f -> "下拉刷新"
-        else -> "刷新中..."
+        else -> "下拉刷新"
     }
 }
