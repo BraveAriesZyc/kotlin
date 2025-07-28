@@ -79,7 +79,6 @@ fun LayoutScreen() {
             modifier = Modifier
                 .fillMaxSize()
                 .offset(x = mainContentOffset.dp)
-                .zIndex(0f)
         ) {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
@@ -87,104 +86,106 @@ fun LayoutScreen() {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(bottom = paddingValues.calculateBottomPadding())
-                    ) {
+                            .padding(bottom = paddingValues.calculateBottomPadding()),
+                        content = {
+                            val nestedScrollConnection = remember(pagerState.currentPage, lastPageIndex) {
+                                object : NestedScrollConnection {
+                                    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                                        val horizontalDrag = available.x
 
-                        val nestedScrollConnection = remember(pagerState.currentPage, lastPageIndex) {
-                            object : NestedScrollConnection {
-                                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                                    val horizontalDrag = available.x
+
+                                        if (pagerState.currentPage == 0 && horizontalDrag > 0) {
+                                            if (layoutViewModel.leftDrawerOffset > 0f) {
+
+                                                val newOffset =
+                                                    (layoutViewModel.leftDrawerOffset + horizontalDrag).coerceAtLeast(0f)
+                                                layoutViewModel.setLeftDrawerOffset(newOffset)
+                                                return available
+                                            }
+                                        }
 
 
-                                    if (pagerState.currentPage == 0 && horizontalDrag > 0) {
-                                        if (layoutViewModel.leftDrawerOffset > 0f) {
+                                        if (pagerState.currentPage == lastPageIndex && horizontalDrag < 0) {
+                                            if (layoutViewModel.rightDrawerOffset < 0f) {
 
-                                            val newOffset = (layoutViewModel.leftDrawerOffset + horizontalDrag).coerceAtLeast(0f)
-                                            layoutViewModel.setLeftDrawerOffset(newOffset)
+                                                val newOffset =
+                                                    (layoutViewModel.rightDrawerOffset + horizontalDrag).coerceAtMost(0f)
+                                                layoutViewModel.setRightDrawerOffset(newOffset)
+                                                return available
+                                            }
+                                        }
+
+
+                                        return Offset.Zero
+                                    }
+
+                                    override fun onPostScroll(
+                                        consumed: Offset,
+                                        available: Offset,
+                                        source: NestedScrollSource
+                                    ): Offset {
+                                        val horizontalDrag = available.x
+                                        val minDragThreshold = 20f
+
+
+                                        if (pagerState.currentPage == 0 && horizontalDrag > minDragThreshold && layoutViewModel.leftDrawerOffset == 0f) {
+                                            layoutViewModel.setLeftDrawerOffset(horizontalDrag)
                                             return available
                                         }
-                                    }
 
 
-                                    if (pagerState.currentPage == lastPageIndex && horizontalDrag < 0) {
-                                        if (layoutViewModel.rightDrawerOffset < 0f) {
-
-                                            val newOffset = (layoutViewModel.rightDrawerOffset + horizontalDrag).coerceAtMost(0f)
-                                            layoutViewModel.setRightDrawerOffset(newOffset)
+                                        if (pagerState.currentPage == lastPageIndex && horizontalDrag < -minDragThreshold && layoutViewModel.rightDrawerOffset == 0f) {
+                                            layoutViewModel.setRightDrawerOffset(horizontalDrag)
                                             return available
                                         }
+
+                                        return Offset.Zero
                                     }
 
-
-                                    return Offset.Zero
-                                }
-
-                                override fun onPostScroll(
-                                    consumed: Offset,
-                                    available: Offset,
-                                    source: NestedScrollSource
-                                ): Offset {
-                                    val horizontalDrag = available.x
-                                    val minDragThreshold = 20f
+                                    override suspend fun onPreFling(available: Velocity): Velocity {
+                                        val horizontalVelocity = available.x
 
 
-                                    if (pagerState.currentPage == 0 && horizontalDrag > minDragThreshold && layoutViewModel.leftDrawerOffset == 0f) {
-                                        layoutViewModel.setLeftDrawerOffset(horizontalDrag)
-                                        return available
-                                    }
-
-
-                                    if (pagerState.currentPage == lastPageIndex && horizontalDrag < -minDragThreshold && layoutViewModel.rightDrawerOffset == 0f) {
-                                        layoutViewModel.setRightDrawerOffset(horizontalDrag)
-                                        return available
-                                    }
-
-                                    return Offset.Zero
-                                }
-
-                                override suspend fun onPreFling(available: Velocity): Velocity {
-                                    val horizontalVelocity = available.x
-
-
-                                    if (pagerState.currentPage == 0 && horizontalVelocity > 0) {
-                                        if (layoutViewModel.leftDrawerOffset > swipeThreshold) {
-                                            layoutViewModel.openLeftDrawer()
-                                        } else {
-                                            layoutViewModel.closeLeftDrawer()
+                                        if (pagerState.currentPage == 0 && horizontalVelocity > 0) {
+                                            if (layoutViewModel.leftDrawerOffset > swipeThreshold) {
+                                                layoutViewModel.openLeftDrawer()
+                                            } else {
+                                                layoutViewModel.closeLeftDrawer()
+                                            }
+                                            layoutViewModel.setLeftDrawerOffset(0f)
+                                            return available
                                         }
-                                        layoutViewModel.setLeftDrawerOffset(0f)
-                                        return available
-                                    }
 
 
-                                    if (pagerState.currentPage == lastPageIndex && horizontalVelocity < 0) {
-                                        if (abs(layoutViewModel.rightDrawerOffset) > swipeThreshold) {
-                                            layoutViewModel.openRightDrawer()
-                                        } else {
-                                            layoutViewModel.closeRightDrawer()
+                                        if (pagerState.currentPage == lastPageIndex && horizontalVelocity < 0) {
+                                            if (abs(layoutViewModel.rightDrawerOffset) > swipeThreshold) {
+                                                layoutViewModel.openRightDrawer()
+                                            } else {
+                                                layoutViewModel.closeRightDrawer()
+                                            }
+                                            layoutViewModel.setRightDrawerOffset(0f)
+                                            return available
                                         }
-                                        layoutViewModel.setRightDrawerOffset(0f)
-                                        return available
-                                    }
 
-                                    return Velocity.Zero
+                                        return Velocity.Zero
+                                    }
                                 }
                             }
-                        }
 
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .nestedScroll(nestedScrollConnection)
-                        ) {
-                            PageScreen(
-                                data = PageScreenData(
-                                    pagerState = pagerState,
-                                    pageContents = layoutViewModel.navItems.map { it.screen }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .nestedScroll(nestedScrollConnection)
+                            ) {
+                                PageScreen(
+                                    data = PageScreenData(
+                                        pagerState = pagerState,
+                                        pageContents = layoutViewModel.navItems.map { it.screen }
+                                    )
                                 )
-                            )
+                            }
                         }
-                    }
+                    )
                 },
                 bottomBar = {
                     BottomNavigationBar(layoutViewModel.navItems, pagerState)
@@ -195,15 +196,13 @@ fun LayoutScreen() {
         LeftDrawer(
             isOpen = layoutViewModel.isLeftDrawerOpen,
             drawerList = layoutViewModel.leftDrawerList,
-            onClose = { layoutViewModel.closeLeftDrawer() },
-            modifier = Modifier.zIndex(3f)
+            onClose = { layoutViewModel.closeLeftDrawer() }
         )
 
         RightDrawer(
             isOpen = layoutViewModel.isRightDrawerOpen,
             drawerList = layoutViewModel.rightDrawerList,
-            onClose = { layoutViewModel.closeRightDrawer() },
-            modifier = Modifier.zIndex(3f)
+            onClose = { layoutViewModel.closeRightDrawer() }
         )
     }
 }
