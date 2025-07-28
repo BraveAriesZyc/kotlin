@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import com.zyc.core.ui.R
 import com.zyc.core.ui.components.drawer.NavigationDrawerItemType
 import com.zyc.core.ui.route.WebViewRoute
+import com.zyc.feature.common_page.components.slidedrawer.DefaultDrawerItemType
 import com.zyc.feature.common_page.model.NavItem
 import com.zyc.feature.friend.FriendScreen
 import com.zyc.feature.home.HomeScreen
@@ -26,21 +27,17 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
     // 左侧抽屉状态
     var isLeftDrawerOpen by mutableStateOf(false)
         private set
-        
+
     // 右侧抽屉状态
     var isRightDrawerOpen by mutableStateOf(false)
         private set
-        
+
     // 抽屉拖拽偏移量
     private var _leftDrawerOffset by mutableStateOf(0f)
     val leftDrawerOffset: Float get() = _leftDrawerOffset
-        
+
     private var _rightDrawerOffset by mutableStateOf(0f)
     val rightDrawerOffset: Float get() = _rightDrawerOffset
-        
-    // 兼容旧版本的属性
-    val isDrawerOpen: Boolean
-        get() = isLeftDrawerOpen || isRightDrawerOpen
 
     // 导航项列表
     val navItems = listOf(
@@ -72,7 +69,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
     )
     // 左侧边栏数据
     val leftDrawerList = listOf(
-        NavigationDrawerItemType(
+        DefaultDrawerItemType(
             title = "华为应用市场",
             icon = "\uEA20",
             color = Color.Companion.Green,
@@ -80,7 +77,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
                 navController.navigate(WebViewRoute("https://developer.huawei.com/consumer/cn/service/josp/agc/index.html#/myApp?menuId=97458334310914199"))
             }
         ),
-        NavigationDrawerItemType(
+        DefaultDrawerItemType(
             title = "百度",
             icon = "\uEE64",
             color = Color.Companion.Blue,
@@ -88,7 +85,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
                 navController.navigate(WebViewRoute("https://www.iconfont.cn/home/index?spm=a313x.collections_index.1998910419.2.44b63a81zIc8sP"))
             }
         ),
-        NavigationDrawerItemType(
+        DefaultDrawerItemType(
             title = "春天",
             icon = "\uECB4",
             color = Color.Companion.Red,
@@ -97,10 +94,10 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             }
         ),
     )
-    
+
     // 右侧边栏数据
     val rightDrawerList = listOf(
-        NavigationDrawerItemType(
+        DefaultDrawerItemType(
             title = "个人设置",
             icon = "\uE8B8",
             color = Color.Companion.Gray,
@@ -108,7 +105,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
                 // 个人设置逻辑
             }
         ),
-        NavigationDrawerItemType(
+        DefaultDrawerItemType(
             title = "隐私设置",
             icon = "\uE8A1",
             color = Color.Companion.Blue,
@@ -116,7 +113,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
                 // 隐私设置逻辑
             }
         ),
-        NavigationDrawerItemType(
+        DefaultDrawerItemType(
             title = "帮助与反馈",
             icon = "\uE8FD",
             color = Color.Companion.Green,
@@ -124,7 +121,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
                 // 帮助与反馈逻辑
             }
         ),
-        NavigationDrawerItemType(
+        DefaultDrawerItemType(
             title = "关于我们",
             icon = "\uE88E",
             color = Color.Companion.Red,
@@ -133,11 +130,6 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             }
         ),
     )
-    
-    // 兼容旧版本的属性
-    val drawerList: List<NavigationDrawerItemType>
-        get() = leftDrawerList
-
     // 处理页面切换
     fun setCurrentPage(page: Int) {
         if (page != _currentPage.intValue) {
@@ -159,61 +151,48 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
         isLeftDrawerOpen = true
         isRightDrawerOpen = false // 确保只有一个抽屉打开
     }
-    
+
     fun closeLeftDrawer() {
         isLeftDrawerOpen = false
     }
-    
+
     fun toggleLeftDrawer() {
         isLeftDrawerOpen = !isLeftDrawerOpen
         if (isLeftDrawerOpen) {
             isRightDrawerOpen = false
         }
     }
-    
+
     // 右侧抽屉控制
     fun openRightDrawer() {
         isRightDrawerOpen = true
         isLeftDrawerOpen = false // 确保只有一个抽屉打开
     }
-    
+
     fun closeRightDrawer() {
         isRightDrawerOpen = false
     }
-    
+
     fun toggleRightDrawer() {
         isRightDrawerOpen = !isRightDrawerOpen
         if (isRightDrawerOpen) {
             isLeftDrawerOpen = false
         }
     }
-    
+
     // 关闭所有抽屉
     fun closeAllDrawers() {
         isLeftDrawerOpen = false
         isRightDrawerOpen = false
     }
-    
+
     // 设置左侧抽屉偏移量
     fun setLeftDrawerOffset(offset: Float) {
         _leftDrawerOffset = offset
     }
-    
+
     // 设置右侧抽屉偏移量
     fun setRightDrawerOffset(offset: Float) {
         _rightDrawerOffset = offset
-    }
-    
-    // 兼容旧版本的方法
-    fun toggleDrawer() {
-        toggleLeftDrawer()
-    }
-
-    fun closeDrawer() {
-        closeAllDrawers()
-    }
-
-    fun openDrawer() {
-        openLeftDrawer()
     }
 }
