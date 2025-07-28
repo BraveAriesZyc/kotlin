@@ -68,55 +68,107 @@ fun ZAppBar(
             .fillMaxWidth()
             .background(backgroundColor)
             .statusBarsPadding(),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // 左侧按钮区域 - 固定最小宽度
-            Box(
+        content = {
+            Row(
                 modifier = Modifier
-                    .widthIn(min = 48.dp)
-                    .fillMaxHeight(),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                if (onBack != null) {
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .background(backgroundColor)
+                    .statusBarsPadding()
+                    .padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                content = {
+                    // 左侧按钮区域 - 固定最小宽度
                     Box(
-                        modifier = Modifier.debounceClick { onBack() },
+                        modifier = Modifier
+                            .widthIn(min = 48.dp)
+                            .fillMaxHeight(),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        if (onBack != null) {
+                            Box(
+                                modifier = Modifier.debounceClick { onBack() },
+                                content = {
+                                    CreateBackIcon()
+                                }
+                            )
+                        }
+                    }
+
+                    // 中间标题
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    // 右侧按钮区域 - 固定最小宽度
+                    Box(
+                        modifier = Modifier
+                            .widthIn(min = 48.dp)
+                            .fillMaxHeight(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            actions()
+                        }
+                    }
+
+                }
+            )
+        }
+    )
+}
+
+@Composable
+fun ZAppBarCp(
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colorScheme.surface,
+    iconButton: @Composable () -> Unit = {},
+    content: @Composable () -> Unit = {},
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(backgroundColor)
+            .statusBarsPadding(),
+        content = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .background(backgroundColor)
+                    .statusBarsPadding()
+                    .padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                content = {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                        contentAlignment = Alignment.CenterEnd,
                         content = {
-                            CreateBackIcon()
+                            content()
+                        }
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                        contentAlignment = Alignment.CenterStart,
+                        content = {
+                            iconButton()
                         }
                     )
                 }
-            }
-
-            // 中间标题
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
             )
-
-            // 右侧按钮区域 - 固定最小宽度
-            Box(
-                modifier = Modifier
-                    .widthIn(min = 48.dp)
-                    .fillMaxHeight(),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    actions()
-                }
-            }
         }
-    }
+    )
 }

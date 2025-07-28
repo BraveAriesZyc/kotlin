@@ -2,7 +2,6 @@ package com.zyc.feature.friend.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,11 +24,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.zyc.core.common.utils.event.GlobalAntiShake.debounceClick
 import com.zyc.core.model.entity.Friend
 import com.zyc.core.model.entity.User
 import com.zyc.core.ui.R
 import com.zyc.core.ui.utils.dateUtil.DateUtil
+import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 
 /**
  * 朋友列表项组件
@@ -149,7 +148,7 @@ fun EmptyFriendsState(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "\uEC96",
+            text = "\uECEC",
             fontSize = 100.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
             fontWeight = FontWeight(600),

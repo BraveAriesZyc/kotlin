@@ -1,11 +1,12 @@
 package com.zyc.feature.friend.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -14,17 +15,25 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.*
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zyc.core.model.entity.Friend
 import com.zyc.core.model.entity.User
+import com.zyc.core.ui.components.CreateBackIcon
 import com.zyc.core.ui.components.ZAppBar
+import com.zyc.core.ui.components.ZAppBarCp
 import com.zyc.core.ui.components.element.components.input.FormInput
 import com.zyc.core.ui.components.refreshview.BounceListView
 import com.zyc.core.ui.route.LocalNavController
@@ -45,8 +54,9 @@ fun AddFriendScreen(
     val focusRequester = remember { FocusRequester() }
     Scaffold(
         topBar = {
-            ZAppBar(
-                actions = {
+            ZAppBarCp(
+                backgroundColor = MaterialTheme.colorScheme.background,
+                content = {
                     FormInput(
                         value = searchKeyword,
                         onValueChange = {
@@ -54,6 +64,7 @@ fun AddFriendScreen(
                                 it
                             )
                         },
+                        shape  = RoundedCornerShape(8.dp),
                         modifier = Modifier
                             .fillMaxWidth()
                             .focusRequester(focusRequester),
@@ -64,6 +75,13 @@ fun AddFriendScreen(
                             onSearch = {
                                 keyboardController?.hide()
                             }
+                        ),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.White,  // 获得焦点时的背景色
+                            unfocusedContainerColor = Color.White,  // 未获得焦点时的背景色
+                            disabledContainerColor = Color.Gray,  // 禁用状态的背景色
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
                         ),
                         trailingIcon = {
                             if (searchKeyword.isNotBlank()) {
@@ -78,9 +96,15 @@ fun AddFriendScreen(
                             }
                         }
                     )
+
                 },
-                onBack = {
-                    navController.popBackStack()
+                iconButton = {
+                    Box(
+                        modifier = Modifier.debounceClick { navController.popBackStack() },
+                        content = {
+                            Text("取消", fontSize = 16.sp)
+                        }
+                    )
                 }
             )
         },

@@ -47,9 +47,9 @@ import com.zyc.core.ui.route.SendMessageRoute
 import com.zyc.core.ui.components.ZAppBar
 import com.zyc.core.ui.route.LocalNavController
 
-import com.zyc.core.common.utils.event.GlobalAntiShake.debounceClick
 import com.zyc.core.ui.utils.refresh.CustomOverscrollEffect
 import com.zyc.core.model.entity.SessionMember
+import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -112,7 +112,7 @@ fun MessageScreen() {
                     )
                 },
             )
-            
+
             // 显示底部表单的条件控制
             if (showBottomSheet) {
                 ModalBottomSheet(

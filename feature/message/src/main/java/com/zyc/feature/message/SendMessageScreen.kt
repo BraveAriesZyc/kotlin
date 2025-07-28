@@ -40,10 +40,10 @@ import com.zyc.core.ui.components.keyboard.InputArea
 import com.zyc.core.ui.components.ZAppBar
 import com.zyc.core.ui.route.LocalNavController
 
-import com.zyc.core.common.utils.event.GlobalAntiShake.debounceClick
 import com.zyc.core.model.entity.Message
 import com.zyc.core.model.entity.SessionMember
 import com.zyc.core.model.entity.MessageType
+import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -181,7 +181,7 @@ fun MessageItem(item: Message, friend: SessionMember?, user: SessionMember?) {
 @Composable
 fun MessageItemText(item: Message) {
     Text(
-        text = item.content ?: "", style = TextStyle(
+        text = item.content, style = TextStyle(
             fontSize = 12.sp
         )
     )

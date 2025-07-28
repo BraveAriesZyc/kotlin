@@ -30,6 +30,7 @@ class FriendViewModel(
     // 朋友列表（包含用户信息）
     private val _friendsWithUserInfo = MutableStateFlow<List<Pair<Friend, User>>>(emptyList())
     val friendsWithUserInfo: StateFlow<List<Pair<Friend, User>>> = _friendsWithUserInfo.asStateFlow()
+
     // 顶置列表
     private val _topFriends = MutableStateFlow<List<Pair<Friend, User>>>(emptyList())
     val topFriends: StateFlow<List<Pair<Friend, User>>> = _topFriends.asStateFlow()
@@ -47,7 +48,7 @@ class FriendViewModel(
     init {
         // 设置初始加载状态
         _uiState.value = _uiState.value.copy(isLoading = true)
-        
+
         // 订阅朋友列表数据流
         viewModelScope.launch {
             try {
@@ -65,12 +66,11 @@ class FriendViewModel(
                 )
             }
         }
-        
+
         // 订阅顶置朋友列表数据流
         viewModelScope.launch {
             try {
                 friendRepository.getTopFriends().collect { friends ->
-                    Log.d("FriendViewModel", "topFriends: $friends")
                     _topFriends.value = friends
                 }
             } catch (e: Exception) {
@@ -79,7 +79,7 @@ class FriendViewModel(
                 )
             }
         }
-        
+
         // 订阅朋友请求数据流
         viewModelScope.launch {
             try {
@@ -128,10 +128,10 @@ class FriendViewModel(
                 // 这里应该调用 repository 的刷新方法来触发数据更新
                 // Flow 的订阅已经在 init 中完成，这里只需要触发数据刷新
                 // 如果 repository 有刷新方法，应该调用它
-                
+
                 // 模拟短暂延迟以显示刷新状态
                 kotlinx.coroutines.delay(500)
-                
+
                 // 刷新完成后设置状态
                 _uiState.value = _uiState.value.copy(
                     isRefreshing = false,
@@ -172,35 +172,41 @@ class FriendViewModel(
      * 搜索朋友
      */
     fun searchFriends(keyword: String) {
-        _searchKeyword.value = keyword
-        _addFriendState.value = listOf(
-            Pair(
-                Friend(
-                    id = 11L,
-                    userId = 1L,
-                    friendUserId = 6L,
-                    friendUserIdStr = "user_11",
-                    nickname = "张三",
-                    groupId = 1L,
-                    groupName = "同事",
-                    status = FriendStatus.NORMAL,
-                    addTime = System.currentTimeMillis() - 432000000,
-                    updateTime = System.currentTimeMillis()
-                ),
-                User(
-                    id = 11L,
-                    userId = "user_11",
-                    username = "newuser1",
-                    nickname = "新用户1",
-                    avatar = "https://picsum.photos/200/200?random=23",
-                    gender = Gender.UNKNOWN,
-                    signature = "刚刚注册",
-                    isOnline = true,
-                    createTime = System.currentTimeMillis() - 3600000,
-                    updateTime = System.currentTimeMillis()
-                ),
+
+
+        try {
+            _searchKeyword.value = keyword
+            _addFriendState.value = listOf(
+                Pair(
+                    Friend(
+                        id = 11L,
+                        userId = 1L,
+                        friendUserId = 6L,
+                        friendUserIdStr = "user_11",
+                        nickname = "张三",
+                        groupId = 1L,
+                        groupName = "同事",
+                        status = FriendStatus.NORMAL,
+                        addTime = System.currentTimeMillis() - 432000000,
+                        updateTime = System.currentTimeMillis()
+                    ),
+                    User(
+                        id = 11L,
+                        userId = "user_11",
+                        username = "newuser1",
+                        nickname = "新用户1",
+                        avatar = "https://picsum.photos/200/200?random=23",
+                        gender = Gender.UNKNOWN,
+                        signature = "刚刚注册",
+                        isOnline = true,
+                        createTime = System.currentTimeMillis() - 3600000,
+                        updateTime = System.currentTimeMillis()
+                    ),
+                )
             )
-        )
+        }catch (e: Exception){
+            Log.d("FriendViewModel", "searchFriends: $e")
+        }
     }
 
     /**
