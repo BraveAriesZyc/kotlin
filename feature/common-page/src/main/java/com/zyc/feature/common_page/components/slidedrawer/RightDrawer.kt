@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.zyc.core.ui.components.drawer.NavigationDrawerItemType
 
 @Composable
 fun RightDrawer(
@@ -31,7 +30,9 @@ fun RightDrawer(
             Scaffold(
                 content = { pd ->
                     LazyColumn(
-                        modifier = Modifier.padding(top = pd.calculateTopPadding()),
+                        modifier = Modifier
+                            .padding(top = pd.calculateTopPadding())
+                            .padding(horizontal = 8.dp),
                         content = {
                             items(drawerList) { item ->
                                 DefaultDrawerItem(
