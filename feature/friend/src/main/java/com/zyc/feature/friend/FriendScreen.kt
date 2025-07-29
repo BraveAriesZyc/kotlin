@@ -63,7 +63,8 @@ fun FriendScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = paddingValues.calculateTopPadding())
-                .padding(vertical = 8.dp, horizontal = 8.dp),
+                .padding(top = 8.dp)
+                .padding(horizontal = 8.dp),
             onRefresh = viewModel::refreshFriends,
             onLoadMore = viewModel::loadMoreFriends,
             isRefreshing = uiState.isRefreshing,
