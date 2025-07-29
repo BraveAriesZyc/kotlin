@@ -41,6 +41,8 @@ fun BounceListView(
     var bounceOffset by remember { mutableFloatStateOf(0f) }
     // 用于动画的Animatable
     val bounceAnimatable = remember { Animatable(0f) }
+    // 动画是否正在执行的状态
+    var isAnimating by remember { mutableStateOf(false) }
 
     // 嵌套滚动连接器
     val nestedScrollConnection = remember {
@@ -48,6 +50,13 @@ fun BounceListView(
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 // 当有向上滚动且当前有回弹偏移时，先消耗回弹偏移
                 if (available.y < 0 && bounceOffset > 0) {
+                    // 如果正在动画中，先停止动画
+                    if (isAnimating) {
+                        coroutineScope.launch {
+                            bounceAnimatable.stop()
+                            isAnimating = false
+                        }
+                    }
                     val consumed = minOf(-available.y, bounceOffset)
                     bounceOffset = (bounceOffset - consumed).coerceAtLeast(0f)
                     return Offset(0f, -consumed)
@@ -65,6 +74,13 @@ fun BounceListView(
                     val isAtTop = listState.firstVisibleItemIndex == 0 &&
                                  listState.firstVisibleItemScrollOffset == 0
                     if (isAtTop) {
+                        // 如果正在动画中，先停止动画
+                        if (isAnimating) {
+                            coroutineScope.launch {
+                                bounceAnimatable.stop()
+                                isAnimating = false
+                            }
+                        }
                         val resistance = 0.3f
                         val bounceAmount = available.y * resistance
                         bounceOffset = (bounceOffset + bounceAmount).coerceAtLeast(0f)
@@ -76,9 +92,10 @@ fun BounceListView(
 
             override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
                 // 松手时回弹到原位置
-                if (bounceOffset > 0) {
+                if (bounceOffset > 0 && !isAnimating) {
                     coroutineScope.launch {
                         try {
+                            isAnimating = true
                             // 同步bounceAnimatable的起始值
                             bounceAnimatable.snapTo(bounceOffset)
                             // 执行动画并同步更新bounceOffset
@@ -94,9 +111,11 @@ fun BounceListView(
                             }
                             // 确保动画完成后状态为0
                             bounceOffset = 0f
+                            isAnimating = false
                         } catch (e: Exception) {
                             // 如果动画被中断，直接设置为0
                             bounceOffset = 0f
+                            isAnimating = false
                         }
                     }
                 }
