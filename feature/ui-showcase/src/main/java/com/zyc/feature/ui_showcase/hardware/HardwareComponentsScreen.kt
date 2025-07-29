@@ -1,5 +1,7 @@
 package com.zyc.feature.ui_showcase.hardware
 
+
+import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -13,8 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.zyc.core.ui.components.common.ZAppBar
+import com.zyc.core.ui.utils.sysHardwareUtil.vibrateShort
+import com.zyc.core.ui.utils.sysHardwareUtil.vibrateLong
 import com.zyc.feature.ui_showcase.components.ComponentSection
-import com.zyc.feature.ui_showcase.components.ComponentDemo
 
 /**
  * 硬件接口组件展示页面
@@ -95,7 +98,7 @@ fun HardwareComponentsScreen(
                 title = "振动反馈组件",
                 description = "触觉反馈和振动控制组件"
             ) {
-                VibrationComponentDemo()
+                VibrationComponentDemo(context)
             }
 
             // 音频组件
@@ -442,7 +445,7 @@ fun BiometricComponentDemo() {
 }
 
 @Composable
-fun VibrationComponentDemo() {
+fun VibrationComponentDemo(context: Context) {
     var vibrationStatus by remember { mutableStateOf("振动已停止") }
 
     Card(
@@ -478,7 +481,9 @@ fun VibrationComponentDemo() {
             ) {
                 Button(
                     onClick = {
+
                         vibrationStatus = "短振动"
+                        context.vibrateShort()
                     }
                 ) {
                     Text("短振动")
@@ -487,6 +492,7 @@ fun VibrationComponentDemo() {
                 OutlinedButton(
                     onClick = {
                         vibrationStatus = "长振动"
+                        context.vibrateLong()
                     }
                 ) {
                     Text("长振动")
@@ -495,6 +501,7 @@ fun VibrationComponentDemo() {
                 OutlinedButton(
                     onClick = {
                         vibrationStatus = "自定义振动模式"
+
                     }
                 ) {
                     Text("模式振动")
