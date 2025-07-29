@@ -37,19 +37,19 @@ fun BounceListView(
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    // 回弹偏移量动画
-    val bounceOffset = remember { Animatable(0f) }
+    // 回弹偏移量状态 - 使用State确保同步更新
+    var bounceOffset by remember { mutableFloatStateOf(0f) }
+    // 用于动画的Animatable
+    val bounceAnimatable = remember { Animatable(0f) }
 
     // 嵌套滚动连接器
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 // 当有向上滚动且当前有回弹偏移时，先消耗回弹偏移
-                if (available.y < 0 && bounceOffset.value > 0) {
-                    val consumed = minOf(-available.y, bounceOffset.value)
-                    coroutineScope.launch {
-                        bounceOffset.snapTo((bounceOffset.value - consumed).coerceAtLeast(0f))
-                    }
+                if (available.y < 0 && bounceOffset > 0) {
+                    val consumed = minOf(-available.y, bounceOffset)
+                    bounceOffset = (bounceOffset - consumed).coerceAtLeast(0f)
                     return Offset(0f, -consumed)
                 }
                 return Offset.Zero
@@ -67,9 +67,7 @@ fun BounceListView(
                     if (isAtTop) {
                         val resistance = 0.3f
                         val bounceAmount = available.y * resistance
-                        coroutineScope.launch {
-                            bounceOffset.snapTo((bounceOffset.value + bounceAmount).coerceAtLeast(0f))
-                        }
+                        bounceOffset = (bounceOffset + bounceAmount).coerceAtLeast(0f)
                         return Offset(0f, available.y)
                     }
                 }
@@ -78,14 +76,29 @@ fun BounceListView(
 
             override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
                 // 松手时回弹到原位置
-                if (bounceOffset.value > 0) {
-                    bounceOffset.animateTo(
-                        targetValue = 0f,
-                        animationSpec = spring(
-                            dampingRatio = 0.8f,
-                            stiffness = 300f
-                        )
-                    )
+                if (bounceOffset > 0) {
+                    coroutineScope.launch {
+                        try {
+                            // 同步bounceAnimatable的起始值
+                            bounceAnimatable.snapTo(bounceOffset)
+                            // 执行动画并同步更新bounceOffset
+                            bounceAnimatable.animateTo(
+                                targetValue = 0f,
+                                animationSpec = spring(
+                                    dampingRatio = 0.9f,
+                                    stiffness = 350f
+                                )
+                            ) { 
+                                // 动画过程中同步更新bounceOffset
+                                bounceOffset = value
+                            }
+                            // 确保动画完成后状态为0
+                            bounceOffset = 0f
+                        } catch (e: Exception) {
+                            // 如果动画被中断，直接设置为0
+                            bounceOffset = 0f
+                        }
+                    }
                 }
                 return Velocity.Zero
             }
@@ -98,7 +111,7 @@ fun BounceListView(
             .fillMaxSize()
             .nestedScroll(nestedScrollConnection)
             .graphicsLayer {
-                translationY = bounceOffset.value
+                translationY = bounceOffset
             },
         contentPadding = contentPadding
     ) {
