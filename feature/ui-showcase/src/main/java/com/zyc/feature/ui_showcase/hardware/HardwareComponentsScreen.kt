@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.zyc.core.ui.components.common.ZAppBar
 import com.zyc.core.ui.utils.sysHardwareUtil.vibrateShort
 import com.zyc.core.ui.utils.sysHardwareUtil.vibrateLong
+import com.zyc.core.ui.utils.sysHardwareUtil.vibratePattern
 import com.zyc.feature.ui_showcase.components.ComponentSection
 
 /**
@@ -501,7 +502,7 @@ fun VibrationComponentDemo(context: Context) {
                 OutlinedButton(
                     onClick = {
                         vibrationStatus = "自定义振动模式"
-
+                        context.vibratePattern()
                     }
                 ) {
                     Text("模式振动")
