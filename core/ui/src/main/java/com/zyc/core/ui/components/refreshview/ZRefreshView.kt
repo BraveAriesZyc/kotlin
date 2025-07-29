@@ -114,7 +114,7 @@ fun ZRefreshView(
                 },
             state = listState,
             contentPadding = contentPadding,
-            userScrollEnabled = !isRefreshing && !isLoadingMore
+            userScrollEnabled = !isRefreshing
         ) {
             // 下拉刷新指示器 - 显示在列表上方
             if (isRefreshing || pullToRefreshState.distanceFraction > 0.05f) {

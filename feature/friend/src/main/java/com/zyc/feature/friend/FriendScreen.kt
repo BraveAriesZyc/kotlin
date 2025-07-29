@@ -186,16 +186,11 @@ fun LongPressFriend(
     }
 
     FriendItem(
-
+        modifier = Modifier.contextMenu { position ->
+            contextMenuState.show(position, menus, 1)
+        },
         friend = friend,
         user = user,
         color = color
     )
-//    LongPressMenuContainer(
-//        menuItems = menuItems,
-//        onTap = onClick,
-//        content = {
-//
-//        }
-//    )
 }
