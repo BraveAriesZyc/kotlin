@@ -13,7 +13,7 @@ fun NavGraphBuilder.profileGraph(
     onNavigateToAuth: () -> Unit = {},
     onBack: () -> Unit = { navController.popBackStack() }
 ) {
-    composableSlide<Routes.Profile> {
+    composableSlide<Routes.Profile.Profile> {
 
     }
 }

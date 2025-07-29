@@ -108,7 +108,7 @@ fun MessageScreen(
                                 modifier = Modifier,
                                 user = it,
                                 onClick = {
-                                    navController.navigate(Routes.SendMessage(it.sessionId))
+                                    navController.navigate(Routes.Message.SendMessage(it.sessionId))
                                 }
                             )
                         }

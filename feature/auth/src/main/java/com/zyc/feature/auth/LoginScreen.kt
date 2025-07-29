@@ -114,8 +114,8 @@ fun LoginScreen(
                                         )
                                         Text(
                                             modifier = Modifier.debounceClick {
-                                                navController.navigate(Routes.Register) {
-                    popUpTo(Routes.Login) { inclusive = true }
+                                                navController.navigate(Routes.Auth.Register) {
+            popUpTo(Routes.Auth.Login) { inclusive = true }
                                                 }
                                             },
                                             text = "前往注册!",

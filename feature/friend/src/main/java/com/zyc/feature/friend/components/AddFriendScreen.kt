@@ -123,7 +123,7 @@ fun AddFriendScreen(
                             key = { (friend, _) -> friend.id }
                         ) { (friend, user) ->
                             OnClickFriend(friend, user, onClick = {
-                                navController.navigate(Routes.SendMessage(user.userId))
+                                navController.navigate(Routes.Message.SendMessage(user.userId))
                             })
                         }
                     }

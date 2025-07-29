@@ -19,17 +19,17 @@ fun NavGraphBuilder.authGraph(
     onNavigateToLayout: () -> Unit = {},
     onBack: () -> Unit = { navController.popBackStack() }
 ) {
-    composableSlide<Routes.Login> { 
+    composableSlide<Routes.Auth.Login> { 
         LoginScreen(
-            onNavigateToRegister = { navController.navigate(Routes.Register) },
+            onNavigateToRegister = { navController.navigate(Routes.Auth.Register) },
             onNavigateToLayout = onNavigateToLayout,
             onBack = onBack
         )
     }
     
-    composableSlide<Routes.Register> { 
+    composableSlide<Routes.Auth.Register> { 
         RegisterScreen(
-            onNavigateToLogin = { navController.navigate(Routes.Login) },
+            onNavigateToLogin = { navController.navigate(Routes.Auth.Login) },
             onNavigateToLayout = onNavigateToLayout,
             onBack = onBack
         )
@@ -40,12 +40,12 @@ fun NavGraphBuilder.authGraph(
  * 导航到登录页面
  */
 fun NavController.navigateToLogin() {
-    navigate(Routes.Login)
+    navigate(Routes.Auth.Login)
 }
 
 /**
  * 导航到注册页面
  */
 fun NavController.navigateToRegister() {
-    navigate(Routes.Register)
+    navigate(Routes.Auth.Register)
 }

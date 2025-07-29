@@ -20,7 +20,7 @@ fun NavGraphBuilder.friendGraph(
     onNavigateToSendMessage: (String) -> Unit = {},
     onBack: () -> Unit = { navController.popBackStack() }
 ) {
-    composableSlide<Routes.AddFriend> { 
+    composableSlide<Routes.Friend.AddFriend> { 
         AddFriendScreen(
             onBack = onBack
         )
@@ -31,5 +31,5 @@ fun NavGraphBuilder.friendGraph(
  * 导航到添加好友页面
  */
 fun NavController.navigateToAddFriend() {
-    navigate(Routes.AddFriend)
+    navigate(Routes.Friend.AddFriend)
 }

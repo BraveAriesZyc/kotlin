@@ -77,7 +77,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             icon = "\uEA20",
             color = Color.Companion.Green,
             onClick = {
-                navController.navigate(Routes.WebView("https://developer.huawei.com/consumer/cn/service/josp/agc/index.html#/myApp?menuId=97458334310914199"))
+                navController.navigate(Routes.Common.WebView("https://developer.huawei.com/consumer/cn/service/josp/agc/index.html#/myApp?menuId=97458334310914199"))
             }
         ),
         DefaultDrawerItemType(
@@ -85,7 +85,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             icon = "\uEE64",
             color = Color.Companion.Blue,
             onClick = {
-                navController.navigate(Routes.WebView("https://www.iconfont.cn/home/index?spm=a313x.collections_index.1998910419.2.44b63a81zIc8sP"))
+                navController.navigate(Routes.Common.WebView("https://www.iconfont.cn/home/index?spm=a313x.collections_index.1998910419.2.44b63a81zIc8sP"))
             }
         ),
         DefaultDrawerItemType(
@@ -93,7 +93,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             icon = "\uECB4",
             color = Color.Companion.Red,
             onClick = {
-                navController.navigate(Routes.WebView("https://d3gbed2ley04jq.ldmnusfm.com/archives/136196"))
+                navController.navigate(Routes.Common.WebView("https://d3gbed2ley04jq.ldmnusfm.com/archives/136196"))
             }
         ),
     )
@@ -137,7 +137,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             icon = "\uEDC5",
             color = Color.Companion.Yellow,
             onClick = {
-              navController.navigate(Routes.UIShowcase)
+              navController.navigate(Routes.UIShowcase.UIShowcase)
             }
         ),
     )

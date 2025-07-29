@@ -21,7 +21,7 @@ fun NavGraphBuilder.uiShowcaseGraph(
     onBack: () -> Unit = { navController.popBackStack() }
 ) {
 
-    composableSlide<Routes.UIShowcase> {
+    composableSlide<Routes.UIShowcase.UIShowcase> {
         UIShowcaseScreen(
             onBack = onBack
         )

@@ -46,7 +46,7 @@ object NavigationManager {
         friendGraph(
             navController = navController,
             onNavigateToSendMessage = { conversationId ->
-                navController.navigate(Routes.SendMessage(conversationId))
+                navController.navigate(Routes.Message.SendMessage(conversationId))
             }
         )
         

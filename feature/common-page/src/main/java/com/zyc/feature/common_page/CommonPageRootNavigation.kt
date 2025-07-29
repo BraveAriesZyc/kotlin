@@ -36,7 +36,7 @@ fun NavGraphBuilder.commonPageGraph(
         )
     }
     
-    composableScale<Routes.WebView> { backStackEntry ->
+    composableScale<Routes.Common.WebView> { backStackEntry ->
         val url = backStackEntry.arguments?.getString("url") ?: ""
         WebViewScreen(
             url = url,
@@ -63,5 +63,5 @@ fun NavController.navigateToLayout() {
  * 导航到WebView页面
  */
 fun NavController.navigateToWebView(url: String) {
-    navigate(Routes.WebView(url))
+    navigate(Routes.Common.WebView(url))
 }

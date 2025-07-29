@@ -52,7 +52,7 @@ fun FriendScreen(
             FriendTopBar(
                 friendRequestCount = friendRequests.size,
                 onAdd = {
-                    navController.navigate(Routes.AddFriend)
+                    navController.navigate(Routes.Friend.AddFriend)
                 },
                 onShowFriendRequests = { showFriendRequests = true }
             )
@@ -92,7 +92,7 @@ fun FriendScreen(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
                                 menus = menus,
                                 onClick = {
-                                    navController.navigate(Routes.SendMessage(user.userId))
+                                    navController.navigate(Routes.Message.SendMessage(user.userId))
                                 }
                             )
                         }
@@ -123,7 +123,7 @@ fun FriendScreen(
                         user,
                         menus = menus,
                         onClick = {
-                            navController.navigate(Routes.SendMessage(user.userId))
+                            navController.navigate(Routes.Message.SendMessage(user.userId))
                         }
                     )
                 }

@@ -18,16 +18,16 @@ fun NavGraphBuilder.messageGraph(
     navController: NavController,
     onBack: () -> Unit = { navController.popBackStack() }
 ) {
-    composableSlide<Routes.Message> { 
+    composableSlide<Routes.Message.Message> { 
         MessageScreen(
             onNavigateToSendMessage = { conversationId ->
-                navController.navigate(Routes.SendMessage(conversationId))
+                navController.navigate(Routes.Message.SendMessage(conversationId))
             },
             onBack = onBack
         )
     }
     
-    composableSlide<Routes.SendMessage> { backStackEntry ->
+    composableSlide<Routes.Message.SendMessage> { backStackEntry ->
         val conversationId = backStackEntry.arguments?.getString("conversationId") ?: ""
         SendMessageScreen(
             conversationId = conversationId,
@@ -40,12 +40,12 @@ fun NavGraphBuilder.messageGraph(
  * 导航到消息列表页面
  */
 fun NavController.navigateToMessage() {
-    navigate(Routes.Message)
+    navigate(Routes.Message.Message)
 }
 
 /**
  * 导航到发送消息页面
  */
 fun NavController.navigateToSendMessage(conversationId: String) {
-    navigate(Routes.SendMessage(conversationId))
+    navigate(Routes.Message.SendMessage(conversationId))
 }

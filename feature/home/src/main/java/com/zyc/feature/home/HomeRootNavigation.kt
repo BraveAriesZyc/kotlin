@@ -18,7 +18,7 @@ fun NavGraphBuilder.homeGraph(
     navController: NavController,
     onBack: () -> Unit = { navController.popBackStack() }
 ) {
-    composableSlide<Routes.Home> { 
+    composableSlide<Routes.Home.Home> { 
         HomeScreen(
             onBack = onBack
         )
@@ -29,5 +29,5 @@ fun NavGraphBuilder.homeGraph(
  * 导航到首页
  */
 fun NavController.navigateToHome() {
-    navigate(Routes.Home)
+    navigate(Routes.Home.Home)
 }
