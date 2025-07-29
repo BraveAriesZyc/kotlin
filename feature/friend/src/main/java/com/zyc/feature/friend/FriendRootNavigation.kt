@@ -6,13 +6,6 @@ import com.zyc.core.router.*
 import com.zyc.feature.friend.components.AddFriendScreen
 
 /**
- * 好友模块的导航配置
- */
-object FriendRootNavigation {
-    const val GRAPH_ROUTE = "friend_graph"
-}
-
-/**
  * 添加好友模块的导航图
  */
 fun NavGraphBuilder.friendGraph(
@@ -20,7 +13,7 @@ fun NavGraphBuilder.friendGraph(
     onNavigateToSendMessage: (String) -> Unit = {},
     onBack: () -> Unit = { navController.popBackStack() }
 ) {
-    composableSlide<Routes.Friend.AddFriend> { 
+    composableSlide<Routes.Friend.AddFriend> {
         AddFriendScreen(
             onBack = onBack
         )

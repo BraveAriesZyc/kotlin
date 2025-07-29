@@ -1,7 +1,9 @@
 package com.zyc.feature.ui_showcase
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
@@ -10,7 +12,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -18,8 +24,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.zyc.core.router.Routes
+import com.zyc.core.ui.R
 import com.zyc.core.ui.components.common.ZAppBar
 import com.zyc.core.ui.components.layout.refreshview.BounceListView
+import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 import com.zyc.feature.ui_showcase.animation.AnimationComponentsScreen
 import com.zyc.feature.ui_showcase.common.CommonComponentsScreen
 import com.zyc.feature.ui_showcase.feedback.FeedbackComponentsScreen
@@ -33,10 +41,9 @@ data class ComponentCategory(
     val title: String,
     val description: String,
     val route: Any,
-    val icon: ImageVector? = null,
+    val icon: String = "",
     val items: List<String> = emptyList()
 )
-
 
 
 @Composable
@@ -119,7 +126,7 @@ fun UIShowcaseHomeScreen(
             title = "通用组件",
             description = "基础的通用UI组件",
             route = Routes.UIShowcase.CommonComponents,
-            icon = Icons.Default.ThumbUp,
+            icon = "\uEBE5",
             items = listOf(
                 "ZAppBar - 统一的应用顶部导航栏",
                 "通用按钮组件",
@@ -130,7 +137,7 @@ fun UIShowcaseHomeScreen(
             title = "表单组件",
             description = "用于用户输入的表单相关组件",
             route = Routes.UIShowcase.FormComponents,
-            icon = Icons.Default.Edit,
+            icon = "\uEC57",
             items = listOf(
                 "ButtonComponent - 基础按钮组件",
                 "FormButton - 表单专用按钮",
@@ -143,7 +150,7 @@ fun UIShowcaseHomeScreen(
             title = "反馈组件",
             description = "用于用户反馈和状态显示的组件",
             route = Routes.UIShowcase.FeedbackComponents,
-            icon = Icons.Default.ThumbUp,
+            icon = "\uEC60",
             items = listOf(
                 "Loading - 加载动画组件",
                 "AnimatedBallLoaderImp - 球形加载动画",
@@ -157,7 +164,7 @@ fun UIShowcaseHomeScreen(
             title = "布局组件",
             description = "用于页面布局和容器的组件",
             route = Routes.UIShowcase.LayoutComponents,
-            icon = Icons.Default.ThumbUp,
+            icon = "\uECB1",
             items = listOf(
                 "PageScreen - 统一页面布局",
                 "PageScreenData - 页面状态数据",
@@ -169,7 +176,7 @@ fun UIShowcaseHomeScreen(
             title = "导航组件",
             description = "用于应用导航的组件",
             route = Routes.UIShowcase.NavigationComponents,
-            icon = Icons.Default.ThumbUp,
+            icon = "\uEC57",
             items = listOf(
                 "WeChatPopupMenu - 微信风格弹出菜单",
                 "MenuAction - 菜单操作数据类"
@@ -179,7 +186,7 @@ fun UIShowcaseHomeScreen(
             title = "交互组件",
             description = "用于用户交互的组件",
             route = Routes.UIShowcase.InteractionComponents,
-            icon = Icons.Default.ThumbUp,
+            icon = "\uED9B",
             items = listOf(
                 "InputArea - 智能输入区域",
                 "键盘相关组件",
@@ -190,7 +197,7 @@ fun UIShowcaseHomeScreen(
             title = "动画组件",
             description = "各种动画效果组件",
             route = Routes.UIShowcase.AnimationComponents,
-            icon = Icons.Default.ThumbUp,
+            icon = "\uEEA3",
             items = listOf(
                 "组合动画效果",
                 "过渡动画组件",
@@ -201,7 +208,7 @@ fun UIShowcaseHomeScreen(
             title = "硬件接口组件",
             description = "用于硬件设备交互的组件",
             route = Routes.UIShowcase.HardwareComponents,
-            icon = Icons.Default.Settings,
+            icon = "\uEEDC",
             items = listOf(
                 "相机组件 - 相机拍照和录像",
                 "传感器组件 - 重力感应、陀螺仪等",
@@ -215,54 +222,57 @@ fun UIShowcaseHomeScreen(
         )
     )
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        ZAppBar(
-            title = "UI组件展示",
-            onBack = onBack
-        )
-
-        BounceListView(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(8.dp),
-        ) {
-            item {
-                // 顶部说明卡片
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    ),
-                    content = {
-                        Column(
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Text(
-                                text = "UI组件库展示",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "这里展示了项目中所有UI组件的使用方法和示例，点击下方分类查看具体组件的详细用法。",
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        }
+    Scaffold(
+        topBar = {
+            ZAppBar(
+                title = "UI组件展示",
+                onBack = onBack
+            )
+        },
+        modifier = Modifier.fillMaxSize(),
+        content = { pd ->
+            BounceListView(
+                modifier = Modifier.fillMaxSize().padding(top = pd.calculateTopPadding()),
+                contentPadding = PaddingValues(8.dp),
+                content = {
+                    item {
+                        // 顶部说明卡片
+                        Card(
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer
+                            ),
+                            content = {
+                                Column(
+                                    modifier = Modifier.padding(16.dp)
+                                ) {
+                                    Text(
+                                        text = "UI组件库展示",
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = "这里展示了项目中所有UI组件的使用方法和示例，点击下方分类查看具体组件的详细用法。",
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                }
+                            }
+                        )
                     }
-                )
-            }
 
-            items(categories) { category ->
-                CategoryCard(
-                    category = category,
-                    onClick = { onNavigateToCategory(category.route) }
-                )
-            }
+                    items(categories) { category ->
+                        CategoryCard(
+                            category = category,
+                            onClick = { onNavigateToCategory(category.route) }
+                        )
+                    }
+                }
+            )
         }
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -271,60 +281,72 @@ fun CategoryCard(
     category: ComponentCategory,
     onClick: () -> Unit
 ) {
-    Card(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // 图标
-            category.icon?.let { icon ->
-                Icon(
-                    imageVector = icon,
-                    contentDescription = category.title,
-                    modifier = Modifier.size(40.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-            }
+    Box(
 
-            // 内容
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = category.title,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = category.description,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .debounceClick { onClick() }
+            .background(
+                MaterialTheme.colorScheme.surfaceBright
+            ),
 
-                if (category.items.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(8.dp))
+        content = {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                content = {
                     Text(
-                        text = "包含 ${category.items.size} 个组件",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Medium
+                        text = category.icon,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontFamily = FontFamily(
+                            Font(R.font.icons)
+                        )
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    // 内容
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = category.title,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = category.description,
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        if (category.items.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "包含 ${category.items.size} 个组件",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+
+                    // 箭头图标
+                    Text(
+                        text = "\uEB3C",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontFamily = FontFamily(
+                            Font(R.font.icons)
+                        )
                     )
                 }
-            }
-
-            // 箭头图标
-            Icon(
-                imageVector = Icons.Default.ThumbUp,
-                contentDescription = "进入",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-    }
+    )
 }

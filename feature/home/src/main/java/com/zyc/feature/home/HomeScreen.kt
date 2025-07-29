@@ -22,7 +22,6 @@ import com.zyc.core.ui.R
 @Composable
 fun HomeScreen(
     openDrawer: () -> Unit = {},
-    onBack: () -> Unit = {}
 ) {
     Scaffold(
         content = { pd ->

@@ -7,12 +7,6 @@ import com.zyc.feature.common_page.pages.layout.LayoutScreen
 import com.zyc.feature.common_page.pages.start.StartScreen
 import com.zyc.feature.common_page.pages.web.WebViewScreen
 
-/**
- * 通用页面模块的导航配置
- */
-object CommonPageRootNavigation {
-    const val GRAPH_ROUTE = "common_page_graph"
-}
 
 /**
  * 添加通用页面模块的导航图
@@ -23,19 +17,19 @@ fun NavGraphBuilder.commonPageGraph(
     onNavigateToLayout: () -> Unit = {},
     onBack: () -> Unit = { navController.popBackStack() }
 ) {
-    composableSlide<Routes.Start> { 
+    composableSlide<Routes.Start> {
         StartScreen(
             onNavigateToAuth = onNavigateToAuth,
             onNavigateToLayout = onNavigateToLayout
         )
     }
-    
-    composableScale<Routes.Layout> { 
+
+    composableScale<Routes.Layout> {
         LayoutScreen(
             onBack = onBack
         )
     }
-    
+
     composableScale<Routes.Common.WebView> { backStackEntry ->
         val url = backStackEntry.arguments?.getString("url") ?: ""
         WebViewScreen(
@@ -46,22 +40,9 @@ fun NavGraphBuilder.commonPageGraph(
 }
 
 /**
- * 导航到启动页面
- */
-fun NavController.navigateToStart() {
-    navigate(Routes.Start)
-}
-
-/**
  * 导航到布局页面
  */
 fun NavController.navigateToLayout() {
     navigate(Routes.Layout)
 }
 
-/**
- * 导航到WebView页面
- */
-fun NavController.navigateToWebView(url: String) {
-    navigate(Routes.Common.WebView(url))
-}
