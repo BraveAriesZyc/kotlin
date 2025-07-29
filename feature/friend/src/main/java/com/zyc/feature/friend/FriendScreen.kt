@@ -1,5 +1,6 @@
 package com.zyc.feature.friend
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
@@ -22,7 +23,9 @@ import com.zyc.feature.friend.components.FriendActionDialog
 import com.zyc.feature.friend.components.FriendItem
 import com.zyc.feature.friend.components.FriendRequestsDialog
 import com.zyc.feature.friend.components.FriendTopBar
+import contextMenu
 import org.koin.compose.viewmodel.koinViewModel
+import rememberContextMenuState
 
 @Composable
 fun FriendScreen(
@@ -175,15 +178,24 @@ fun LongPressFriend(
         )
     }
 
-    LongPressMenuContainer(
-        menuItems = menuItems,
-        onTap = onClick,
-        content = {
-            FriendItem(
-                friend = friend,
-                user = user,
-                color = color
-            )
-        }
+    val menus = remember {
+        listOf("标为未读", "置顶该聊天", "不显示该聊天", "删除该聊天")
+    }
+    val contextMenuState = rememberContextMenuState { listIndex, menuIndex ->
+        Log.d("你点击了第${listIndex + 1}项的", menus[menuIndex])
+    }
+
+    FriendItem(
+
+        friend = friend,
+        user = user,
+        color = color
     )
+//    LongPressMenuContainer(
+//        menuItems = menuItems,
+//        onTap = onClick,
+//        content = {
+//
+//        }
+//    )
 }

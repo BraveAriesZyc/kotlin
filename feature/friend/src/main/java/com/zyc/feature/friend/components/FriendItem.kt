@@ -37,13 +37,14 @@ import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FriendItem(
+    modifier: Modifier = Modifier,
     friend: Friend,
     user: User,
     onClick: (() -> Unit)? = null,
     color: Color
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .padding(bottom = 8.dp)
             .clip(shape = RoundedCornerShape(8.dp))
             .background(color)
