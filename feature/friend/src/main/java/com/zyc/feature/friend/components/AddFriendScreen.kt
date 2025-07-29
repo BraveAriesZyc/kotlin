@@ -1,6 +1,5 @@
 package com.zyc.feature.friend.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,12 +10,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -31,9 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zyc.core.model.entity.Friend
 import com.zyc.core.model.entity.User
-import com.zyc.core.ui.components.CreateBackIcon
 import com.zyc.core.ui.components.ZAppBar
-import com.zyc.core.ui.components.ZAppBarCp
 import com.zyc.core.ui.components.element.components.input.FormInput
 import com.zyc.core.ui.components.refreshview.BounceListView
 import com.zyc.core.ui.route.LocalNavController
@@ -54,9 +46,10 @@ fun AddFriendScreen(
     val focusRequester = remember { FocusRequester() }
     Scaffold(
         topBar = {
-            ZAppBarCp(
+
+            ZAppBar(
                 backgroundColor = MaterialTheme.colorScheme.background,
-                content = {
+                customContent = {
                     FormInput(
                         value = searchKeyword,
                         onValueChange = {
@@ -98,7 +91,7 @@ fun AddFriendScreen(
                     )
 
                 },
-                iconButton = {
+                customIconButton =  {
                     Box(
                         modifier = Modifier.debounceClick { navController.popBackStack() },
                         content = {
