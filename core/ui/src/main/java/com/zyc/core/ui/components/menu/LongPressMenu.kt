@@ -1,5 +1,6 @@
 package com.zyc.core.ui.components.menu
 
+import MenuAction
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -34,15 +35,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.zyc.core.ui.R
-
-/**
- * 菜单操作数据类
- */
-data class MenuAction(
-    val title: String,
-    val icon: String,
-    val onClickMenu: () -> Unit
-)
 
 /**
  * 长按菜单容器组件

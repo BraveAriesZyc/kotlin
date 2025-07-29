@@ -1,5 +1,6 @@
 package com.zyc.feature.friend
 
+import MenuAction
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,8 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zyc.core.model.entity.Friend
 import com.zyc.core.model.entity.User
-import com.zyc.core.ui.components.menu.LongPressMenuContainer
-import com.zyc.core.ui.components.menu.MenuAction
 import com.zyc.core.ui.components.refreshview.ZRefreshView
 import com.zyc.core.ui.route.AddFriendRoute
 import com.zyc.core.ui.route.LocalNavController
@@ -75,16 +74,27 @@ fun FriendScreen(
                 if (topFriends.isNotEmpty()) {
                     topFriends.forEach { (friend, user) ->
                         item {
+
+                            val menus = remember {
+                                listOf(
+                                    MenuAction(
+                                        "取消顶置",
+                                        "\uEC15"
+                                    ) { viewModel.toggleStarFriend(friend.id, false) },
+                                    MenuAction("更多操作", "\uEBD3") {
+                                        println("更多操作")
+                                        selectedFriendId = friend.id
+                                    },
+                                )
+                            }
+
+
+
                             LongPressFriend(
                                 friend,
                                 user,
                                 color = MaterialTheme.colorScheme.surfaceVariant,
-                                onMoreClick = { id ->
-                                    selectedFriendId = id
-                                },
-                                onTopClick = { id, isStarred ->
-                                    viewModel.toggleStarFriend(id, isStarred)
-                                },
+                                menus = menus,
                                 onClick = {
                                     navController.navigate(SendMessageRoute(user.userId))
                                 }
@@ -96,15 +106,26 @@ fun FriendScreen(
                     items = friendsWithUserInfo,
                     key = { (friend, _) -> friend.id }
                 ) { (friend, user) ->
+
+                    val menus = remember {
+                        listOf(
+                            MenuAction(
+                                "顶置",
+                                "\uEC14"
+                            ) { viewModel.toggleStarFriend(friend.id, true) },
+                            MenuAction("更多操作", "\uEBD3") {
+                                println("更多操作")
+                                selectedFriendId = friend.id
+                            },
+                        )
+                    }
+
+
                     LongPressFriend(
+
                         friend,
                         user,
-                        onMoreClick = { id ->
-                            selectedFriendId = id
-                        },
-                        onTopClick = { id, isStarred ->
-                            viewModel.toggleStarFriend(id, isStarred)
-                        },
+                        menus = menus,
                         onClick = {
                             navController.navigate(SendMessageRoute(user.userId))
                         }
@@ -160,36 +181,21 @@ fun FriendScreen(
 fun LongPressFriend(
     friend: Friend,
     user: User,
-    onMoreClick: (Long) -> Unit,
-    onTopClick: (Long, Boolean) -> Unit,
+    menus: List<MenuAction> = emptyList(),
     onClick: () -> Unit,
     color: Color = MaterialTheme.colorScheme.surfaceBright,
 ) {
-    // 创建菜单项
-    val menuItems = remember {
-        listOf(
-            MenuAction(
-                if (friend.isStarred) "取消顶置" else "顶置",
-                if (friend.isStarred) "\uEC15" else "\uEC14"
-            ) { onTopClick(friend.id, !friend.isStarred) },
-            MenuAction("更多操作", "\uEBD3") {
-                println("更多操作")
-                onMoreClick(friend.id)
-            },
-        )
-    }
-
-    val menus = remember {
-        listOf("标为未读", "置顶该聊天", "不显示该聊天", "删除该聊天")
-    }
     val contextMenuState = rememberContextMenuState { listIndex, menuIndex ->
-        Log.d("你点击了第${listIndex + 1}项的", menus[menuIndex])
+        Log.d("你点击了第${listIndex + 1}项的", menus[menuIndex].title)
     }
 
     FriendItem(
-        modifier = Modifier.contextMenu { position ->
-            contextMenuState.show(position, menus, 1)
-        },
+        modifier = Modifier.contextMenu(
+            onLongPress = { position ->
+                contextMenuState.show(position, menus, 1)
+            },
+            onTap = { onClick() }
+        ),
         friend = friend,
         user = user,
         color = color
