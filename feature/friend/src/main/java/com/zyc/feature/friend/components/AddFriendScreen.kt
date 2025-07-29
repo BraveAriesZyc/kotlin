@@ -25,9 +25,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zyc.core.model.entity.Friend
 import com.zyc.core.model.entity.User
-import com.zyc.core.ui.components.ZAppBar
-import com.zyc.core.ui.components.element.components.input.FormInput
-import com.zyc.core.ui.components.refreshview.BounceListView
+import com.zyc.core.ui.components.common.ZAppBar
+import com.zyc.core.ui.components.form.input.FormInput
+import com.zyc.core.ui.components.layout.refreshview.BounceListView
+
 import com.zyc.core.ui.route.LocalNavController
 import com.zyc.core.ui.route.SendMessageRoute
 import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick

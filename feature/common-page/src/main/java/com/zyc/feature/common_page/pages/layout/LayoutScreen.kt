@@ -19,8 +19,9 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
-import com.zyc.core.ui.components.page.PageScreen
-import com.zyc.core.ui.components.page.PageScreenData
+import com.zyc.core.ui.components.layout.page.PageScreen
+import com.zyc.core.ui.components.layout.page.PageScreenData
+
 import com.zyc.core.ui.route.LocalNavController
 import com.zyc.feature.common_page.components.bottombar.BottomNavigationBar
 import com.zyc.feature.common_page.components.slidedrawer.LeftDrawer

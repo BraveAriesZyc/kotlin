@@ -32,7 +32,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zyc.core.ui.components.loading.Loading
+import com.zyc.core.ui.components.feedback.loading.Loading
+
 import com.zyc.core.ui.route.LayoutRoute
 import com.zyc.core.ui.route.LocalNavController
 import com.zyc.core.ui.route.StartRoute

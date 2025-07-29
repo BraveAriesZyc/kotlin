@@ -1,6 +1,5 @@
 package com.zyc.feature.friend
 
-import MenuAction
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,7 +13,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zyc.core.model.entity.Friend
 import com.zyc.core.model.entity.User
-import com.zyc.core.ui.components.refreshview.ZRefreshView
+import com.zyc.core.ui.components.navigation.menu.MenuAction
+import com.zyc.core.ui.components.layout.refreshview.ZRefreshView
+import com.zyc.core.ui.components.navigation.menu.contextMenu
+import com.zyc.core.ui.components.navigation.menu.rememberContextMenuState
+
 import com.zyc.core.ui.route.AddFriendRoute
 import com.zyc.core.ui.route.LocalNavController
 import com.zyc.core.ui.route.SendMessageRoute
@@ -22,9 +25,7 @@ import com.zyc.feature.friend.components.FriendActionDialog
 import com.zyc.feature.friend.components.FriendItem
 import com.zyc.feature.friend.components.FriendRequestsDialog
 import com.zyc.feature.friend.components.FriendTopBar
-import contextMenu
 import org.koin.compose.viewmodel.koinViewModel
-import rememberContextMenuState
 
 @Composable
 fun FriendScreen(
@@ -79,17 +80,13 @@ fun FriendScreen(
                                 listOf(
                                     MenuAction(
                                         "取消顶置",
-                                        "\uEC15"
+                                        "\uEB38"
                                     ) { viewModel.toggleStarFriend(friend.id, false) },
                                     MenuAction("更多操作", "\uEBD3") {
-                                        println("更多操作")
                                         selectedFriendId = friend.id
                                     },
                                 )
                             }
-
-
-
                             LongPressFriend(
                                 friend,
                                 user,
@@ -111,7 +108,7 @@ fun FriendScreen(
                         listOf(
                             MenuAction(
                                 "顶置",
-                                "\uEC14"
+                                "\uEB42"
                             ) { viewModel.toggleStarFriend(friend.id, true) },
                             MenuAction("更多操作", "\uEBD3") {
                                 println("更多操作")

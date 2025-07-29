@@ -2,7 +2,7 @@ package com.zyc.feature.message
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,11 +44,12 @@ import coil3.compose.AsyncImage
 
 
 import com.zyc.core.ui.route.SendMessageRoute
-import com.zyc.core.ui.components.ZAppBar
+
 import com.zyc.core.ui.route.LocalNavController
 
 import com.zyc.core.ui.utils.refresh.CustomOverscrollEffect
 import com.zyc.core.model.entity.SessionMember
+import com.zyc.core.ui.components.common.ZAppBar
 import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 
 import org.koin.compose.viewmodel.koinViewModel

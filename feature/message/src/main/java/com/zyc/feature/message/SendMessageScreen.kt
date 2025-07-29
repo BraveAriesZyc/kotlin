@@ -1,18 +1,7 @@
 package com.zyc.feature.message
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,16 +22,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-
-import com.zyc.core.ui.components.keyboard.InputArea
-
-
-import com.zyc.core.ui.components.ZAppBar
-import com.zyc.core.ui.route.LocalNavController
-
 import com.zyc.core.model.entity.Message
-import com.zyc.core.model.entity.SessionMember
 import com.zyc.core.model.entity.MessageType
+import com.zyc.core.model.entity.SessionMember
+import com.zyc.core.ui.components.common.ZAppBar
+import com.zyc.core.ui.components.interaction.keyboard.InputArea
+import com.zyc.core.ui.route.LocalNavController
 import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -192,7 +177,6 @@ fun MessageItemImage(item: Message) {
     val context = LocalContext.current
     Text(item.metadata?.imageUrl ?: "")
 }
-
 
 
 @Composable

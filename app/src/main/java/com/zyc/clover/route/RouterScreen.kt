@@ -10,7 +10,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.zyc.core.ui.components.WebViewScreen
+import com.zyc.feature.common_page.pages.web.WebViewScreen
 import com.zyc.core.ui.route.*
 import com.zyc.feature.auth.LoginScreen
 import com.zyc.feature.auth.RegisterScreen

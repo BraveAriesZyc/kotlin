@@ -1,4 +1,4 @@
-package com.zyc.core.ui.components
+package com.zyc.feature.common_page.pages.web
 
 import android.annotation.SuppressLint
 import android.webkit.WebChromeClient

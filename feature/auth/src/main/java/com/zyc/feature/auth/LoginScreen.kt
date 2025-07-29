@@ -20,14 +20,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.zyc.core.ui.R
+import com.zyc.core.ui.components.form.button.FormButton
+import com.zyc.core.ui.components.form.input.NoBorderFormInput
 
-import com.zyc.core.ui.components.element.components.button.FormButton
-import com.zyc.core.ui.components.element.components.input.NoBorderFormInput
 import com.zyc.core.ui.route.LocalNavController
 import com.zyc.core.ui.route.LoginRoute
 import com.zyc.core.ui.route.RegisterRoute
-
-import com.zyc.core.common.utils.event.GlobalAntiShake.debounceClick
+import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 
 
 @OptIn(ExperimentalMaterial3Api::class)
