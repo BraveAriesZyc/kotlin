@@ -11,7 +11,7 @@ import android.util.Log
  * 触发短震动
  */
 fun Context.vibrateShort() {
-    vibrate(15)
+    vibrate(200)
 }
 
 /**
