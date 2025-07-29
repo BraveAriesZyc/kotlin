@@ -1,5 +1,6 @@
 package com.zyc.feature.ui_showcase.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -21,6 +22,11 @@ fun ComponentSection(
     content: @Composable () -> Unit
 ) {
     Column(
+        modifier = Modifier
+            .padding(bottom = 8.dp)
+            .background(
+                MaterialTheme.colorScheme.surfaceBright
+            ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // 标题和描述
@@ -39,13 +45,13 @@ fun ComponentSection(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        
+
         // 分隔线
         HorizontalDivider(
             color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
             thickness = 1.dp
         )
-        
+
         // 内容区域
         content()
     }
@@ -64,6 +70,10 @@ fun ComponentDemo(
     content: @Composable () -> Unit
 ) {
     Column(
+        modifier = Modifier.padding(horizontal = 8.dp)
+            .background(
+                MaterialTheme.colorScheme.surfaceBright
+            ),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         // 演示标题和描述
@@ -82,7 +92,7 @@ fun ComponentDemo(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        
+
         // 演示内容
         content()
     }
@@ -259,14 +269,14 @@ fun NoteCard(
  * 示例数据生成器
  */
 object ShowcaseDataGenerator {
-    
+
     /**
      * 生成示例列表数据
      */
     fun generateSampleList(count: Int, prefix: String = "项目"): List<String> {
         return (1..count).map { "$prefix $it" }
     }
-    
+
     /**
      * 生成示例用户数据
      */
@@ -275,11 +285,11 @@ object ShowcaseDataGenerator {
         val avatar: String,
         val status: String
     )
-    
+
     fun generateSampleUsers(count: Int): List<SampleUser> {
         val names = listOf("张三", "李四", "王五", "赵六", "钱七", "孙八", "周九", "吴十")
         val statuses = listOf("在线", "离线", "忙碌", "离开")
-        
+
         return (1..count).map { index ->
             SampleUser(
                 name = names[index % names.size],
@@ -288,7 +298,7 @@ object ShowcaseDataGenerator {
             )
         }
     }
-    
+
     /**
      * 生成示例消息数据
      */
@@ -297,7 +307,7 @@ object ShowcaseDataGenerator {
         val time: String,
         val isFromMe: Boolean
     )
-    
+
     fun generateSampleMessages(count: Int): List<SampleMessage> {
         val messages = listOf(
             "你好！",
@@ -309,7 +319,7 @@ object ShowcaseDataGenerator {
             "明天见！",
             "晚安"
         )
-        
+
         return (1..count).map { index ->
             SampleMessage(
                 content = messages[index % messages.size],

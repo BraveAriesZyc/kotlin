@@ -3,8 +3,7 @@ package com.zyc.feature.ui_showcase.hardware
 
 import android.content.Context
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.ThumbUp
@@ -13,11 +12,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.zyc.core.ui.R
 import com.zyc.core.ui.components.common.ZAppBar
-import com.zyc.core.ui.utils.sysHardwareUtil.vibrateShort
-import com.zyc.core.ui.utils.sysHardwareUtil.vibrateLong
-import com.zyc.core.ui.utils.sysHardwareUtil.vibratePattern
+import com.zyc.core.ui.components.layout.refreshview.BounceListView
+
+import com.zyc.core.ui.utils.sysHardwareUtil.VibrationUtils
+
 import com.zyc.feature.ui_showcase.components.ComponentSection
 
 /**
@@ -39,75 +44,96 @@ fun HardwareComponentsScreen(
             onBack = onBack
         )
 
-        Column(
+        BounceListView(
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // 相机组件
-            ComponentSection(
-                title = "相机组件",
-                description = "用于相机拍照和录像功能的组件"
+                .fillMaxSize(),
+            contentPadding = PaddingValues(8.dp),
+
             ) {
-                CameraComponentDemo()
+            item {
+                // 相机组件
+                ComponentSection(
+                    title = "相机组件",
+                    description = "用于相机拍照和录像功能的组件",
+                    content = {
+                        CameraComponentDemo()
+                    }
+                )
+            }
+            item {
+                // 传感器组件
+                ComponentSection(
+                    title = "传感器组件",
+                    description = "重力感应、陀螺仪、加速度计等传感器组件",
+                    content = {
+                        SensorComponentDemo()
+                    }
+                )
             }
 
-            // 传感器组件
-            ComponentSection(
-                title = "传感器组件",
-                description = "重力感应、陀螺仪、加速度计等传感器组件"
-            ) {
-                SensorComponentDemo()
+            item {
+                // 蓝牙组件
+                ComponentSection(
+                    title = "蓝牙组件",
+                    description = "蓝牙设备连接和通信组件",
+                    content = {
+                        BluetoothComponentDemo()
+                    }
+                )
             }
 
-            // 蓝牙组件
-            ComponentSection(
-                title = "蓝牙组件",
-                description = "蓝牙设备连接和通信组件"
-            ) {
-                BluetoothComponentDemo()
+            item {
+                // GPS定位组件
+                ComponentSection(
+                    title = "GPS定位组件",
+                    description = "位置获取和地图显示组件",
+                    content = {
+                        LocationComponentDemo()
+                    }
+
+                )
+            }
+            item {         // NFC组件
+                ComponentSection(
+                    title = "NFC组件",
+                    description = "近场通信功能组件",
+                    content = {
+                        NFCComponentDemo()
+                    }
+                )
+            }
+            item {
+                // 指纹识别组件
+                ComponentSection(
+                    title = "指纹识别组件",
+                    description = "生物识别认证组件",
+                    content = {
+                        BiometricComponentDemo()
+                    }
+                )
+            }
+            item {
+
+                // 振动反馈组件
+                ComponentSection(
+                    title = "振动反馈组件",
+                    description = "触觉反馈和振动控制组件",
+                    content = {
+                        VibrationComponentDemo(context)
+                    }
+                )
             }
 
-            // GPS定位组件
-            ComponentSection(
-                title = "GPS定位组件",
-                description = "位置获取和地图显示组件"
-            ) {
-                LocationComponentDemo()
-            }
 
-            // NFC组件
-            ComponentSection(
-                title = "NFC组件",
-                description = "近场通信功能组件"
-            ) {
-                NFCComponentDemo()
-            }
-
-            // 指纹识别组件
-            ComponentSection(
-                title = "指纹识别组件",
-                description = "生物识别认证组件"
-            ) {
-                BiometricComponentDemo()
-            }
-
-            // 振动反馈组件
-            ComponentSection(
-                title = "振动反馈组件",
-                description = "触觉反馈和振动控制组件"
-            ) {
-                VibrationComponentDemo(context)
-            }
-
-            // 音频组件
-            ComponentSection(
-                title = "音频组件",
-                description = "录音和播放功能组件"
-            ) {
-                AudioComponentDemo()
+            item {
+                // 音频组件
+                ComponentSection(
+                    title = "音频组件",
+                    description = "录音和播放功能组件",
+                    content = {
+                        AudioComponentDemo()
+                    }
+                )
             }
         }
     }
@@ -451,7 +477,8 @@ fun VibrationComponentDemo(context: Context) {
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -461,10 +488,15 @@ fun VibrationComponentDemo(context: Context) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.ThumbUp,
-                    contentDescription = "振动",
-                    tint = MaterialTheme.colorScheme.primary
+                // 箭头图标
+                Text(
+                    text = "\uEA21",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontFamily = FontFamily(
+                        Font(R.font.icons)
+                    )
                 )
                 Text(
                     text = "振动反馈",
@@ -484,7 +516,7 @@ fun VibrationComponentDemo(context: Context) {
                     onClick = {
 
                         vibrationStatus = "短振动"
-                        context.vibrateShort()
+                        VibrationUtils.vibrateShort(context) // 振动500毫秒，使用默认振幅
                     }
                 ) {
                     Text("短振动")
@@ -493,7 +525,8 @@ fun VibrationComponentDemo(context: Context) {
                 OutlinedButton(
                     onClick = {
                         vibrationStatus = "长振动"
-                        context.vibrateLong()
+                        // 指定强度的振动
+                        VibrationUtils.vibrateLong(context) // 振动300毫秒，振幅80
                     }
                 ) {
                     Text("长振动")
@@ -502,7 +535,7 @@ fun VibrationComponentDemo(context: Context) {
                 OutlinedButton(
                     onClick = {
                         vibrationStatus = "自定义振动模式"
-                        context.vibratePattern()
+                        VibrationUtils.vibratePattern(context ) // 振动300毫秒，振幅80
                     }
                 ) {
                     Text("模式振动")
