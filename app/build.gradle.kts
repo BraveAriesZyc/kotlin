@@ -25,6 +25,7 @@ dependencies {
     implementation(project(":feature:friend"))
     implementation(project(":feature:profile"))
     implementation(project(":feature:common-page"))
+    implementation(project(":feature:ui-showcase"))
 
     // 核心模块
     implementation(project(":core:common"))
@@ -74,6 +75,6 @@ dependencies {
 
 
 
-    implementation(platform("androidx.compose:compose-bom:2024.09.00"))
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.09.00"))
+    implementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
 }

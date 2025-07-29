@@ -54,10 +54,12 @@ include(":feature:home")
 include(":feature:message")
 include(":feature:profile")
 include(":feature:common-page")
+include(":feature:ui-showcase")
 
 // 核心模块
 include(":core:common")
 include(":core:ui")
+include(":core:router")
 include(":core:network")
 include(":core:database")
 include(":core:model")

@@ -4,14 +4,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import com.zyc.core.router.Routes
 import com.zyc.core.ui.R
-import com.zyc.core.ui.route.WebViewRoute
 import com.zyc.feature.common_page.components.slidedrawer.DefaultDrawerItemType
 import com.zyc.feature.common_page.model.NavItem
 import com.zyc.feature.friend.FriendScreen
 import com.zyc.feature.home.HomeScreen
 import com.zyc.feature.message.MessageScreen
-import com.zyc.feature.profile.MeScreen
+import com.zyc.feature.profile.ProfileScreen
 
 class LayoutScreenViewModel(navController: NavController) : ViewModel() {
     // 当前页面状态
@@ -63,7 +63,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             title = "我的",
             icon = R.drawable.my,
             selectIcon = R.drawable.select_my,
-            screen = { MeScreen(
+            screen = { ProfileScreen(
                 openDrawer = {
                     openRightDrawer()
                 }
@@ -77,7 +77,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             icon = "\uEA20",
             color = Color.Companion.Green,
             onClick = {
-                navController.navigate(WebViewRoute("https://developer.huawei.com/consumer/cn/service/josp/agc/index.html#/myApp?menuId=97458334310914199"))
+                navController.navigate(Routes.WebView("https://developer.huawei.com/consumer/cn/service/josp/agc/index.html#/myApp?menuId=97458334310914199"))
             }
         ),
         DefaultDrawerItemType(
@@ -85,7 +85,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             icon = "\uEE64",
             color = Color.Companion.Blue,
             onClick = {
-                navController.navigate(WebViewRoute("https://www.iconfont.cn/home/index?spm=a313x.collections_index.1998910419.2.44b63a81zIc8sP"))
+                navController.navigate(Routes.WebView("https://www.iconfont.cn/home/index?spm=a313x.collections_index.1998910419.2.44b63a81zIc8sP"))
             }
         ),
         DefaultDrawerItemType(
@@ -93,7 +93,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             icon = "\uECB4",
             color = Color.Companion.Red,
             onClick = {
-                navController.navigate(WebViewRoute("https://d3gbed2ley04jq.ldmnusfm.com/archives/136196"))
+                navController.navigate(Routes.WebView("https://d3gbed2ley04jq.ldmnusfm.com/archives/136196"))
             }
         ),
     )
@@ -130,6 +130,14 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             color = Color.Companion.Red,
             onClick = {
                 // 关于我们逻辑
+            }
+        ),
+        DefaultDrawerItemType(
+            title = "ui模块",
+            icon = "\uEDC5",
+            color = Color.Companion.Yellow,
+            onClick = {
+              navController.navigate(Routes.UIShowcase)
             }
         ),
     )

@@ -43,9 +43,8 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 
 
-import com.zyc.core.ui.route.SendMessageRoute
-
-import com.zyc.core.ui.route.LocalNavController
+import com.zyc.core.router.Routes
+import com.zyc.core.router.LocalNavController
 
 import com.zyc.core.ui.utils.refresh.CustomOverscrollEffect
 import com.zyc.core.model.entity.SessionMember
@@ -56,7 +55,10 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MessageScreen() {
+fun MessageScreen(
+    onNavigateToSendMessage: (String) -> Unit = {},
+    onBack: () -> Unit = {}
+) {
     val navController = LocalNavController.current
     val messageViewModel = koinViewModel<MessageViewModel>()
     val scrollState = rememberLazyListState()
@@ -106,7 +108,7 @@ fun MessageScreen() {
                                 modifier = Modifier,
                                 user = it,
                                 onClick = {
-                                    navController.navigate(SendMessageRoute(it.sessionId))
+                                    navController.navigate(Routes.SendMessage(it.sessionId))
                                 }
                             )
                         }

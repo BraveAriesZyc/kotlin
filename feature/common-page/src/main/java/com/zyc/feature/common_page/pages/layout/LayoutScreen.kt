@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.zyc.core.ui.components.layout.page.PageScreen
 import com.zyc.core.ui.components.layout.page.PageScreenData
 
-import com.zyc.core.ui.route.LocalNavController
+import com.zyc.core.router.LocalNavController
 import com.zyc.feature.common_page.components.bottombar.BottomNavigationBar
 import com.zyc.feature.common_page.components.slidedrawer.LeftDrawer
 import com.zyc.feature.common_page.components.slidedrawer.RightDrawer
@@ -36,7 +36,9 @@ object DrawerConfig {
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun LayoutScreen() {
+fun LayoutScreen(
+    onBack: () -> Unit = {}
+) {
     val navController = LocalNavController.current
     val layoutViewModel by remember { mutableStateOf(LayoutScreenViewModel(navController)) }
     val pagerState = rememberPagerState(pageCount = { layoutViewModel.navItems.size })

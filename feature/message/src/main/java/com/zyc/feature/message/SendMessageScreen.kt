@@ -27,12 +27,15 @@ import com.zyc.core.model.entity.MessageType
 import com.zyc.core.model.entity.SessionMember
 import com.zyc.core.ui.components.common.ZAppBar
 import com.zyc.core.ui.components.interaction.keyboard.InputArea
-import com.zyc.core.ui.route.LocalNavController
+import com.zyc.core.router.LocalNavController
 import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SendMessageScreen(conversationId: String) {
+fun SendMessageScreen(
+    conversationId: String,
+    onBack: () -> Unit = {}
+) {
     val navController = LocalNavController.current
     val scrollState = rememberLazyListState()
     val sendMessageViewModel = koinViewModel<SendMessageViewModel>()

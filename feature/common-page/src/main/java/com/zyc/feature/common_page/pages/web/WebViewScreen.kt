@@ -19,13 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.zyc.core.ui.route.LocalNavController
+import com.zyc.core.router.LocalNavController
 
 
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WebViewScreen(url: String) {
+fun WebViewScreen(
+    url: String,
+    onBack: () -> Unit = {}
+) {
     val navController = LocalNavController.current
     Scaffold(
         content = { padding ->

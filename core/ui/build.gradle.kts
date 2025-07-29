@@ -16,11 +16,12 @@ dependencies {
     // 依赖核心模块
     implementation(project(":core:common"))
     implementation(project(":core:model"))
+    api(project(":core:router"))
 
     // 依赖功能模块 - 移除以避免循环依赖
 
     // Compose BOM
-    implementation(platform("androidx.compose:compose-bom:2024.09.00"))
+    implementation(platform(libs.androidx.compose.bom))
 
     // Compose 核心库
     api(libs.androidx.ui)
@@ -57,5 +58,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.09.00"))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
 }

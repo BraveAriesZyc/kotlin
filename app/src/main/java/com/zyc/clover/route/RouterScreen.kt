@@ -1,6 +1,5 @@
 package com.zyc.clover.route
 
-
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -10,15 +9,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.zyc.feature.common_page.pages.web.WebViewScreen
-import com.zyc.core.ui.route.*
-import com.zyc.feature.auth.LoginScreen
-import com.zyc.feature.auth.RegisterScreen
-import com.zyc.feature.common_page.pages.layout.LayoutScreen
-import com.zyc.feature.common_page.pages.start.StartScreen
-import com.zyc.feature.friend.components.AddFriendScreen
-import com.zyc.feature.message.MessageScreen
-import com.zyc.feature.message.SendMessageScreen
+import com.zyc.core.router.*
+import com.zyc.clover.route.NavigationManager.installAllModules
 
 
 @Composable
@@ -32,24 +24,19 @@ fun NavigationRouterScreen() {
         NavHost(
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
             navController = navController,
-            startDestination = RootRoute,
-            builder = installRoot,
-        )
+            startDestination = Routes.Root
+        ) {
+            installRoot(navController)
+        }
     }
 }
 
 
-val installRoot: (NavGraphBuilder.() -> Unit) = {
-    navigation<RootRoute>(startDestination = StartRoute) {
-        composableSlide<StartRoute> { StartScreen() }
-        composableSlide<LoginRoute> { LoginScreen() }
-        composableSlide<RegisterRoute> { RegisterScreen() }
-        composableSlide<MessageRoute> { MessageScreen() }
-        composableSlide<AddFriendRoute> { AddFriendScreen() }
-        composableScale<WebViewRoute> { WebViewScreen(it.arguments?.getString("url") ?: "") }
-        composableSlide<SendMessageRoute> { SendMessageScreen(it.arguments?.getString("conversationId") ?: "") }
-        composableScale<LayoutRoute> { LayoutScreen() }
-
-//        navigation<LayoutRoute>(startDestination = LayoutRoute, builder = installLayout)
+val installRoot: NavGraphBuilder.(navController: androidx.navigation.NavHostController) -> Unit = { navController ->
+    navigation<Routes.Root>(startDestination = Routes.Start) {
+        // 使用导航管理器统一安装所有模块的导航配置
+        installAllModules(
+            navController = navController
+        )
     }
 }

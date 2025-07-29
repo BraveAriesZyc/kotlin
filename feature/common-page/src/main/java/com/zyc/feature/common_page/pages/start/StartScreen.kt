@@ -34,15 +34,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zyc.core.ui.components.feedback.loading.Loading
 
-import com.zyc.core.ui.route.LayoutRoute
-import com.zyc.core.ui.route.LocalNavController
-import com.zyc.core.ui.route.StartRoute
+import com.zyc.core.router.Routes
+import com.zyc.core.router.LocalNavController
 
 import com.zyc.core.ui.utils.event.GlobalAntiShake
 import kotlinx.coroutines.delay
 
 @Composable
-fun StartScreen() {
+fun StartScreen(
+    onNavigateToAuth: () -> Unit = {},
+    onNavigateToLayout: () -> Unit = {}
+) {
     val navController = LocalNavController.current
     // 使用状态管理倒计时
     val countdownSeconds = remember { mutableIntStateOf(3) }
@@ -66,8 +68,8 @@ fun StartScreen() {
         }
         GlobalAntiShake.runWithDebounce {
             // 倒计时结束后跳转
-            navController.navigate(LayoutRoute) {
-                popUpTo(StartRoute) { inclusive = true }
+            navController.navigate(Routes.Layout) {
+                    popUpTo(Routes.Start) { inclusive = true }
             }
         }
     }
@@ -111,8 +113,8 @@ fun StartScreen() {
                             shape = RoundedCornerShape(4.dp),
                             onClick = {
                                 GlobalAntiShake.runWithDebounce {
-                                    navController.navigate(LayoutRoute) {
-                                        popUpTo(StartRoute) { inclusive = true }
+                                    navController.navigate(Routes.Layout) {
+                popUpTo(Routes.Start) { inclusive = true }
                                     }
                                 }
                             },

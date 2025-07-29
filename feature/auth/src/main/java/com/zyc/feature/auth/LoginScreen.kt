@@ -23,15 +23,18 @@ import com.zyc.core.ui.R
 import com.zyc.core.ui.components.form.button.FormButton
 import com.zyc.core.ui.components.form.input.NoBorderFormInput
 
-import com.zyc.core.ui.route.LocalNavController
-import com.zyc.core.ui.route.LoginRoute
-import com.zyc.core.ui.route.RegisterRoute
+import com.zyc.core.router.LocalNavController
+import com.zyc.core.router.Routes
 import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen( ) {
+fun LoginScreen(
+    onNavigateToRegister: () -> Unit = {},
+    onNavigateToLayout: () -> Unit = {},
+    onBack: () -> Unit = {}
+) {
     val navController = LocalNavController.current
     val authView = viewModel<AuthViewModel>()
 
@@ -111,8 +114,8 @@ fun LoginScreen( ) {
                                         )
                                         Text(
                                             modifier = Modifier.debounceClick {
-                                                navController.navigate(RegisterRoute) {
-                                                    popUpTo(LoginRoute) { inclusive = true }
+                                                navController.navigate(Routes.Register) {
+                    popUpTo(Routes.Login) { inclusive = true }
                                                 }
                                             },
                                             text = "前往注册!",

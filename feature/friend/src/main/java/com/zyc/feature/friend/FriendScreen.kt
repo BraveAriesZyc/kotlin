@@ -18,9 +18,8 @@ import com.zyc.core.ui.components.layout.refreshview.ZRefreshView
 import com.zyc.core.ui.components.navigation.menu.contextMenu
 import com.zyc.core.ui.components.navigation.menu.rememberContextMenuState
 
-import com.zyc.core.ui.route.AddFriendRoute
-import com.zyc.core.ui.route.LocalNavController
-import com.zyc.core.ui.route.SendMessageRoute
+import com.zyc.core.router.Routes
+import com.zyc.core.router.LocalNavController
 import com.zyc.feature.friend.components.FriendActionDialog
 import com.zyc.feature.friend.components.FriendItem
 import com.zyc.feature.friend.components.FriendRequestsDialog
@@ -53,7 +52,7 @@ fun FriendScreen(
             FriendTopBar(
                 friendRequestCount = friendRequests.size,
                 onAdd = {
-                    navController.navigate(AddFriendRoute)
+                    navController.navigate(Routes.AddFriend)
                 },
                 onShowFriendRequests = { showFriendRequests = true }
             )
@@ -93,7 +92,7 @@ fun FriendScreen(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
                                 menus = menus,
                                 onClick = {
-                                    navController.navigate(SendMessageRoute(user.userId))
+                                    navController.navigate(Routes.SendMessage(user.userId))
                                 }
                             )
                         }
@@ -124,7 +123,7 @@ fun FriendScreen(
                         user,
                         menus = menus,
                         onClick = {
-                            navController.navigate(SendMessageRoute(user.userId))
+                            navController.navigate(Routes.SendMessage(user.userId))
                         }
                     )
                 }

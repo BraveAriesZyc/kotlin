@@ -29,15 +29,17 @@ import com.zyc.core.ui.components.common.ZAppBar
 import com.zyc.core.ui.components.form.input.FormInput
 import com.zyc.core.ui.components.layout.refreshview.BounceListView
 
-import com.zyc.core.ui.route.LocalNavController
-import com.zyc.core.ui.route.SendMessageRoute
+import com.zyc.core.router.LocalNavController
+import com.zyc.core.router.Routes
 import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 import com.zyc.feature.friend.FriendViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AddFriendScreen(
-    viewModel: FriendViewModel = koinViewModel()
+    viewModel: FriendViewModel = koinViewModel(),
+    onNavigateToSendMessage: (String) -> Unit = {},
+    onBack: () -> Unit = {}
 ) {
     val searchKeyword by viewModel.searchKeyword.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
@@ -121,7 +123,7 @@ fun AddFriendScreen(
                             key = { (friend, _) -> friend.id }
                         ) { (friend, user) ->
                             OnClickFriend(friend, user, onClick = {
-                                navController.navigate(SendMessageRoute(user.userId))
+                                navController.navigate(Routes.SendMessage(user.userId))
                             })
                         }
                     }
