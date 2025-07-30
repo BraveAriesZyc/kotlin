@@ -21,6 +21,9 @@ object Routes {
     object Common {
         @Serializable
         data class WebView(val url: String)
+
+        @Serializable
+        data object WebList
     }
 
     // ==================== 认证模块路由 ====================

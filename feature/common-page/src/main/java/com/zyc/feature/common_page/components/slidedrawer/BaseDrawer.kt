@@ -1,5 +1,6 @@
 package com.zyc.feature.common_page.components.slidedrawer
 
+import android.graphics.BlurMaskFilter
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.zyc.core.ui.R
+import com.zyc.core.ui.components.common.IconBackground
 
 enum class DrawerPosition {
     LEFT, RIGHT
@@ -133,55 +135,10 @@ fun DefaultDrawerItem(
         ,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            content = {
-                // 下层的模糊圆形Box
-                Box(
-                    modifier = Modifier
-                        .size(60.dp)
-                        .padding(16.dp)
-                        .drawBehind {
-                            drawIntoCanvas { canvas ->
-                                val paint = Paint().apply {
-                                    color = item.color.copy(alpha = 0.3f)
-                                    asFrameworkPaint().maskFilter =
-                                        android.graphics.BlurMaskFilter(
-                                            60f,
-                                            android.graphics.BlurMaskFilter.Blur.NORMAL
-                                        )
-                                }
-                                canvas.drawCircle(
-                                    center = Offset(
-                                        size.width / 2,
-                                        size.height / 2
-                                    ),
-                                    radius = size.minDimension / 2.5f,
-                                    paint
-                                )
-                            }
-                        },
-                    contentAlignment = Alignment.Center,
-                    content = {}
-                )
-
-                // 上层的文本Box（会重叠在下层Box上）
-                Box(
-                    modifier = Modifier
-                        .size(60.dp) // 与下层保持相同大小，确保居中重叠
-                        .padding(16.dp)
-                        .blur(0.2.dp), // 保持一致的内边距，对齐位置
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = item.icon,
-                        color = item.color,
-                        fontSize = 24.sp,
-                        fontFamily = FontFamily(Font(R.font.icons)),
-                    )
-                }
-            }
+        IconBackground(
+            icon = item.icon,
+            color = item.color,
         )
-
         Spacer(modifier = Modifier.width(16.dp))
 
         // 标题

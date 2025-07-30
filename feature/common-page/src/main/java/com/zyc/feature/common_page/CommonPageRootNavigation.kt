@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import com.zyc.core.router.*
 import com.zyc.feature.common_page.pages.layout.LayoutScreen
 import com.zyc.feature.common_page.pages.start.StartScreen
+import com.zyc.feature.common_page.pages.web.WebListScreen
 import com.zyc.feature.common_page.pages.web.WebViewScreen
 
 
@@ -34,6 +35,11 @@ fun NavGraphBuilder.commonPageGraph(
         val url = backStackEntry.arguments?.getString("url") ?: ""
         WebViewScreen(
             url = url,
+            onBack = onBack
+        )
+    }
+    composableScale<Routes.Common.WebList> {
+        WebListScreen(
             onBack = onBack
         )
     }

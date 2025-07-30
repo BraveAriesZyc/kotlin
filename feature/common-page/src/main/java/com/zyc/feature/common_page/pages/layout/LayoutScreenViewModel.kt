@@ -75,7 +75,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
         DefaultDrawerItemType(
             title = "华为应用市场",
             icon = "\uEA20",
-            color = Color.Companion.Green,
+            color = Color.Companion.Red,
             onClick = {
                 navController.navigate(Routes.Common.WebView("https://developer.huawei.com/consumer/cn/service/josp/agc/index.html#/myApp?menuId=97458334310914199"))
             }
@@ -89,13 +89,29 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             }
         ),
         DefaultDrawerItemType(
-            title = "春天",
-            icon = "\uECB4",
-            color = Color.Companion.Red,
+            title = "网站列表",
+            icon = "\uEBC4",
+            color = Color.Companion.Green,
             onClick = {
-                navController.navigate(Routes.Common.WebView("https://d3gbed2ley04jq.ldmnusfm.com/archives/136196"))
+                navController.navigate(Routes.Common.WebList)
             }
         ),
+//        DefaultDrawerItemType(
+//            title = "夏天",
+//            icon = "\uEA71",
+//            color = Color.Companion.Yellow,
+//            onClick = {
+//                navController.navigate(Routes.Common.WebView("https://yandex.com"))
+//            }
+//        ),
+//        DefaultDrawerItemType(
+//            title = "秋天",
+//            icon = "\uEB7C",
+//            color = Color(0xe6d2b100),
+//            onClick = {
+//                navController.navigate(Routes.Common.WebView("https://d3op4betz9vht.cloudfront.net/"))
+//            }
+//        ),
     )
 
     // 右侧边栏数据
