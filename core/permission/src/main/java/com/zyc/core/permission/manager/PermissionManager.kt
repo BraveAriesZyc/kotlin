@@ -6,6 +6,9 @@ import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import com.zyc.core.permission.model.PermissionInfo
 import com.zyc.core.permission.model.PermissionStatus
+import com.zyc.core.permission.model.PermissionCategory
+import com.zyc.core.permission.model.PermissionCategoryInfo
+import com.zyc.core.permission.model.PermissionCategoryHelper
 
 /**
  * 权限管理器
@@ -84,6 +87,65 @@ class PermissionManager(private val context: Context) {
             Manifest.permission.WRITE_CALENDAR -> true
             else -> false
         }
+    }
+    
+    /**
+     * 获取权限分类
+     */
+    fun getPermissionCategory(permission: String): PermissionCategory {
+        return PermissionCategoryHelper.getPermissionCategory(permission)
+    }
+    
+    /**
+     * 根据分类获取权限信息
+     */
+    fun getPermissionsByCategory(category: PermissionCategory): List<PermissionInfo> {
+        val permissions = PermissionCategoryHelper.getPermissionsByCategory(category)
+        return getMultiplePermissionInfo(permissions.toTypedArray())
+    }
+    
+    /**
+     * 获取所有分类的权限信息
+     */
+    fun getAllCategorizedPermissions(): Map<PermissionCategory, List<PermissionInfo>> {
+        return PermissionCategory.values().associateWith { category ->
+            getPermissionsByCategory(category)
+        }.filterValues { it.isNotEmpty() }
+    }
+    
+    /**
+     * 获取分类信息
+     */
+    fun getCategoryInfo(category: PermissionCategory): PermissionCategoryInfo {
+        return PermissionCategoryInfo(
+            category = category,
+            displayName = PermissionCategoryHelper.getCategoryDisplayName(category),
+            description = PermissionCategoryHelper.getCategoryDescription(category),
+            permissions = PermissionCategoryHelper.getPermissionsByCategory(category)
+        )
+    }
+    
+    /**
+     * 获取所有分类信息
+     */
+    fun getAllCategoryInfo(): List<PermissionCategoryInfo> {
+        return PermissionCategoryHelper.getAllCategories()
+    }
+    
+    /**
+     * 检查分类中的权限状态
+     */
+    fun checkCategoryPermissions(category: PermissionCategory): Map<String, PermissionStatus> {
+        val permissions = PermissionCategoryHelper.getPermissionsByCategory(category)
+        return checkMultiplePermissions(permissions.toTypedArray())
+    }
+    
+    /**
+     * 检查分类中的权限是否全部已授权
+     */
+    fun areCategoryPermissionsGranted(category: PermissionCategory): Boolean {
+        val permissions = PermissionCategoryHelper.getPermissionsByCategory(category)
+        return areAllPermissionsGranted(permissions.toTypedArray())
     }
     
 }

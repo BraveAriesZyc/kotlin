@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.zyc.core.router.Routes
+import com.zyc.core.router.composableSlide
 import com.zyc.feature.ui_showcase.screen.animation.AnimationComponentsScreen
 import com.zyc.feature.ui_showcase.screen.common.CommonComponentsScreen
 import com.zyc.feature.ui_showcase.screen.feedback.FeedbackComponentsScreen
@@ -40,55 +41,55 @@ fun NavGraphBuilder.installUIShowcaseScreens(
     navController: NavController,
     onBack: () -> Unit = { navController.popBackStack() }
 ) {
-    composable<Routes.UIShowcase.CommonComponents> {
+    composableSlide<Routes.UIShowcase.CommonComponents> {
         CommonComponentsScreen(
             onBack = { navController.popBackStack() }
         )
     }
 
-    composable<Routes.UIShowcase.FormComponents> {
+    composableSlide<Routes.UIShowcase.FormComponents> {
         FormComponentsScreen(
             onBack = { navController.popBackStack() }
         )
     }
 
-    composable<Routes.UIShowcase.FeedbackComponents> {
+    composableSlide<Routes.UIShowcase.FeedbackComponents> {
         FeedbackComponentsScreen(
             onBack = { navController.popBackStack() }
         )
     }
 
-    composable<Routes.UIShowcase.LayoutComponents> {
+    composableSlide<Routes.UIShowcase.LayoutComponents> {
         LayoutComponentsScreen(
             onBack = { navController.popBackStack() }
         )
     }
 
-    composable<Routes.UIShowcase.NavigationComponents> {
+    composableSlide<Routes.UIShowcase.NavigationComponents> {
         NavigationComponentsScreen(
             onBack = { navController.popBackStack() }
         )
     }
 
-    composable<Routes.UIShowcase.InteractionComponents> {
+    composableSlide<Routes.UIShowcase.InteractionComponents> {
         InteractionComponentsScreen(
             onBack = { navController.popBackStack() }
         )
     }
 
-    composable<Routes.UIShowcase.AnimationComponents> {
+    composableSlide<Routes.UIShowcase.AnimationComponents> {
         AnimationComponentsScreen(
             onBack = { navController.popBackStack() }
         )
     }
 
-    composable<Routes.UIShowcase.HardwareComponents> {
+    composableSlide<Routes.UIShowcase.HardwareComponents> {
         HardwareComponentsScreen(
             onBack = { navController.popBackStack() }
         )
     }
 
-    composable<Routes.UIShowcase.PermissionComponents> {
+    composableSlide<Routes.UIShowcase.PermissionComponents> {
         PermissionComponentsScreen(
             onBack = { navController.popBackStack() }
         )
