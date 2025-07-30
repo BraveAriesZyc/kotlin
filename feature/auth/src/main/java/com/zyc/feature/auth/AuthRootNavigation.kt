@@ -6,6 +6,12 @@ import com.zyc.core.router.*
 
 /**
  * 认证模块的导航配置
+ * 
+ * 该模块提供用户认证相关功能，包括：
+ * - 用户登录页面
+ * - 用户注册页面
+ * - 密码重置功能
+ * - 第三方登录集成
  */
 object AuthRootNavigation {
     const val GRAPH_ROUTE = "auth_graph"
@@ -13,6 +19,10 @@ object AuthRootNavigation {
 
 /**
  * 添加认证模块的导航图
+ * 
+ * @param navController 导航控制器
+ * @param onNavigateToLayout 导航到布局页面的回调
+ * @param onBack 返回回调函数，默认为popBackStack
  */
 fun NavGraphBuilder.authGraph(
     navController: NavController,
@@ -38,6 +48,8 @@ fun NavGraphBuilder.authGraph(
 
 /**
  * 导航到登录页面
+ * 
+ * @receiver NavController
  */
 fun NavController.navigateToLogin() {
     navigate(Routes.Auth.Login)
@@ -45,6 +57,8 @@ fun NavController.navigateToLogin() {
 
 /**
  * 导航到注册页面
+ * 
+ * @receiver NavController
  */
 fun NavController.navigateToRegister() {
     navigate(Routes.Auth.Register)

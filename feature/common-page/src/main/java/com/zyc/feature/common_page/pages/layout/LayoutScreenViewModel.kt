@@ -1,5 +1,6 @@
 package com.zyc.feature.common_page.pages.layout
 
+import android.util.Log
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
@@ -153,7 +154,14 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             icon = "\uEDC5",
             color = Color.Companion.Yellow,
             onClick = {
-              navController.navigate(Routes.UIShowcase.UIShowcase)
+                try {
+                    // UI展示模块
+                    navController.navigate(Routes.UIShowcase.UIShowcase)
+                } catch (e: Exception) {
+                    Log.e("NavigationManager", "installUiShowcaseGraph error: ${e.message}")
+                    e.printStackTrace()
+                }
+
             }
         ),
     )

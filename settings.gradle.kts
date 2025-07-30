@@ -55,7 +55,6 @@ include(":feature:message")
 include(":feature:profile")
 include(":feature:common-page")
 include(":feature:ui-showcase")
-include(":feature:permission")
 
 // 核心模块
 include(":core:common")
@@ -65,3 +64,4 @@ include(":core:network")
 include(":core:database")
 include(":core:model")
 include(":core:data")
+include(":core:permission")
