@@ -3,7 +3,7 @@ package com.zyc.feature.ui_showcase.screen.permission
 // Manifest 导入已删除
 // PermissionInfo 导入已删除
 // GlobalAntiShake 导入已删除
-// PermissionCategoryDemo 导入已删除
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -104,7 +104,7 @@ fun PermissionComponentsScreen(
                 )
             }
 
-            // 权限分类演示已合并到使用场景演示中
+            
 
             // 权限检查工具
             item {
@@ -116,7 +116,7 @@ fun PermissionComponentsScreen(
                 )
             }
 
-            // 功能演示和详情列表已移除
+            
         }
     }
 }
