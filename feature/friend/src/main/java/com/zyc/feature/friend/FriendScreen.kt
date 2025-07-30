@@ -20,6 +20,7 @@ import com.zyc.core.ui.components.navigation.menu.rememberContextMenuState
 
 import com.zyc.core.router.Routes
 import com.zyc.core.router.LocalNavController
+import com.zyc.core.ui.components.layout.refreshview.BounceListView
 import com.zyc.feature.friend.components.FriendActionDialog
 import com.zyc.feature.friend.components.FriendItem
 import com.zyc.feature.friend.components.FriendRequestsDialog
@@ -58,17 +59,12 @@ fun FriendScreen(
             )
         }
     ) { paddingValues ->
-        ZRefreshView(
+        BounceListView(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = paddingValues.calculateTopPadding())
                 .padding(top = 8.dp)
                 .padding(horizontal = 8.dp),
-            onRefresh = viewModel::refreshFriends,
-            onLoadMore = viewModel::loadMoreFriends,
-            isRefreshing = uiState.isRefreshing,
-            isLoadingMore = uiState.isLoadingMore,
-            enableLoadMore = true,
             content = {
                 // 添加顶置
                 if (topFriends.isNotEmpty()) {
