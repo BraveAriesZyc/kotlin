@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import com.zyc.core.router.*
 import com.zyc.feature.common_page.pages.layout.LayoutScreen
 import com.zyc.feature.common_page.pages.start.StartScreen
-import com.zyc.feature.common_page.pages.web.WebListScreen
+import com.zyc.feature.common_page.pages.webList.WebListScreen
 import com.zyc.feature.common_page.pages.web.WebViewScreen
 
 
