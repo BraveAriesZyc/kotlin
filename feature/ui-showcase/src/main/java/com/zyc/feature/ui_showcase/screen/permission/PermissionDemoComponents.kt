@@ -210,7 +210,7 @@ fun PermissionCategoryDemo(
                 isDangerous = true
             )
 
-            Divider()
+            HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
             // 普通权限
             PermissionCategorySection(

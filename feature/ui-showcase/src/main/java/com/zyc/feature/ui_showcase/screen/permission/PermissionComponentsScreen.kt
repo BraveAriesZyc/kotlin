@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.zyc.core.permission.manager.PermissionManager
 import com.zyc.core.permission.model.PermissionInfo
 import com.zyc.core.ui.components.common.ZAppBar
+import com.zyc.core.ui.components.layout.refreshview.BounceListView
 import com.zyc.core.ui.utils.event.GlobalAntiShake
 import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 
@@ -81,12 +82,11 @@ fun PermissionComponentsScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
+        BounceListView(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = paddingValues.calculateTopPadding())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(8.dp),
         ) {
             // 权限统计卡片
             item {

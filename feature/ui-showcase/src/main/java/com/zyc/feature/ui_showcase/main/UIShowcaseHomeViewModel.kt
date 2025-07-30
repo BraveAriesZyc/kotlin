@@ -174,7 +174,7 @@ class UIShowcaseHomeViewModel : ViewModel() {
             title = "权限组件",
             description = "权限管理和检查相关的组件演示",
             route = Routes.UIShowcase.PermissionComponents,
-            icon = "\uE8D4",
+            icon = "\uEA13",
             items = listOf(
                 "权限状态检查 - 检查单个权限授权状态",
                 "多权限检查 - 批量检查多个权限状态",
