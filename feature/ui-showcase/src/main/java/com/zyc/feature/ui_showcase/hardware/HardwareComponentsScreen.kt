@@ -1,29 +1,22 @@
 package com.zyc.feature.ui_showcase.hardware
 
-
-import android.content.Context
 import androidx.compose.foundation.layout.*
-
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.zyc.core.ui.R
 import com.zyc.core.ui.components.common.ZAppBar
 import com.zyc.core.ui.components.layout.refreshview.BounceListView
-
-import com.zyc.core.ui.utils.sysHardwareUtil.VibrationUtils
-
 import com.zyc.feature.ui_showcase.components.ComponentSection
+import com.zyc.feature.ui_showcase.hardware.audio.AudioComponentDemo
+import com.zyc.feature.ui_showcase.hardware.biometric.BiometricComponentDemo
+import com.zyc.feature.ui_showcase.hardware.bluetooth.BluetoothComponentDemo
+import com.zyc.feature.ui_showcase.hardware.camera.CameraComponentDemo
+import com.zyc.feature.ui_showcase.hardware.location.LocationComponentDemo
+import com.zyc.feature.ui_showcase.hardware.network.NetworkComponentDemo
+import com.zyc.feature.ui_showcase.hardware.nfc.NFCComponentDemo
+import com.zyc.feature.ui_showcase.hardware.sensor.SensorComponentDemo
+import com.zyc.feature.ui_showcase.hardware.vibration.VibrationComponentDemo
 
 /**
  * 硬件接口组件展示页面
@@ -34,8 +27,6 @@ import com.zyc.feature.ui_showcase.components.ComponentSection
 fun HardwareComponentsScreen(
     onBack: () -> Unit = {}
 ) {
-    val context = LocalContext.current
-
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -45,11 +36,9 @@ fun HardwareComponentsScreen(
         )
 
         BounceListView(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(8.dp),
-
-            ) {
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(8.dp)
+        ) {
             item {
                 // 相机组件
                 ComponentSection(
@@ -60,6 +49,7 @@ fun HardwareComponentsScreen(
                     }
                 )
             }
+            
             item {
                 // 传感器组件
                 ComponentSection(
@@ -90,10 +80,11 @@ fun HardwareComponentsScreen(
                     content = {
                         LocationComponentDemo()
                     }
-
                 )
             }
-            item {         // NFC组件
+            
+            item {
+                // NFC组件
                 ComponentSection(
                     title = "NFC组件",
                     description = "近场通信功能组件",
@@ -102,6 +93,7 @@ fun HardwareComponentsScreen(
                     }
                 )
             }
+            
             item {
                 // 指纹识别组件
                 ComponentSection(
@@ -112,18 +104,17 @@ fun HardwareComponentsScreen(
                     }
                 )
             }
+            
             item {
-
                 // 振动反馈组件
                 ComponentSection(
                     title = "振动反馈组件",
                     description = "触觉反馈和振动控制组件",
                     content = {
-                        VibrationComponentDemo(context)
+                        VibrationComponentDemo()
                     }
                 )
             }
-
 
             item {
                 // 音频组件
@@ -135,474 +126,16 @@ fun HardwareComponentsScreen(
                     }
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun CameraComponentDemo() {
-    var isCameraOpen by remember { mutableStateOf(false) }
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ThumbUp,
-                    contentDescription = "相机",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = "相机控制",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            Text(
-                text = "状态: ${if (isCameraOpen) "已开启" else "已关闭"}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = { isCameraOpen = !isCameraOpen }
-                ) {
-                    Text(if (isCameraOpen) "关闭相机" else "打开相机")
-                }
-
-                OutlinedButton(
-                    onClick = { /* 拍照逻辑 */ }
-                ) {
-                    Text("拍照")
-                }
-
-                OutlinedButton(
-                    onClick = { /* 录像逻辑 */ }
-                ) {
-                    Text("录像")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun SensorComponentDemo() {
-    var sensorData by remember { mutableStateOf("等待传感器数据...") }
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ThumbUp,
-                    contentDescription = "传感器",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = "传感器数据",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            Text(
-                text = sensorData,
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = {
-                        sensorData = "加速度: X=0.1, Y=0.2, Z=9.8"
+            
+            item {
+                // 网络组件
+                ComponentSection(
+                    title = "网络组件",
+                    description = "网络连接状态和功能组件",
+                    content = {
+                        NetworkComponentDemo()
                     }
-                ) {
-                    Text("读取加速度")
-                }
-
-                OutlinedButton(
-                    onClick = {
-                        sensorData = "陀螺仪: X=0.01, Y=0.02, Z=0.03"
-                    }
-                ) {
-                    Text("读取陀螺仪")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun BluetoothComponentDemo() {
-    var bluetoothStatus by remember { mutableStateOf("未连接") }
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ThumbUp,
-                    contentDescription = "蓝牙",
-                    tint = MaterialTheme.colorScheme.primary
                 )
-                Text(
-                    text = "蓝牙连接",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            Text(
-                text = "状态: $bluetoothStatus",
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = {
-                        bluetoothStatus = "正在扫描设备..."
-                    }
-                ) {
-                    Text("扫描设备")
-                }
-
-                OutlinedButton(
-                    onClick = {
-                        bluetoothStatus = "已连接到设备"
-                    }
-                ) {
-                    Text("连接")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun LocationComponentDemo() {
-    var locationInfo by remember { mutableStateOf("位置未获取") }
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "定位",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = "GPS定位",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            Text(
-                text = locationInfo,
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = {
-                        locationInfo = "纬度: 39.9042, 经度: 116.4074"
-                    }
-                ) {
-                    Text("获取位置")
-                }
-
-                OutlinedButton(
-                    onClick = {
-                        locationInfo = "正在打开地图..."
-                    }
-                ) {
-                    Text("打开地图")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun NFCComponentDemo() {
-    var nfcStatus by remember { mutableStateOf("NFC未启用") }
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ThumbUp,
-                    contentDescription = "NFC",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = "NFC通信",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            Text(
-                text = "状态: $nfcStatus",
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = {
-                        nfcStatus = "NFC已启用，等待标签..."
-                    }
-                ) {
-                    Text("启用NFC")
-                }
-
-                OutlinedButton(
-                    onClick = {
-                        nfcStatus = "检测到NFC标签"
-                    }
-                ) {
-                    Text("读取标签")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun BiometricComponentDemo() {
-    var authStatus by remember { mutableStateOf("未认证") }
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ThumbUp,
-                    contentDescription = "指纹",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = "生物识别",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            Text(
-                text = "状态: $authStatus",
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = {
-                        authStatus = "请验证指纹..."
-                    }
-                ) {
-                    Text("指纹认证")
-                }
-
-                OutlinedButton(
-                    onClick = {
-                        authStatus = "认证成功"
-                    }
-                ) {
-                    Text("面部识别")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun VibrationComponentDemo(context: Context) {
-    var vibrationStatus by remember { mutableStateOf("振动已停止") }
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                // 箭头图标
-                Text(
-                    text = "\uEA21",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontFamily = FontFamily(
-                        Font(R.font.icons)
-                    )
-                )
-                Text(
-                    text = "振动反馈",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            Text(
-                text = "状态: $vibrationStatus",
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = {
-
-                        vibrationStatus = "短振动"
-                        VibrationUtils.vibrateShort(context) // 振动500毫秒，使用默认振幅
-                    }
-                ) {
-                    Text("短振动")
-                }
-
-                OutlinedButton(
-                    onClick = {
-                        vibrationStatus = "长振动"
-                        // 指定强度的振动
-                        VibrationUtils.vibrateLong(context) // 振动300毫秒，振幅80
-                    }
-                ) {
-                    Text("长振动")
-                }
-
-                OutlinedButton(
-                    onClick = {
-                        vibrationStatus = "自定义振动模式"
-                        VibrationUtils.vibratePattern(context ) // 振动300毫秒，振幅80
-                    }
-                ) {
-                    Text("模式振动")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun AudioComponentDemo() {
-    var audioStatus by remember { mutableStateOf("音频已停止") }
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ThumbUp,
-                    contentDescription = "音频",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = "音频控制",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            Text(
-                text = "状态: $audioStatus",
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = {
-                        audioStatus = "正在录音..."
-                    }
-                ) {
-                    Text("开始录音")
-                }
-
-                OutlinedButton(
-                    onClick = {
-                        audioStatus = "正在播放..."
-                    }
-                ) {
-                    Text("播放音频")
-                }
-
-                OutlinedButton(
-                    onClick = {
-                        audioStatus = "音频已停止"
-                    }
-                ) {
-                    Text("停止")
-                }
             }
         }
     }
