@@ -4,33 +4,14 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
-import com.zyc.core.permission.model.PermissionGroup
 import com.zyc.core.permission.model.PermissionInfo
 import com.zyc.core.permission.model.PermissionStatus
 
 /**
  * 权限管理器
- * 负责权限的检查、分类和状态管理
+ * 负责权限的检查和状态管理
  */
 class PermissionManager(private val context: Context) {
-    
-    /**
-     * 获取所有已声明的权限信息
-     */
-    fun getAllDeclaredPermissions(): List<PermissionInfo> {
-        return try {
-            val packageInfo = context.packageManager.getPackageInfo(
-                context.packageName,
-                PackageManager.GET_PERMISSIONS
-            )
-            
-            packageInfo.requestedPermissions?.map { permission ->
-                createPermissionInfo(permission)
-            } ?: emptyList()
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
     
     /**
      * 检查单个权限状态
@@ -44,43 +25,48 @@ class PermissionManager(private val context: Context) {
     }
     
     /**
-     * 获取危险权限列表
+     * 检查权限是否已授权
      */
-    fun getDangerousPermissions(): List<PermissionInfo> {
-        return getAllDeclaredPermissions().filter { it.isDangerous }
+    fun isPermissionGranted(permission: String): Boolean {
+        return checkPermissionStatus(permission) == PermissionStatus.GRANTED
     }
     
     /**
-     * 按组分类权限
+     * 检查多个权限状态
      */
-    fun getPermissionsByGroup(): Map<PermissionGroup, List<PermissionInfo>> {
-        return getAllDeclaredPermissions().groupBy { it.group }
+    fun checkMultiplePermissions(permissions: Array<String>): Map<String, PermissionStatus> {
+        return permissions.associateWith { checkPermissionStatus(it) }
     }
     
     /**
-     * 创建权限信息对象
+     * 检查多个权限是否全部已授权
      */
-    private fun createPermissionInfo(permission: String): PermissionInfo {
-        val isGranted = checkPermissionStatus(permission) == PermissionStatus.GRANTED
-        val isDangerous = isDangerousPermission(permission)
-        val group = getPermissionGroup(permission)
-        val name = getPermissionDisplayName(permission)
-        val description = getPermissionDescription(permission)
-        
+    fun areAllPermissionsGranted(permissions: Array<String>): Boolean {
+        return permissions.all { isPermissionGranted(it) }
+    }
+    
+    /**
+     * 获取权限信息
+     */
+    fun getPermissionInfo(permission: String): PermissionInfo {
         return PermissionInfo(
             permission = permission,
-            name = name,
-            description = description,
-            isGranted = isGranted,
-            isDangerous = isDangerous,
-            group = group
+            isGranted = isPermissionGranted(permission),
+            isDangerous = isDangerousPermission(permission)
         )
+    }
+    
+    /**
+     * 获取多个权限信息
+     */
+    fun getMultiplePermissionInfo(permissions: Array<String>): List<PermissionInfo> {
+        return permissions.map { getPermissionInfo(it) }
     }
     
     /**
      * 判断是否为危险权限
      */
-    private fun isDangerousPermission(permission: String): Boolean {
+    fun isDangerousPermission(permission: String): Boolean {
         return when (permission) {
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO,
@@ -100,73 +86,4 @@ class PermissionManager(private val context: Context) {
         }
     }
     
-    /**
-     * 获取权限组
-     */
-    private fun getPermissionGroup(permission: String): PermissionGroup {
-        return when {
-            permission.contains("CAMERA") -> PermissionGroup.CAMERA
-            permission.contains("AUDIO") || permission.contains("MICROPHONE") -> PermissionGroup.MICROPHONE
-            permission.contains("LOCATION") -> PermissionGroup.LOCATION
-            permission.contains("STORAGE") || permission.contains("EXTERNAL_STORAGE") -> PermissionGroup.STORAGE
-            permission.contains("CONTACTS") -> PermissionGroup.CONTACTS
-            permission.contains("PHONE") || permission.contains("CALL") -> PermissionGroup.PHONE
-            permission.contains("SMS") -> PermissionGroup.SMS
-            permission.contains("CALENDAR") -> PermissionGroup.CALENDAR
-            permission.contains("SENSOR") -> PermissionGroup.SENSORS
-            permission.contains("INTERNET") || permission.contains("NETWORK") -> PermissionGroup.NETWORK
-            permission.contains("NOTIFICATION") -> PermissionGroup.NOTIFICATION
-            else -> PermissionGroup.OTHER
-        }
-    }
-    
-    /**
-     * 获取权限显示名称
-     */
-    private fun getPermissionDisplayName(permission: String): String {
-        return when (permission) {
-            Manifest.permission.CAMERA -> "相机权限"
-            Manifest.permission.RECORD_AUDIO -> "录音权限"
-            Manifest.permission.ACCESS_FINE_LOCATION -> "精确位置权限"
-            Manifest.permission.ACCESS_COARSE_LOCATION -> "大致位置权限"
-            Manifest.permission.READ_EXTERNAL_STORAGE -> "读取存储权限"
-            Manifest.permission.WRITE_EXTERNAL_STORAGE -> "写入存储权限"
-            Manifest.permission.READ_CONTACTS -> "读取通讯录权限"
-            Manifest.permission.WRITE_CONTACTS -> "写入通讯录权限"
-            Manifest.permission.CALL_PHONE -> "拨打电话权限"
-            Manifest.permission.READ_PHONE_STATE -> "读取电话状态权限"
-            Manifest.permission.SEND_SMS -> "发送短信权限"
-            Manifest.permission.READ_SMS -> "读取短信权限"
-            Manifest.permission.READ_CALENDAR -> "读取日历权限"
-            Manifest.permission.WRITE_CALENDAR -> "写入日历权限"
-            Manifest.permission.INTERNET -> "网络权限"
-            Manifest.permission.POST_NOTIFICATIONS -> "通知权限"
-            else -> permission.substringAfterLast(".")
-        }
-    }
-    
-    /**
-     * 获取权限描述
-     */
-    private fun getPermissionDescription(permission: String): String {
-        return when (permission) {
-            Manifest.permission.CAMERA -> "允许应用使用相机拍照和录制视频"
-            Manifest.permission.RECORD_AUDIO -> "允许应用录制音频"
-            Manifest.permission.ACCESS_FINE_LOCATION -> "允许应用获取精确的位置信息"
-            Manifest.permission.ACCESS_COARSE_LOCATION -> "允许应用获取大致的位置信息"
-            Manifest.permission.READ_EXTERNAL_STORAGE -> "允许应用读取外部存储中的文件"
-            Manifest.permission.WRITE_EXTERNAL_STORAGE -> "允许应用向外部存储写入文件"
-            Manifest.permission.READ_CONTACTS -> "允许应用读取联系人信息"
-            Manifest.permission.WRITE_CONTACTS -> "允许应用修改联系人信息"
-            Manifest.permission.CALL_PHONE -> "允许应用直接拨打电话"
-            Manifest.permission.READ_PHONE_STATE -> "允许应用读取电话状态和身份"
-            Manifest.permission.SEND_SMS -> "允许应用发送短信"
-            Manifest.permission.READ_SMS -> "允许应用读取短信内容"
-            Manifest.permission.READ_CALENDAR -> "允许应用读取日历事件"
-            Manifest.permission.WRITE_CALENDAR -> "允许应用添加或修改日历事件"
-            Manifest.permission.INTERNET -> "允许应用访问网络"
-            Manifest.permission.POST_NOTIFICATIONS -> "允许应用发送通知"
-            else -> "系统权限"
-        }
-    }
 }

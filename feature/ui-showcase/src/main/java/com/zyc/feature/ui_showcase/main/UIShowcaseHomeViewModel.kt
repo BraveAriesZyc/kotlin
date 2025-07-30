@@ -169,6 +169,19 @@ class UIShowcaseHomeViewModel : ViewModel() {
                 "振动反馈组件 - 触觉反馈",
                 "音频组件 - 录音和播放"
             )
+        ),
+        ComponentCategory(
+            title = "权限组件",
+            description = "权限管理和检查相关的组件演示",
+            route = Routes.UIShowcase.PermissionComponents,
+            icon = "\uE8D4",
+            items = listOf(
+                "权限状态检查 - 检查单个权限授权状态",
+                "多权限检查 - 批量检查多个权限状态",
+                "危险权限识别 - 识别和标记危险权限",
+                "权限信息获取 - 获取权限详细信息",
+                "权限管理器演示 - PermissionManager核心功能"
+            )
         )
     )
 }

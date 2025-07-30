@@ -12,6 +12,7 @@ import com.zyc.feature.ui_showcase.screen.hardware.HardwareComponentsScreen
 import com.zyc.feature.ui_showcase.screen.interaction.InteractionComponentsScreen
 import com.zyc.feature.ui_showcase.screen.layout.LayoutComponentsScreen
 import com.zyc.feature.ui_showcase.screen.navigation.NavigationComponentsScreen
+import com.zyc.feature.ui_showcase.screen.permission.PermissionComponentsScreen
 
 /**
  * UI展示模块的子页面路由配置
@@ -83,6 +84,12 @@ fun NavGraphBuilder.installUIShowcaseScreens(
 
     composable<Routes.UIShowcase.HardwareComponents> {
         HardwareComponentsScreen(
+            onBack = { navController.popBackStack() }
+        )
+    }
+
+    composable<Routes.UIShowcase.PermissionComponents> {
+        PermissionComponentsScreen(
             onBack = { navController.popBackStack() }
         )
     }

@@ -5,30 +5,9 @@ package com.zyc.core.permission.model
  */
 data class PermissionInfo(
     val permission: String,
-    val name: String,
-    val description: String,
     val isGranted: Boolean = false,
-    val isDangerous: Boolean = false,
-    val group: PermissionGroup = PermissionGroup.OTHER
+    val isDangerous: Boolean = false
 )
-
-/**
- * 权限组枚举
- */
-enum class PermissionGroup(val displayName: String) {
-    CAMERA("相机"),
-    MICROPHONE("麦克风"),
-    LOCATION("位置"),
-    STORAGE("存储"),
-    CONTACTS("通讯录"),
-    PHONE("电话"),
-    SMS("短信"),
-    CALENDAR("日历"),
-    SENSORS("传感器"),
-    NETWORK("网络"),
-    NOTIFICATION("通知"),
-    OTHER("其他")
-}
 
 /**
  * 权限状态枚举
