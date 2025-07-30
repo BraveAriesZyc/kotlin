@@ -47,6 +47,31 @@ fun BounceListView(
     // 动画是否正在执行的状态
     var isTopAnimating by remember { mutableStateOf(false) }
     var isBottomAnimating by remember { mutableStateOf(false) }
+    
+    // 优化：使用derivedStateOf计算总偏移量，减少重组
+    val totalOffset by remember {
+        derivedStateOf { topBounceOffset + bottomBounceOffset }
+    }
+    
+    // 优化：提取动画停止逻辑为内联函数
+    val stopTopAnimation = {
+        if (isTopAnimating) {
+            isTopAnimating = false
+            coroutineScope.launch { topBounceAnimatable.stop() }
+        }
+    }
+    
+    val stopBottomAnimation = {
+        if (isBottomAnimating) {
+            isBottomAnimating = false
+            coroutineScope.launch { bottomBounceAnimatable.stop() }
+        }
+    }
+    
+    // 优化：常量提取，避免重复计算
+    val resistance = 0.3f
+    val animationStiffness = 500f // 提高刚度，减少动画时间
+    val dampingRatio = 0.85f // 稍微降低阻尼，让动画更快结束
 
     // 嵌套滚动连接器
     val nestedScrollConnection = remember {
@@ -54,28 +79,14 @@ fun BounceListView(
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 // 当有向上滚动且当前有下拉回弹偏移时，先消耗下拉回弹偏移
                 if (available.y < 0 && topBounceOffset > 0) {
-                    // 如果正在动画中，标记停止并直接操作偏移量
-                    if (isTopAnimating) {
-                        isTopAnimating = false
-                        // 启动协程停止动画，但不等待
-                        coroutineScope.launch {
-                            topBounceAnimatable.stop()
-                        }
-                    }
+                    stopTopAnimation()
                     val consumed = minOf(-available.y, topBounceOffset)
                     topBounceOffset = (topBounceOffset - consumed).coerceAtLeast(0f)
                     return Offset(0f, -consumed)
                 }
                 // 当有向下滚动且当前有上拉阻尼偏移时，先消耗上拉阻尼偏移
                 if (available.y > 0 && bottomBounceOffset < 0) {
-                    // 如果正在动画中，标记停止并直接操作偏移量
-                    if (isBottomAnimating) {
-                        isBottomAnimating = false
-                        // 启动协程停止动画，但不等待
-                        coroutineScope.launch {
-                            bottomBounceAnimatable.stop()
-                        }
-                    }
+                    stopBottomAnimation()
                     val consumed = minOf(available.y, -bottomBounceOffset)
                     bottomBounceOffset = (bottomBounceOffset + consumed).coerceAtMost(0f)
                     return Offset(0f, consumed)
@@ -93,15 +104,7 @@ fun BounceListView(
                     val isAtTop = listState.firstVisibleItemIndex == 0 &&
                                  listState.firstVisibleItemScrollOffset == 0
                     if (isAtTop) {
-                        // 如果正在动画中，标记停止并直接操作偏移量
-                        if (isTopAnimating) {
-                            isTopAnimating = false
-                            // 启动协程停止动画，但不等待
-                            coroutineScope.launch {
-                                topBounceAnimatable.stop()
-                            }
-                        }
-                        val resistance = 0.3f
+                        stopTopAnimation()
                         val bounceAmount = available.y * resistance
                         topBounceOffset = (topBounceOffset + bounceAmount).coerceAtLeast(0f)
                         return Offset(0f, available.y)
@@ -117,15 +120,7 @@ fun BounceListView(
                     } ?: false
                     
                     if (isAtBottom) {
-                        // 如果正在动画中，标记停止并直接操作偏移量
-                        if (isBottomAnimating) {
-                            isBottomAnimating = false
-                            // 启动协程停止动画，但不等待
-                            coroutineScope.launch {
-                                bottomBounceAnimatable.stop()
-                            }
-                        }
-                        val resistance = 0.3f
+                        stopBottomAnimation()
                         val bounceAmount = available.y * resistance
                         bottomBounceOffset = (bottomBounceOffset + bounceAmount).coerceAtMost(0f)
                         return Offset(0f, available.y)
@@ -146,8 +141,8 @@ fun BounceListView(
                             topBounceAnimatable.animateTo(
                                 targetValue = 0f,
                                 animationSpec = spring(
-                                    dampingRatio = 0.9f,
-                                    stiffness = 400f // 稍微提高刚度以减少动画时间
+                                    dampingRatio = dampingRatio,
+                                    stiffness = animationStiffness
                                 )
                             ) { 
                                 // 动画过程中同步更新topBounceOffset
@@ -175,8 +170,8 @@ fun BounceListView(
                             bottomBounceAnimatable.animateTo(
                                 targetValue = 0f,
                                 animationSpec = spring(
-                                    dampingRatio = 0.9f,
-                                    stiffness = 400f // 稍微提高刚度以减少动画时间
+                                    dampingRatio = dampingRatio,
+                                    stiffness = animationStiffness
                                 )
                             ) { 
                                 // 动画过程中同步更新bottomBounceOffset
@@ -203,7 +198,7 @@ fun BounceListView(
             .fillMaxSize()
             .nestedScroll(nestedScrollConnection)
             .graphicsLayer {
-                translationY = topBounceOffset + bottomBounceOffset
+                translationY = totalOffset
             },
         contentPadding = contentPadding
     ) {
