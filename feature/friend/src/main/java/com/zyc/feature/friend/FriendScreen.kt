@@ -114,7 +114,6 @@ fun FriendScreen(
 
 
                     LongPressFriend(
-
                         friend,
                         user,
                         menus = menus,
