@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.Velocity
 import kotlinx.coroutines.launch
 
 /**
- * 带回弹效果的列表
+ * 带回弹效果的列表，支持下拉回弹和上拉阻尼
  *
  * @param modifier 修饰符
  * @param contentPadding 内边距
@@ -37,29 +37,46 @@ fun BounceListView(
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    // 回弹偏移量状态 - 使用State确保同步更新
-    var bounceOffset by remember { mutableFloatStateOf(0f) }
+    // 下拉回弹偏移量状态 - 使用State确保同步更新
+    var topBounceOffset by remember { mutableFloatStateOf(0f) }
+    // 上拉阻尼偏移量状态
+    var bottomBounceOffset by remember { mutableFloatStateOf(0f) }
     // 用于动画的Animatable
-    val bounceAnimatable = remember { Animatable(0f) }
+    val topBounceAnimatable = remember { Animatable(0f) }
+    val bottomBounceAnimatable = remember { Animatable(0f) }
     // 动画是否正在执行的状态
-    var isAnimating by remember { mutableStateOf(false) }
+    var isTopAnimating by remember { mutableStateOf(false) }
+    var isBottomAnimating by remember { mutableStateOf(false) }
 
     // 嵌套滚动连接器
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                // 当有向上滚动且当前有回弹偏移时，先消耗回弹偏移
-                if (available.y < 0 && bounceOffset > 0) {
+                // 当有向上滚动且当前有下拉回弹偏移时，先消耗下拉回弹偏移
+                if (available.y < 0 && topBounceOffset > 0) {
                     // 如果正在动画中，先停止动画
-                    if (isAnimating) {
+                    if (isTopAnimating) {
                         coroutineScope.launch {
-                            bounceAnimatable.stop()
-                            isAnimating = false
+                            topBounceAnimatable.stop()
+                            isTopAnimating = false
                         }
                     }
-                    val consumed = minOf(-available.y, bounceOffset)
-                    bounceOffset = (bounceOffset - consumed).coerceAtLeast(0f)
+                    val consumed = minOf(-available.y, topBounceOffset)
+                    topBounceOffset = (topBounceOffset - consumed).coerceAtLeast(0f)
                     return Offset(0f, -consumed)
+                }
+                // 当有向下滚动且当前有上拉阻尼偏移时，先消耗上拉阻尼偏移
+                if (available.y > 0 && bottomBounceOffset < 0) {
+                    // 如果正在动画中，先停止动画
+                    if (isBottomAnimating) {
+                        coroutineScope.launch {
+                            bottomBounceAnimatable.stop()
+                            isBottomAnimating = false
+                        }
+                    }
+                    val consumed = minOf(available.y, -bottomBounceOffset)
+                    bottomBounceOffset = (bottomBounceOffset + consumed).coerceAtMost(0f)
+                    return Offset(0f, consumed)
                 }
                 return Offset.Zero
             }
@@ -69,21 +86,44 @@ fun BounceListView(
                 available: Offset,
                 source: NestedScrollSource
             ): Offset {
-                // 当列表已经滚动到顶部且还有向下的滚动量时，产生回弹效果
+                // 当列表已经滚动到顶部且还有向下的滚动量时，产生下拉回弹效果
                 if (available.y > 0) {
                     val isAtTop = listState.firstVisibleItemIndex == 0 &&
                                  listState.firstVisibleItemScrollOffset == 0
                     if (isAtTop) {
                         // 如果正在动画中，先停止动画
-                        if (isAnimating) {
+                        if (isTopAnimating) {
                             coroutineScope.launch {
-                                bounceAnimatable.stop()
-                                isAnimating = false
+                                topBounceAnimatable.stop()
+                                isTopAnimating = false
                             }
                         }
                         val resistance = 0.3f
                         val bounceAmount = available.y * resistance
-                        bounceOffset = (bounceOffset + bounceAmount).coerceAtLeast(0f)
+                        topBounceOffset = (topBounceOffset + bounceAmount).coerceAtLeast(0f)
+                        return Offset(0f, available.y)
+                    }
+                }
+                
+                // 当列表已经滚动到底部且还有向上的滚动量时，产生上拉阻尼效果
+                if (available.y < 0) {
+                    val layoutInfo = listState.layoutInfo
+                    val isAtBottom = layoutInfo.visibleItemsInfo.lastOrNull()?.let { lastItem ->
+                        lastItem.index == layoutInfo.totalItemsCount - 1 &&
+                        lastItem.offset + lastItem.size <= layoutInfo.viewportEndOffset
+                    } ?: false
+                    
+                    if (isAtBottom) {
+                        // 如果正在动画中，先停止动画
+                        if (isBottomAnimating) {
+                            coroutineScope.launch {
+                                bottomBounceAnimatable.stop()
+                                isBottomAnimating = false
+                            }
+                        }
+                        val resistance = 0.3f
+                        val bounceAmount = available.y * resistance
+                        bottomBounceOffset = (bottomBounceOffset + bounceAmount).coerceAtMost(0f)
                         return Offset(0f, available.y)
                     }
                 }
@@ -91,31 +131,60 @@ fun BounceListView(
             }
 
             override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
-                // 松手时回弹到原位置
-                if (bounceOffset > 0 && !isAnimating) {
+                // 松手时下拉回弹到原位置
+                if (topBounceOffset > 0 && !isTopAnimating) {
                     coroutineScope.launch {
                         try {
-                            isAnimating = true
-                            // 同步bounceAnimatable的起始值
-                            bounceAnimatable.snapTo(bounceOffset)
-                            // 执行动画并同步更新bounceOffset
-                            bounceAnimatable.animateTo(
+                            isTopAnimating = true
+                            // 同步topBounceAnimatable的起始值
+                            topBounceAnimatable.snapTo(topBounceOffset)
+                            // 执行动画并同步更新topBounceOffset
+                            topBounceAnimatable.animateTo(
                                 targetValue = 0f,
                                 animationSpec = spring(
                                     dampingRatio = 0.9f,
                                     stiffness = 350f
                                 )
                             ) { 
-                                // 动画过程中同步更新bounceOffset
-                                bounceOffset = value
+                                // 动画过程中同步更新topBounceOffset
+                                topBounceOffset = value
                             }
                             // 确保动画完成后状态为0
-                            bounceOffset = 0f
-                            isAnimating = false
+                            topBounceOffset = 0f
+                            isTopAnimating = false
                         } catch (e: Exception) {
                             // 如果动画被中断，直接设置为0
-                            bounceOffset = 0f
-                            isAnimating = false
+                            topBounceOffset = 0f
+                            isTopAnimating = false
+                        }
+                    }
+                }
+                
+                // 松手时上拉阻尼回弹到原位置
+                if (bottomBounceOffset < 0 && !isBottomAnimating) {
+                    coroutineScope.launch {
+                        try {
+                            isBottomAnimating = true
+                            // 同步bottomBounceAnimatable的起始值
+                            bottomBounceAnimatable.snapTo(bottomBounceOffset)
+                            // 执行动画并同步更新bottomBounceOffset
+                            bottomBounceAnimatable.animateTo(
+                                targetValue = 0f,
+                                animationSpec = spring(
+                                    dampingRatio = 0.9f,
+                                    stiffness = 350f
+                                )
+                            ) { 
+                                // 动画过程中同步更新bottomBounceOffset
+                                bottomBounceOffset = value
+                            }
+                            // 确保动画完成后状态为0
+                            bottomBounceOffset = 0f
+                            isBottomAnimating = false
+                        } catch (e: Exception) {
+                            // 如果动画被中断，直接设置为0
+                            bottomBounceOffset = 0f
+                            isBottomAnimating = false
                         }
                     }
                 }
@@ -130,7 +199,7 @@ fun BounceListView(
             .fillMaxSize()
             .nestedScroll(nestedScrollConnection)
             .graphicsLayer {
-                translationY = bounceOffset
+                translationY = topBounceOffset + bottomBounceOffset
             },
         contentPadding = contentPadding
     ) {
