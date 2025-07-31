@@ -35,9 +35,7 @@ object DrawerConfig {
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun LayoutScreen(
-    onBack: () -> Unit = {}
-) {
+fun LayoutScreen() {
     val navController = LocalNavController.current
     val layoutViewModel by remember { mutableStateOf(LayoutScreenViewModel(navController)) }
     val pagerState = rememberPagerState(pageCount = { layoutViewModel.navItems.size })

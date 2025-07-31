@@ -29,20 +29,17 @@ import com.zyc.feature.common_page.pages.web.WebViewScreen
  */
 fun NavGraphBuilder.commonPageGraph(
     navController: NavController,
-    onNavigateToAuth: () -> Unit = {},
-    onNavigateToLayout: () -> Unit = {},
     onBack: () -> Unit = { navController.popBackStack() }
 ) {
     composableScale<Routes.Start> {
         StartScreen(
-            onNavigateToAuth = onNavigateToAuth,
-            onNavigateToLayout = onNavigateToLayout
+
         )
     }
 
-    composableScale<Routes.Layout> {
+    composableLayout<Routes.Layout> {
         LayoutScreen(
-            onBack = onBack
+
         )
     }
 

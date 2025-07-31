@@ -69,16 +69,16 @@ inline fun <reified T : Any> NavGraphBuilder.composableSlide(
         typeMap,
         deepLinks,
         enterTransition = {
-            // 新页面：从右到左滑入
-            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300))
+            // 新页面：从右到左滑入（略快）
+            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(250))
         },
         exitTransition = {
             // 旧页面：向左滑出
             slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(300))
         },
         popEnterTransition = {
-            // 返回时：新页面从左到右滑入
-            slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(300))
+            // 返回时：新页面从左到右滑入（略快）
+            slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(250))
         },
         popExitTransition = {
             // 返回时：旧页面向右滑出
@@ -115,6 +115,38 @@ inline fun <reified T : Any> NavGraphBuilder.composableFaded(
         }, popExitTransition = {
             // 返回时：旧页面（实际上是新页面）逐渐变淡消失（不透明度从 100% 到 0）
             fadeOut(animationSpec = tween(400))
+        },
+        sizeTransform,
+        content
+    )
+}
+//  滑动动画
+inline fun <reified T : Any> NavGraphBuilder.composableLayout(
+    typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
+    deepLinks: List<NavDeepLink> = emptyList(),
+    noinline sizeTransform:
+    (AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards
+    SizeTransform?)? =
+        null,
+    noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
+) {
+    composable(
+        T::class,
+        typeMap,
+        deepLinks,
+        enterTransition = {
+            // 新页面：由内往外扩展 + 渐变显示
+            fadeIn(animationSpec = tween(300)) + scaleIn(initialScale = 0.8f, animationSpec = tween(300))
+        },
+        exitTransition = {
+            // 旧页面：向内缩放 + 渐变消失
+            fadeOut(animationSpec = tween(300)) + scaleOut(targetScale = 0.8f, animationSpec = tween(300))
+        }, popEnterTransition = {
+            // 返回时：新页面（实际上是旧页面）由内往外扩展 + 渐变显示
+            fadeIn(animationSpec = tween(300)) + scaleIn(initialScale = 0.8f, animationSpec = tween(300))
+        }, popExitTransition = {
+            // 返回时：旧页面（实际上是新页面）向内缩放 + 渐变消失
+            fadeOut(animationSpec = tween(300)) + scaleOut(targetScale = 0.8f, animationSpec = tween(300))
         },
         sizeTransform,
         content

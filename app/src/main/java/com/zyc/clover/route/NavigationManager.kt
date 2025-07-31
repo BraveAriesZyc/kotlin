@@ -6,7 +6,7 @@ import com.zyc.core.router.*
 import com.zyc.feature.auth.authGraph
 import com.zyc.feature.auth.navigateToLogin
 import com.zyc.feature.common_page.commonPageGraph
-import com.zyc.feature.common_page.navigateToLayout
+
 import com.zyc.feature.friend.friendGraph
 import com.zyc.feature.home.homeGraph
 import com.zyc.feature.message.messageGraph
@@ -41,17 +41,13 @@ object NavigationManager {
         navController: NavController
     ) {
         // 通用页面模块
-        commonPageGraph(
-            navController = navController,
-            onNavigateToAuth = { navController.navigateToLogin() },
-            onNavigateToLayout = { navController.navigateToLayout() }
-        )
+        commonPageGraph(navController = navController)
 
         // 认证模块
         authGraph(
             navController = navController,
-            onNavigateToLayout = { navController.navigateToLayout() }
-        )
+
+            )
 
         // 消息模块
         messageGraph(

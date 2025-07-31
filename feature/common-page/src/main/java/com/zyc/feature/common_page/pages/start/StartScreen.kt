@@ -41,10 +41,7 @@ import com.zyc.core.ui.utils.event.GlobalAntiShake
 import kotlinx.coroutines.delay
 
 @Composable
-fun StartScreen(
-    onNavigateToAuth: () -> Unit = {},
-    onNavigateToLayout: () -> Unit = {}
-) {
+fun StartScreen() {
     val navController = LocalNavController.current
     // 使用状态管理倒计时
     val countdownSeconds = remember { mutableIntStateOf(3) }
@@ -69,7 +66,7 @@ fun StartScreen(
         GlobalAntiShake.runWithDebounce {
             // 倒计时结束后跳转
             navController.navigate(Routes.Layout) {
-                    popUpTo(Routes.Start) { inclusive = true }
+                popUpTo(Routes.Start) { inclusive = true }
             }
         }
     }
@@ -114,7 +111,7 @@ fun StartScreen(
                             onClick = {
                                 GlobalAntiShake.runWithDebounce {
                                     navController.navigate(Routes.Layout) {
-                popUpTo(Routes.Start) { inclusive = true }
+                                        popUpTo(Routes.Start) { inclusive = true }
                                     }
                                 }
                             },
