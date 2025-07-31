@@ -22,7 +22,9 @@ fun RightDrawer(
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
     screenWidth: Dp = LocalConfiguration.current.screenWidthDp.dp,
-    drawerWidthRatio: Float = 0.5f
+    drawerWidthRatio: Float = 0.5f,
+    dragOffset: Float = 0f, // 新增：拖拽偏移量
+    isDragging: Boolean = false // 新增：是否正在拖拽
 ) {
     BaseDrawer(
         isOpen = isOpen,
@@ -31,6 +33,8 @@ fun RightDrawer(
         modifier = modifier,
         screenWidth = screenWidth,
         drawerWidthRatio = drawerWidthRatio,
+        dragOffset = dragOffset,
+        isDragging = isDragging,
         content = {
             Scaffold(
                 content = { pd ->

@@ -39,6 +39,13 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
     private var _rightDrawerOffset by mutableFloatStateOf(0f)
     val rightDrawerOffset: Float get() = _rightDrawerOffset
 
+    // 拖拽状态
+    private var _isLeftDragging by mutableStateOf(false)
+    val isLeftDragging: Boolean get() = _isLeftDragging
+
+    private var _isRightDragging by mutableStateOf(false)
+    val isRightDragging: Boolean get() = _isRightDragging
+
     // 导航项列表
     val navItems = listOf(
         NavItem(
@@ -247,5 +254,15 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
     // 设置右侧抽屉偏移量
     fun setRightDrawerOffset(offset: Float) {
         _rightDrawerOffset = offset
+    }
+
+    // 设置左侧拖拽状态
+    fun setLeftDragging(isDragging: Boolean) {
+        _isLeftDragging = isDragging
+    }
+
+    // 设置右侧拖拽状态
+    fun setRightDragging(isDragging: Boolean) {
+        _isRightDragging = isDragging
     }
 }
