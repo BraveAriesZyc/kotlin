@@ -5,74 +5,121 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import com.zyc.core.common.AppConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-
 import kotlinx.coroutines.delay
-
 import kotlinx.coroutines.launch
 
 object GlobalAntiShake {
-    var globalConfig: Config = Config()
     private val clickRecords = mutableMapOf<String, Long>()
     private var isHandlingEvent = false
     private var lastClickTime: Long = 0
     private val mainScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
-    data class Config(
-        val defaultDelay: Long = 300L, // 降低默认延迟，300ms更合理
-        val enableGlobalCheck: Boolean = true
+    /**
+     * 事件配置类
+     * @param key 事件唯一标识
+     * @param delay 防抖延迟时间
+     * @param enabled 是否启用
+     * @param useGlobalCheck 是否使用全局检查
+     */
+    data class EventConfig(
+        val key: String = "default",
+        val delay: Long = AppConfig.DEFAULT_DELAY,
+        val enabled: Boolean = true,
+        val useGlobalCheck: Boolean = true
     )
 
-    fun Modifier.debounceClick(
-        key: String = "default",
-        delay: Long = globalConfig.defaultDelay,
-        enabled: Boolean = true,
-        indication : Indication? = null,
-        interactionSource: MutableInteractionSource? = null,
-        onClick: () -> Unit,
 
+
+    /**
+     * 修饰符扩展防抖函数
+     * @param config 事件配置
+     * @param indication 点击指示器
+     * @param interactionSource 交互源
+     * @param onClick 点击回调
+     */
+    fun Modifier.debounceClick(
+        config: EventConfig = EventConfig(),
+        indication: Indication? = null,
+        interactionSource: MutableInteractionSource? = null,
+        onClick: () -> Unit
     ): Modifier = composed {
         var lastClickTime by remember { mutableStateOf(0L) }
         var isDebouncing by remember { mutableStateOf(false) }
-
         clickable(
-            indication =  indication,
+            indication = indication,
             interactionSource = interactionSource,
-            enabled = enabled && !isDebouncing
+            enabled = config.enabled && !isDebouncing
         ) {
             val currentTime = System.currentTimeMillis()
+            
+            if (AppConfig.ENABLE_LOGGING) {
+                println("DebounceClick[${config.key}]: Attempting click at $currentTime")
+            }
 
-            if (currentTime - lastClickTime >= delay &&
-                (!globalConfig.enableGlobalCheck || canClickGlobally(currentTime))) {
-
+            if (canExecuteEvent(config, currentTime, lastClickTime)) {
                 lastClickTime = currentTime
-                clickRecords[key] = currentTime
+                clickRecords[config.key] = currentTime
                 isDebouncing = true
 
-                onClick() // 立即执行点击逻辑
+                if (AppConfig.ENABLE_LOGGING) {
+                    println("DebounceClick[${config.key}]: Executing click")
+                }
 
-                // 使用统一的协程作用域管理延迟
+                onClick()
+
                 mainScope.launch {
-                    delay(delay)
+                    delay(config.delay)
                     isDebouncing = false
-                    if (globalConfig.enableGlobalCheck) {
+                    if (config.useGlobalCheck) {
                         isHandlingEvent = false
                     }
                 }
+            } else if (AppConfig.ENABLE_LOGGING) {
+                println("DebounceClick[${config.key}]: Click blocked by debounce")
             }
         }
     }
 
+    /**
+     * 检查事件是否可以执行
+     */
+    private fun canExecuteEvent(
+        config: EventConfig,
+        currentTime: Long,
+        lastLocalClickTime: Long
+    ): Boolean {
+        // 检查本地防抖
+        if (currentTime - lastLocalClickTime < config.delay) {
+            return false
+        }
+
+        // 检查全局防抖
+        if (config.useGlobalCheck && !canClickGlobally(currentTime)) {
+            return false
+        }
+
+        // 检查键值防抖
+        val lastKeyClickTime = clickRecords[config.key] ?: 0
+        if (currentTime - lastKeyClickTime < config.delay) {
+            return false
+        }
+
+        return true
+    }
+
     private fun canClickGlobally(currentTime: Long): Boolean {
-        if (isHandlingEvent || currentTime - lastClickTime < globalConfig.defaultDelay) {
+        if (isHandlingEvent || currentTime - lastClickTime < AppConfig.DEFAULT_DELAY) {
             return false
         }
 
@@ -81,24 +128,40 @@ object GlobalAntiShake {
         return true
     }
 
+    /**
+     * 使用防抖执行代码块
+     * @param config 事件配置
+     * @param block 要执行的代码块
+     * @return 是否成功执行
+     */
     fun runWithDebounce(
-        key: String = "default",
-        delay: Long = globalConfig.defaultDelay,
+        config: EventConfig = EventConfig(),
         block: () -> Unit
     ): Boolean {
         val currentTime = System.currentTimeMillis()
+        val lastTime = clickRecords[config.key] ?: 0
+        if (AppConfig.ENABLE_LOGGING) {
+            println("RunWithDebounce[${config.key}]: Attempting execution at $currentTime")
+        }
 
-        if (currentTime - (clickRecords[key] ?: 0) < delay ||
-            (globalConfig.enableGlobalCheck && !canClickGlobally(currentTime))) {
+        if (!canExecuteEvent(config, currentTime, lastTime)) {
+            if (AppConfig.ENABLE_LOGGING) {
+                println("RunWithDebounce[${config.key}]: Execution blocked by debounce")
+            }
             return false
         }
 
-        clickRecords[key] = currentTime
-        block() // 立即执行逻辑
+        clickRecords[config.key] = currentTime
+        
+        if (AppConfig.ENABLE_LOGGING) {
+            println("RunWithDebounce[${config.key}]: Executing block")
+        }
+        
+        block()
 
         mainScope.launch {
-            delay(delay)
-            if (globalConfig.enableGlobalCheck) {
+            delay(config.delay)
+            if (config.useGlobalCheck) {
                 isHandlingEvent = false
             }
         }
@@ -112,13 +175,7 @@ object GlobalAntiShake {
         clickRecords.clear()
     }
 
-    @Composable
-    fun SetupGlobalConfig(config: Config) {
-        DisposableEffect(Unit) {
-            globalConfig = config
-            onDispose {
-                // 清理资源
-            }
-        }
-    }
+
+
+
 }

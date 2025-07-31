@@ -1,8 +1,5 @@
 package com.zyc.feature.ui_showcase.screen.permission
 
-// Manifest 导入已删除
-// PermissionInfo 导入已删除
-// GlobalAntiShake 导入已删除
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

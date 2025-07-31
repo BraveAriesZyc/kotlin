@@ -54,12 +54,7 @@ class UIShowcaseHomeViewModel : ViewModel() {
         }
     }
 
-    /**
-     * 导航到指定分类
-     */
-    fun navigateToCategory(route: Any) {
-        // 这里可以添加导航逻辑或者通过回调传递给UI层
-    }
+
 
     /**
      * 清除错误状态

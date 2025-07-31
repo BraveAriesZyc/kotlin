@@ -60,9 +60,9 @@ fun UIShowcaseScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
-                        onClick = { 
+                        onClick = {
                             Log.d("UIShowcaseScreen", "Retry button clicked")
-                            viewModel.clearError() 
+                            viewModel.clearError()
                         }
                     ) {
                         Text("重试")
@@ -76,7 +76,6 @@ fun UIShowcaseScreen(
                 categories = uiState.categories,
                 onNavigateToCategory = { route ->
                     Log.d("UIShowcaseScreen", "Navigating to category: $route")
-                    viewModel.navigateToCategory(route)
                     onNavigateToCategory(route)
                 },
                 onBack = onBack

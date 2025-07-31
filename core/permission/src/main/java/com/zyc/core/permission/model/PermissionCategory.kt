@@ -29,22 +29,22 @@ data class PermissionCategoryInfo(
  * 权限分类工具类
  */
 object PermissionCategoryHelper {
-    
+
     /**
      * 获取分类对应的图标字符
      */
     fun getCategoryIcon(category: PermissionCategory): String {
         return when (category) {
-            PermissionCategory.MEDIA -> "\uEE5A"        // 媒体图标
-            PermissionCategory.LOCATION -> "\uEE7B"     // 位置图标
-            PermissionCategory.STORAGE -> "\uEE8F"      // 存储图标
-            PermissionCategory.COMMUNICATION -> "\uEE4A" // 通讯图标
-            PermissionCategory.CALENDAR -> "\uEE3A"     // 日历图标
-            PermissionCategory.SYSTEM -> "\uEE9A"       // 系统图标
-            PermissionCategory.OTHER -> "\uEE2A"        // 其他图标
+            PermissionCategory.MEDIA -> "\uEEA1"        // 媒体图标
+            PermissionCategory.LOCATION -> "\uED71"     // 位置图标
+            PermissionCategory.STORAGE -> "\uEE6A"      // 存储图标
+            PermissionCategory.COMMUNICATION -> "\uEDAB" // 通讯图标
+            PermissionCategory.CALENDAR -> "\uEAD5"     // 日历图标
+            PermissionCategory.SYSTEM -> "\uEECA"       // 系统图标
+            PermissionCategory.OTHER -> "\uEA11"        // 其他图标
         }
     }
-    
+
     /**
      * 获取分类对应的颜色（用于IconBackground）
      */
@@ -59,7 +59,7 @@ object PermissionCategoryHelper {
             PermissionCategory.OTHER -> 0xFF6B7280        // 灰色
         }
     }
-    
+
     /**
      * 获取权限的简化显示名称
      */
@@ -97,7 +97,7 @@ object PermissionCategoryHelper {
             else -> permission.substringAfterLast(".")
         }
     }
-    
+
     /**
      * 获取权限所属分类
      */
@@ -106,17 +106,17 @@ object PermissionCategoryHelper {
             // 媒体权限（相机、麦克风等）
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO -> PermissionCategory.MEDIA
-            
+
             // 位置权限
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_BACKGROUND_LOCATION -> PermissionCategory.LOCATION
-            
+
             // 存储权限
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.MANAGE_EXTERNAL_STORAGE -> PermissionCategory.STORAGE
-            
+
             // 通讯权限（联系人、电话、短信等）
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.WRITE_CONTACTS,
@@ -129,11 +129,11 @@ object PermissionCategoryHelper {
             Manifest.permission.READ_SMS,
             Manifest.permission.RECEIVE_SMS,
             Manifest.permission.RECEIVE_MMS -> PermissionCategory.COMMUNICATION
-            
+
             // 日历权限
             Manifest.permission.READ_CALENDAR,
             Manifest.permission.WRITE_CALENDAR -> PermissionCategory.CALENDAR
-            
+
             // 系统权限（网络、通知、系统设置等）
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE,
@@ -143,11 +143,11 @@ object PermissionCategoryHelper {
             Manifest.permission.WAKE_LOCK,
             Manifest.permission.SYSTEM_ALERT_WINDOW,
             Manifest.permission.WRITE_SETTINGS -> PermissionCategory.SYSTEM
-            
+
             else -> PermissionCategory.OTHER
         }
     }
-    
+
     /**
      * 获取分类的显示名称
      */
@@ -162,7 +162,7 @@ object PermissionCategoryHelper {
             PermissionCategory.OTHER -> "其他权限"
         }
     }
-    
+
     /**
      * 获取分类的描述
      */
@@ -177,7 +177,7 @@ object PermissionCategoryHelper {
             PermissionCategory.OTHER -> "其他未分类权限"
         }
     }
-    
+
     /**
      * 获取所有权限分类信息
      */
@@ -191,7 +191,7 @@ object PermissionCategoryHelper {
             )
         }
     }
-    
+
     /**
      * 根据分类获取权限列表
      */

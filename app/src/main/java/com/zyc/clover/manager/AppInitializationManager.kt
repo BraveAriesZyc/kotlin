@@ -103,17 +103,5 @@ class AppInitializationManager(
         return _initializationState.value == InitializationState.COMPLETED
     }
 
-    /**
-     * 检查是否正在初始化
-     */
-    fun isInitializing(): Boolean {
-        return _initializationState.value == InitializationState.INITIALIZING
-    }
 
-    /**
-     * 检查是否有初始化错误
-     */
-    fun hasError(): Boolean {
-        return _initializationState.value == InitializationState.ERROR
-    }
 }

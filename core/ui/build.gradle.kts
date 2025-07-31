@@ -18,7 +18,7 @@ dependencies {
     implementation(project(":core:model"))
     api(project(":core:router"))
 
-    // 依赖功能模块 - 移除以避免循环依赖
+
 
     // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
@@ -44,7 +44,7 @@ dependencies {
     // 生命周期
     api(libs.lifecycle.runtime.ktx)
 
-    // 视屏播放exoplayer
+    // 视频播放exoplayer
 
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.exoplayer.dash)

@@ -43,14 +43,6 @@ class MainActivity : ComponentActivity() {
 
         // 设置Compose内容
         setContent {
-            // 配置全局防抖策略（防止重复点击）
-            GlobalAntiShake.SetupGlobalConfig(
-                GlobalAntiShake.Config(
-                    defaultDelay = 500L,
-                    enableGlobalCheck = true
-                )
-            )
-
             // 应用主题包装
             CloverAppTheme {
                     // 导航入口组件，管理应用内的页面跳转

@@ -147,36 +147,15 @@ fun FormInput(
                         // 内部文本编辑区域，由 BasicTextField 提供
                         // 这是实际的文本输入区域，DecorationBox 会围绕它添加各种装饰元素
                         innerTextField = innerTextField,
-                        // 占位符文本，当文本框为空时显示在文本框内
-                        // 通常用于提供关于预期输入的提示
                         placeholder = { Text(text = placeholder, style = TextStyle(fontSize = 14.sp)) },
-                        // 文本框的标签，当文本框为空或未获得焦点时显示在文本框上方
-                        // 当文本框获得焦点或有内容时，标签会浮动到文本框上方
                         label = label,
-                        // 文本框左侧的图标，通常用于提供上下文信息或功能指示
-                        // 例如，邮箱输入框可能使用邮件图标作为 leadingIcon
                         leadingIcon = leadingIcon,
-                        // 文本框右侧的图标，通常用于提供额外功能或操作
-                        // 例如，密码输入框可能使用眼睛图标作为 trailingIcon，用于切换密码可见性
                         trailingIcon = trailingIcon,
-                        // 文本框内文本的前缀，显示在文本前面但在光标范围内
-                        // 例如，货币输入框可能使用 "$" 作为前缀
                         prefix = prefix,
-                        // 文本框内文本的后缀，显示在文本后面但在光标范围内
-                        // 例如，百分比输入框可能使用 "%" 作为后缀
                         suffix = suffix,
-                        // 支持文本，显示在文本框下方，通常用于提供额外信息或错误提示
-                        // 当 isError 为 true 时，支持文本通常会显示为错误信息
                         supportingText = supportingText,
-                        // 文本框的形状，决定了边框的圆角等属性
-                        // 通常使用 RoundedCornerShape 或 RectangleShape
                         shape = shape,
-                        // 是否为单行文本框
-                        // 为 true 时，文本框不会换行，高度固定
-                        // 为 false 时，文本框会根据内容自动换行
                         singleLine = singleLine,
-                        // 是否启用文本框
-                        // 为 false 时，文本框不可编辑，通常会显示为灰色
                         enabled = enabled,
                         // 是否显示错误状态
                         // 为 true 时，文本框边框、标签和支持文本会显示为错误颜色
