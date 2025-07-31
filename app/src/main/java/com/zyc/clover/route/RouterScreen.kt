@@ -1,5 +1,7 @@
 package com.zyc.clover.route
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -24,7 +26,11 @@ fun NavigationRouterScreen() {
         NavHost(
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
             navController = navController,
-            startDestination = Routes.Root
+            startDestination = Routes.Root,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None},
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None}
         ) {
             installRoot(navController)
         }

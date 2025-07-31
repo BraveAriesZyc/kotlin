@@ -1,6 +1,7 @@
 package com.zyc.feature.ui_showcase.screen.permission
 
 
+import android.Manifest
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.zyc.core.permission.manager.PermissionManager
+import com.zyc.core.permission.model.PermissionEnum
 import com.zyc.core.ui.components.common.ZAppBar
 import com.zyc.core.ui.components.layout.refreshview.BounceListView
 
@@ -38,29 +40,34 @@ fun PermissionComponentsScreen(
     val context = LocalContext.current
     val permissionManager = remember { PermissionManager(context) }
 
-    // 常用权限列表
-    val commonPermissions = listOf(
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO",
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.READ_CONTACTS",
-        "android.permission.CALL_PHONE",
-        "android.permission.SEND_SMS",
-        "android.permission.ACCESS_NETWORK_STATE",
-        "android.permission.INTERNET",
-        "android.permission.VIBRATE"
+    // 常用权限列表 - 使用权限枚举
+    val commonPermissionEnums = listOf(
+        PermissionEnum.CAMERA,
+        PermissionEnum.RECORD_AUDIO,
+        PermissionEnum.ACCESS_FINE_LOCATION,
+        PermissionEnum.ACCESS_COARSE_LOCATION,
+        PermissionEnum.READ_EXTERNAL_STORAGE,
+        PermissionEnum.WRITE_EXTERNAL_STORAGE,
+        PermissionEnum.READ_CONTACTS,
+        PermissionEnum.CALL_PHONE,
+        PermissionEnum.SEND_SMS,
+        PermissionEnum.ACCESS_NETWORK_STATE,
+        PermissionEnum.INTERNET,
+        PermissionEnum.VIBRATE
     )
+    
+    // 转换为权限字符串列表（用于兼容现有API）
+    val commonPermissions = commonPermissionEnums.map { it.manifestPermission }
 
     var allPermissionsGranted by remember { mutableStateOf(false) }
     var dangerousPermissionsCount by remember { mutableStateOf(0) }
 
     // 初始化权限信息
     LaunchedEffect(Unit) {
-        allPermissionsGranted = permissionManager.areAllPermissionsGranted(commonPermissions.toTypedArray())
-        dangerousPermissionsCount = commonPermissions.count { permissionManager.isDangerousPermission(it) }
+        allPermissionsGranted = permissionManager.areAllPermissionsGranted(commonPermissions)
+        dangerousPermissionsCount = commonPermissions.count { permission ->
+            permissionManager.getPermissionInfo(permission).isDangerous
+        }
     }
 
     Scaffold(
@@ -101,7 +108,7 @@ fun PermissionComponentsScreen(
                 )
             }
 
-            
+
 
             // 权限检查工具
             item {
@@ -113,7 +120,17 @@ fun PermissionComponentsScreen(
                 )
             }
 
-            
+            // 权限枚举演示
+            item {
+                PermissionEnumDemo(
+                    permissionManager = permissionManager,
+                    onResultUpdate = { result ->
+                        // 可以在这里处理结果显示
+                    }
+                )
+            }
+
+
         }
     }
 }

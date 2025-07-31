@@ -20,7 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zyc.core.permission.manager.PermissionManager
 import com.zyc.core.permission.model.PermissionCategoryHelper
-import com.zyc.core.permission.model.PermissionCategoryInfo
+import com.zyc.core.permission.model.PermissionEnum
+import com.zyc.core.permission.model.PermissionGroupInfo
 import com.zyc.core.permission.model.PermissionInfo
 import com.zyc.core.permission.model.PermissionStatus
 import com.zyc.core.ui.components.common.IconBackground
@@ -52,7 +53,7 @@ fun PermissionUseCaseDemo(
                 description = "检查相机权限是否可用",
                 icon = "\uEADD",
                 onClick = {
-                    val cameraGranted = permissionManager.isPermissionGranted(Manifest.permission.CAMERA)
+                    val cameraGranted = permissionManager.isPermissionGranted(PermissionEnum.CAMERA.manifestPermission)
                     onResultUpdate("相机功能: ${if (cameraGranted) "可用" else "需要权限授权"}")
                 }
             )
@@ -63,13 +64,13 @@ fun PermissionUseCaseDemo(
                 description = "检查位置权限状态",
                 icon = "\uED71",
                 onClick = {
-                    val locationPermissions = arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    val locationPermissions = listOf(
+                        PermissionEnum.ACCESS_FINE_LOCATION.manifestPermission,
+                        PermissionEnum.ACCESS_COARSE_LOCATION.manifestPermission
                     )
                     val results = permissionManager.checkMultiplePermissions(locationPermissions)
-                    val fineLocation = results[Manifest.permission.ACCESS_FINE_LOCATION] == PermissionStatus.GRANTED
-                    val coarseLocation = results[Manifest.permission.ACCESS_COARSE_LOCATION] == PermissionStatus.GRANTED
+                    val fineLocation = results[PermissionEnum.ACCESS_FINE_LOCATION.manifestPermission] == PermissionStatus.GRANTED
+                    val coarseLocation = results[PermissionEnum.ACCESS_COARSE_LOCATION.manifestPermission] == PermissionStatus.GRANTED
 
                     val status = when {
                         fineLocation -> "精确位置可用"
@@ -86,9 +87,9 @@ fun PermissionUseCaseDemo(
                 description = "检查存储权限",
                 icon = "\uEE6A",
                 onClick = {
-                    val storagePermissions = arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    val storagePermissions = listOf(
+                        PermissionEnum.READ_EXTERNAL_STORAGE.manifestPermission,
+                        PermissionEnum.WRITE_EXTERNAL_STORAGE.manifestPermission
                     )
                     val allGranted = permissionManager.areAllPermissionsGranted(storagePermissions)
                     onResultUpdate("文件存储: ${if (allGranted) "完全访问" else "受限访问"}")
@@ -101,7 +102,7 @@ fun PermissionUseCaseDemo(
                 description = "检查联系人权限",
                 icon = "\uEADA",
                 onClick = {
-                    val contactsGranted = permissionManager.isPermissionGranted(Manifest.permission.READ_CONTACTS)
+                    val contactsGranted = permissionManager.isPermissionGranted(PermissionEnum.READ_CONTACTS.manifestPermission)
                     onResultUpdate("通讯录访问: ${if (contactsGranted) "可访问" else "无法访问"}")
                 }
             )
@@ -180,9 +181,9 @@ private fun PermissionCategorySection(
     onResultUpdate: (String) -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    var selectedCategoryInfo by remember { mutableStateOf<PermissionCategoryInfo?>(null) }
+    var selectedCategoryInfo by remember { mutableStateOf<PermissionGroupInfo?>(null) }
     var categoryPermissions by remember { mutableStateOf<List<PermissionInfo>>(emptyList()) }
-    val allCategories = remember { permissionManager.getAllCategoryInfo() }
+    val allCategories = remember { permissionManager.getAllPermissionGroups() }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -210,7 +211,7 @@ private fun PermissionCategorySection(
                 FilterChip(
                     onClick = {
                         selectedCategoryInfo = categoryInfo
-                        categoryPermissions = permissionManager.getPermissionsByCategory(categoryInfo.category)
+                        categoryPermissions = categoryInfo.permissions
                         val grantedCount = categoryPermissions.count { it.isGranted }
                         val totalCount = categoryPermissions.size
                         onResultUpdate("${categoryInfo.displayName}: $grantedCount/$totalCount 权限已授权")
@@ -222,8 +223,8 @@ private fun PermissionCategorySection(
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             IconBackground(
-                                icon = PermissionCategoryHelper.getCategoryIcon(categoryInfo.category),
-                                color = Color(PermissionCategoryHelper.getCategoryColorHex(categoryInfo.category)),
+                                icon = categoryInfo.icon,
+                                color = Color(categoryInfo.color),
                             )
                             Text(
                                 text = categoryInfo.displayName,
@@ -270,7 +271,7 @@ private fun PermissionCategorySection(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text(
-                                    text = PermissionCategoryHelper.getPermissionSimpleName(permissionInfo.permission),
+                                    text = permissionInfo.displayName,
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Medium
                                 )
@@ -324,21 +325,26 @@ fun PermissionCheckTool(
     permissionManager: PermissionManager,
     onResultUpdate: (String) -> Unit
 ) {
-    // 常用权限列表
-    val commonPermissions = listOf(
-        "相机" to "android.permission.CAMERA",
-        "麦克风" to "android.permission.RECORD_AUDIO",
-        "精确位置" to "android.permission.ACCESS_FINE_LOCATION",
-        "大概位置" to "android.permission.ACCESS_COARSE_LOCATION",
-        "读取存储" to "android.permission.READ_EXTERNAL_STORAGE",
-        "写入存储" to "android.permission.WRITE_EXTERNAL_STORAGE",
-        "读取联系人" to "android.permission.READ_CONTACTS",
-        "拨打电话" to "android.permission.CALL_PHONE",
-        "发送短信" to "android.permission.SEND_SMS",
-        "网络状态" to "android.permission.ACCESS_NETWORK_STATE",
-        "网络访问" to "android.permission.INTERNET",
-        "震动" to "android.permission.VIBRATE"
+    // 常用权限列表 - 使用权限枚举
+    val commonPermissionEnums = listOf(
+        PermissionEnum.CAMERA,
+        PermissionEnum.RECORD_AUDIO,
+        PermissionEnum.ACCESS_FINE_LOCATION,
+        PermissionEnum.ACCESS_COARSE_LOCATION,
+        PermissionEnum.READ_EXTERNAL_STORAGE,
+        PermissionEnum.WRITE_EXTERNAL_STORAGE,
+        PermissionEnum.READ_CONTACTS,
+        PermissionEnum.CALL_PHONE,
+        PermissionEnum.SEND_SMS,
+        PermissionEnum.ACCESS_NETWORK_STATE,
+        PermissionEnum.INTERNET,
+        PermissionEnum.VIBRATE
     )
+    
+    // 转换为显示名称和权限字符串的配对列表
+    val commonPermissions = commonPermissionEnums.map { permissionEnum ->
+        permissionEnum.getDisplayName() to permissionEnum.manifestPermission
+    }
 
     Card(
         modifier = Modifier.fillMaxWidth()
@@ -366,12 +372,11 @@ fun PermissionCheckTool(
             ) {
                 items(commonPermissions.size) { index ->
                     val (label, permission) = commonPermissions[index]
-                    Button(
-                        onClick = {
-                            val isGranted = permissionManager.isPermissionGranted(permission)
-                            val isDangerous = permissionManager.isDangerousPermission(permission)
-                            onResultUpdate("权限: $label\n完整名称: $permission\n状态: ${if (isGranted) "已授权" else "未授权"}\n类型: ${if (isDangerous) "危险权限" else "普通权限"}")
-                        },
+                                            Button(
+                            onClick = {
+                                val permissionInfo = permissionManager.getPermissionInfo(permission)
+                                onResultUpdate("权限: $label\n完整名称: $permission\n状态: ${if (permissionInfo.isGranted) "已授权" else "未授权"}\n类型: ${if (permissionInfo.isDangerous) "危险权限" else "普通权限"}")
+                            },
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
