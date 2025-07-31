@@ -37,7 +37,7 @@ fun NavGraphBuilder.commonPageGraph(
         )
     }
 
-    composableLayout<Routes.Layout> {
+    composableScale<Routes.Layout> {
         LayoutScreen(
 
         )
