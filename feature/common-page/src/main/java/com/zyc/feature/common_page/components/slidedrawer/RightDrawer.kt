@@ -46,7 +46,7 @@ fun RightDrawer(
                                     item = item,
                                     onItemClick = {
                                         item.onClick()
-                                        onClose()
+//                                        onClose()
                                     }
                                 )
                             }

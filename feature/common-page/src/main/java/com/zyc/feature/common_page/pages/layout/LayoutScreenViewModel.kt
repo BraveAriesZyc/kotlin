@@ -4,7 +4,10 @@ import android.util.Log
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import com.zyc.core.router.Routes
 import com.zyc.core.ui.R
 import com.zyc.feature.common_page.components.slidedrawer.DefaultDrawerItemType
@@ -13,6 +16,8 @@ import com.zyc.feature.friend.FriendScreen
 import com.zyc.feature.home.HomeScreen
 import com.zyc.feature.message.MessageScreen
 import com.zyc.feature.profile.ProfileScreen
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class LayoutScreenViewModel(navController: NavController) : ViewModel() {
     // 当前页面状态
@@ -21,12 +26,11 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
 
 
     // 左侧抽屉状态
-    var isLeftDrawerOpen by mutableStateOf(false)
-        private set
+    private var _isLeftDrawerOpen = MutableStateFlow<Boolean>(false)
+    var isLeftDrawerOpen: StateFlow<Boolean> = _isLeftDrawerOpen
 
-    // 右侧抽屉状态
-    var isRightDrawerOpen by mutableStateOf(false)
-        private set
+    private var _isRightDrawerOpen = MutableStateFlow<Boolean>(false)
+    var isRightDrawerOpen: StateFlow<Boolean> = _isRightDrawerOpen
 
     // 抽屉拖拽偏移量
     private var _leftDrawerOffset by mutableFloatStateOf(0f)
@@ -41,11 +45,13 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             title = "首页",
             icon = R.drawable.home,
             selectIcon = R.drawable.select_home,
-            screen = { HomeScreen(
-                openDrawer = {
-                    openLeftDrawer()
-                }
-            ) }
+            screen = {
+                HomeScreen(
+                    openDrawer = {
+                        openLeftDrawer()
+                    }
+                )
+            }
         ),
 
         NavItem(
@@ -64,13 +70,16 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             title = "我的",
             icon = R.drawable.my,
             selectIcon = R.drawable.select_my,
-            screen = { ProfileScreen(
-                openDrawer = {
-                    openRightDrawer()
-                }
-            ) }
+            screen = {
+                ProfileScreen(
+                    openDrawer = {
+                        openRightDrawer()
+                    }
+                )
+            }
         )
     )
+
     // 左侧边栏数据
     val leftDrawerList = listOf(
         DefaultDrawerItemType(
@@ -94,7 +103,10 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             icon = "\uEBC4",
             color = Color.Companion.Green,
             onClick = {
-                navController.navigate(Routes.Common.WebList)
+                viewModelScope.launch {
+                    delay(3)
+                    navController.navigate(Routes.Common.WebList)
+                }
             }
         ),
 //        DefaultDrawerItemType(
@@ -155,8 +167,13 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             color = Color.Companion.Yellow,
             onClick = {
                 try {
+                    closeRightDrawer()
                     // UI展示模块
-                    navController.navigate(Routes.UIShowcase.UIShowcase)
+                    viewModelScope.launch {
+                        delay(3)
+                        navController.navigate(Routes.UIShowcase.UIShowcase)
+                    }
+
                 } catch (e: Exception) {
                     Log.e("NavigationManager", "installUiShowcaseGraph error: ${e.message}")
                     e.printStackTrace()
@@ -165,6 +182,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             }
         ),
     )
+
     // 处理页面切换
     fun setCurrentPage(page: Int) {
         if (page != _currentPage.intValue) {
@@ -183,42 +201,42 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
 
     // 左侧抽屉控制
     fun openLeftDrawer() {
-        isLeftDrawerOpen = true
-        isRightDrawerOpen = false // 确保只有一个抽屉打开
+        _isLeftDrawerOpen.value = true
+        _isRightDrawerOpen.value = false // 确保只有一个抽屉打开
     }
 
     fun closeLeftDrawer() {
-        isLeftDrawerOpen = false
+        _isLeftDrawerOpen.value = false
     }
 
     fun toggleLeftDrawer() {
-        isLeftDrawerOpen = !isLeftDrawerOpen
-        if (isLeftDrawerOpen) {
-            isRightDrawerOpen = false
+        _isLeftDrawerOpen.value = !_isLeftDrawerOpen.value
+        if (_isLeftDrawerOpen.value) {
+            _isRightDrawerOpen.value = false
         }
     }
 
     // 右侧抽屉控制
     fun openRightDrawer() {
-        isRightDrawerOpen = true
-        isLeftDrawerOpen = false // 确保只有一个抽屉打开
+        _isRightDrawerOpen.value = true
+        _isLeftDrawerOpen.value = false // 确保只有一个抽屉打开
     }
 
     fun closeRightDrawer() {
-        isRightDrawerOpen = false
+        _isRightDrawerOpen.value = false
     }
 
     fun toggleRightDrawer() {
-        isRightDrawerOpen = !isRightDrawerOpen
-        if (isRightDrawerOpen) {
-            isLeftDrawerOpen = false
+        _isRightDrawerOpen.value = !_isRightDrawerOpen.value
+        if (_isRightDrawerOpen.value) {
+            _isLeftDrawerOpen.value = false
         }
     }
 
     // 关闭所有抽屉
     fun closeAllDrawers() {
-        isLeftDrawerOpen = false
-        isRightDrawerOpen = false
+        _isLeftDrawerOpen.value = false
+        _isRightDrawerOpen.value = false
     }
 
     // 设置左侧抽屉偏移量

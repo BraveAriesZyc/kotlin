@@ -19,10 +19,9 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import com.zyc.core.router.LocalNavController
 import com.zyc.core.ui.components.layout.page.PageScreen
 import com.zyc.core.ui.components.layout.page.PageScreenData
-
-import com.zyc.core.router.LocalNavController
 import com.zyc.feature.common_page.components.bottombar.BottomNavigationBar
 import com.zyc.feature.common_page.components.slidedrawer.LeftDrawer
 import com.zyc.feature.common_page.components.slidedrawer.RightDrawer
@@ -42,6 +41,8 @@ fun LayoutScreen(
     val navController = LocalNavController.current
     val layoutViewModel by remember { mutableStateOf(LayoutScreenViewModel(navController)) }
     val pagerState = rememberPagerState(pageCount = { layoutViewModel.navItems.size })
+    val isLeftDrawerOpen by layoutViewModel.isLeftDrawerOpen.collectAsState()
+    val isRightDrawerOpen by layoutViewModel.isRightDrawerOpen.collectAsState()
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -52,8 +53,8 @@ fun LayoutScreen(
     val swipeThreshold = with(density) { (screenWidth * DrawerConfig.SWIPE_THRESHOLD_RATIO).toPx() }
     val mainContentOffset by animateFloatAsState(
         targetValue = when {
-            layoutViewModel.isLeftDrawerOpen -> drawerWidth.value
-            layoutViewModel.isRightDrawerOpen -> -drawerWidth.value
+            isLeftDrawerOpen -> drawerWidth.value
+            isRightDrawerOpen -> -drawerWidth.value
             else -> 0f
         },
         animationSpec = tween(durationMillis = 300),
@@ -195,7 +196,7 @@ fun LayoutScreen(
         }
 
         LeftDrawer(
-            isOpen = layoutViewModel.isLeftDrawerOpen,
+            isOpen =  isLeftDrawerOpen,
             drawerList = layoutViewModel.leftDrawerList,
             onClose = { layoutViewModel.closeLeftDrawer() },
             screenWidth = screenWidth,
@@ -203,7 +204,7 @@ fun LayoutScreen(
         )
 
         RightDrawer(
-            isOpen = layoutViewModel.isRightDrawerOpen,
+            isOpen =  isRightDrawerOpen,
             drawerList = layoutViewModel.rightDrawerList,
             onClose = { layoutViewModel.closeRightDrawer() },
             screenWidth = screenWidth,

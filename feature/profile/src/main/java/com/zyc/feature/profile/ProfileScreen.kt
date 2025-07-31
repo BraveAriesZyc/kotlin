@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zyc.core.router.LocalNavController
+import com.zyc.core.router.Routes
 import com.zyc.core.ui.components.common.CreateBackIcon
 import com.zyc.core.ui.components.common.ZAppBar
 import com.zyc.core.ui.components.layout.refreshview.BounceListView
@@ -43,7 +44,8 @@ fun ProfileScreen(
                     Box(
                         modifier = Modifier.debounceClick {
                             scope.launch {
-                                openDrawer()
+//                                openDrawer()
+                                navController.navigate(Routes.UIShowcase.UIShowcase)
                             }
                         },
                         content = {
