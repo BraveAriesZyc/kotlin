@@ -10,7 +10,7 @@ import com.zyc.feature.common_page.pages.web.WebViewScreen
 
 /**
  * 通用页面模块的导航配置
- * 
+ *
  * 该模块提供应用通用页面功能，包括：
  * - 启动页面
  * - 布局展示页面
@@ -21,7 +21,7 @@ import com.zyc.feature.common_page.pages.web.WebViewScreen
 
 /**
  * 添加通用页面模块的导航图
- * 
+ *
  * @param navController 导航控制器
  * @param onNavigateToAuth 导航到认证页面的回调
  * @param onNavigateToLayout 导航到布局页面的回调
@@ -33,7 +33,7 @@ fun NavGraphBuilder.commonPageGraph(
     onNavigateToLayout: () -> Unit = {},
     onBack: () -> Unit = { navController.popBackStack() }
 ) {
-    composableSlide<Routes.Start> {
+    composableScale<Routes.Start> {
         StartScreen(
             onNavigateToAuth = onNavigateToAuth,
             onNavigateToLayout = onNavigateToLayout
@@ -62,7 +62,7 @@ fun NavGraphBuilder.commonPageGraph(
 
 /**
  * 导航到布局页面
- * 
+ *
  * @receiver NavController
  */
 fun NavController.navigateToLayout() {
@@ -71,7 +71,7 @@ fun NavController.navigateToLayout() {
 
 /**
  * 导航到启动页面
- * 
+ *
  * @receiver NavController
  */
 fun NavController.navigateToStart() {
@@ -80,7 +80,7 @@ fun NavController.navigateToStart() {
 
 /**
  * 导航到WebView页面
- * 
+ *
  * @receiver NavController
  * @param url 要加载的网页URL
  */
@@ -90,7 +90,7 @@ fun NavController.navigateToWebView(url: String) {
 
 /**
  * 导航到网页列表页面
- * 
+ *
  * @receiver NavController
  */
 fun NavController.navigateToWebList() {
