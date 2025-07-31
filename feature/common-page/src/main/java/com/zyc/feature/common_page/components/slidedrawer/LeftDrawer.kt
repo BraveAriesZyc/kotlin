@@ -19,6 +19,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.zyc.core.ui.R
 import com.zyc.core.ui.components.layout.refreshview.BounceListView
 
@@ -52,7 +56,8 @@ fun LeftDrawer(
                         modifier = Modifier
                             .fillMaxHeight()
                             .padding(top = pd.calculateTopPadding())
-                            .background(MaterialTheme.colorScheme.background),
+                            .background(MaterialTheme.colorScheme.background)
+                            .baseDrawer(isDragging),
                         contentPadding = PaddingValues(vertical = 8.dp, horizontal = 8.dp),
                         content = {
                             item {

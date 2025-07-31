@@ -1,8 +1,10 @@
 package com.zyc.feature.common_page.components.slidedrawer
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,7 +16,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -82,6 +89,7 @@ fun BaseDrawer(
                     val progress = (dragOffset + drawerWidth.value) / drawerWidth.value
                     progress.coerceIn(0f, 1f)
                 }
+
                 DrawerPosition.RIGHT -> {
                     val progress = (drawerWidth.value - dragOffset) / drawerWidth.value
                     progress.coerceIn(0f, 1f)
@@ -170,8 +178,7 @@ fun DefaultDrawerItem(
             .padding(bottom = 8.dp)
             .clickable { onItemClick() }
             .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.surfaceBright)
-        ,
+            .background(MaterialTheme.colorScheme.surfaceBright),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconBackground(
@@ -206,3 +213,32 @@ data class DefaultDrawerItemType(
     val title: String,
     val onClick: () -> Unit
 )
+
+
+@SuppressLint("ModifierFactoryUnreferencedReceiver")
+fun Modifier.baseDrawer(isDragging: Boolean): Modifier {
+    return Modifier.let { modifier ->
+        if (isDragging) {
+            // 在拖拽时添加一个拦截所有滚动事件的nestedScroll
+            modifier.nestedScroll(object : NestedScrollConnection {
+                override fun onPreScroll(
+                    available: Offset,
+                    source: NestedScrollSource
+                ): Offset {
+                    return available // 消费所有滚动事件
+                }
+
+                override fun onPostScroll(
+                    consumed: Offset,
+                    available: Offset,
+                    source: NestedScrollSource
+                ): Offset {
+                    return available // 消费所有滚动事件
+                }
+            })
+        } else {
+            modifier
+        }
+    }
+
+}

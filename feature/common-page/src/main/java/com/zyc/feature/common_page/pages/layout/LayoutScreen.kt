@@ -1,6 +1,7 @@
 package com.zyc.feature.common_page.pages.layout
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -43,7 +44,7 @@ object DrawerConfig {
     const val VELOCITY_THRESHOLD = 800f // 速度阈值，用于快速滑动判断
     const val MAX_DRAG_SPEED = 15f // 最大单次拖拽距离，防止闪烁
     const val SMOOTH_FACTOR = 0.7f // 平滑系数，减少突兀变化
-    
+
     // 限制拖拽速度，防止视觉闪烁
     fun limitDragSpeed(dragValue: Float): Float {
         val maxSpeed = MAX_DRAG_SPEED
@@ -53,7 +54,7 @@ object DrawerConfig {
             else -> dragValue
         }
     }
-    
+
     // 平滑拖拽变化
     fun smoothDrag(currentOffset: Float, targetOffset: Float): Float {
         return currentOffset + (targetOffset - currentOffset) * SMOOTH_FACTOR
@@ -77,9 +78,17 @@ fun LayoutScreen(
 
     val drawerWidth = screenWidth * DrawerConfig.DRAWER_WIDTH_RATIO
 
-    val swipeThreshold = remember(screenWidth) { 
+    val swipeThreshold = remember(screenWidth) {
         with(density) { (screenWidth * DrawerConfig.SWIPE_THRESHOLD_RATIO).toPx() }
     }
+
+
+    LaunchedEffect(isRightDrawerOpen){
+        Log.d("LayoutScreen", "isOverlayMode: $isRightDrawerOpen")
+    }
+
+
+
     val maxDragDistance = remember(drawerWidth) { drawerWidth * DrawerConfig.MAX_DRAG_RATIO }
     val openThreshold = remember(drawerWidth) { drawerWidth * DrawerConfig.OPEN_THRESHOLD_RATIO }
     // 根据isOverlayMode参数决定是否应用主内容偏移
@@ -169,8 +178,21 @@ fun LayoutScreen(
                                                 val smoothOffset = DrawerConfig.smoothDrag(layoutViewModel.leftDrawerOffset, targetOffset)
                                                 layoutViewModel.setLeftDrawerOffset(smoothOffset)
                                                 layoutViewModel.setLeftDragging(true)
-                                                return available
+                                                return available // 完全消费事件，防止内容滚动
                                             }
+                                        }
+
+                                        // 左侧拖拽：反向拖拽时也要拦截事件
+                                        if (pagerState.currentPage == 0 && horizontalDrag < 0 && layoutViewModel.isLeftDragging) {
+                                            // 反向拖拽时继续更新偏移量
+                                            val limitedDrag = DrawerConfig.limitDragSpeed(horizontalDrag)
+                                            val resistedDrag = limitedDrag * DrawerConfig.DRAG_RESISTANCE_FACTOR
+                                            val targetOffset = (layoutViewModel.leftDrawerOffset + resistedDrag)
+                                                .coerceAtLeast(-drawerWidth.value)
+                                                .coerceAtMost(-drawerWidth.value + maxDragDistance.value)
+                                            val smoothOffset = DrawerConfig.smoothDrag(layoutViewModel.leftDrawerOffset, targetOffset)
+                                            layoutViewModel.setLeftDrawerOffset(smoothOffset)
+                                            return available // 完全消费事件，防止内容滚动
                                         }
 
                                         // 右侧拖拽：在最后一页且向左拖拽
@@ -189,8 +211,21 @@ fun LayoutScreen(
                                                 val smoothOffset = DrawerConfig.smoothDrag(layoutViewModel.rightDrawerOffset, targetOffset)
                                                 layoutViewModel.setRightDrawerOffset(smoothOffset)
                                                 layoutViewModel.setRightDragging(true)
-                                                return available
+                                                return available // 完全消费事件，防止内容滚动
                                             }
+                                        }
+
+                                        // 右侧拖拽：反向拖拽时也要拦截事件
+                                        if (pagerState.currentPage == lastPageIndex && horizontalDrag > 0 && layoutViewModel.isRightDragging) {
+                                            // 反向拖拽时继续更新偏移量
+                                            val limitedDrag = DrawerConfig.limitDragSpeed(horizontalDrag)
+                                            val resistedDrag = limitedDrag * DrawerConfig.DRAG_RESISTANCE_FACTOR
+                                            val targetOffset = (layoutViewModel.rightDrawerOffset + resistedDrag)
+                                                .coerceAtMost(drawerWidth.value)
+                                                .coerceAtLeast(drawerWidth.value - maxDragDistance.value)
+                                            val smoothOffset = DrawerConfig.smoothDrag(layoutViewModel.rightDrawerOffset, targetOffset)
+                                            layoutViewModel.setRightDrawerOffset(smoothOffset)
+                                            return available // 完全消费事件，防止内容滚动
                                         }
 
                                         return Offset.Zero
@@ -204,7 +239,7 @@ fun LayoutScreen(
                                         val horizontalDrag = available.x
 
                                         // 左侧拖拽开始：在第一页且向右拖拽，且还未开始拖拽
-                                        if (pagerState.currentPage == 0 && horizontalDrag > DrawerConfig.MIN_DRAG_THRESHOLD && 
+                                        if (pagerState.currentPage == 0 && horizontalDrag > DrawerConfig.MIN_DRAG_THRESHOLD &&
                                             !layoutViewModel.isLeftDragging && layoutViewModel.leftDrawerOffset == 0f) {
                                             // 开始拖拽，设置初始偏移量为从完全隐藏开始，但限制最大拖拽距离
                                             val limitedDrag = DrawerConfig.limitDragSpeed(horizontalDrag)
@@ -213,11 +248,11 @@ fun LayoutScreen(
                                                 .coerceAtMost(-drawerWidth.value + maxDragDistance.value)
                                             layoutViewModel.setLeftDrawerOffset(initialOffset)
                                             layoutViewModel.setLeftDragging(true)
-                                            return available
+                                            return available // 完全消费事件，防止内容滚动
                                         }
 
                                         // 右侧拖拽开始：在最后一页且向左拖拽，且还未开始拖拽
-                                        if (pagerState.currentPage == lastPageIndex && horizontalDrag < -DrawerConfig.MIN_DRAG_THRESHOLD && 
+                                        if (pagerState.currentPage == lastPageIndex && horizontalDrag < -DrawerConfig.MIN_DRAG_THRESHOLD &&
                                             !layoutViewModel.isRightDragging && layoutViewModel.rightDrawerOffset == 0f) {
                                             // 开始拖拽，设置初始偏移量为从完全隐藏开始，但限制最大拖拽距离
                                             val limitedDrag = DrawerConfig.limitDragSpeed(horizontalDrag)
@@ -226,7 +261,7 @@ fun LayoutScreen(
                                                 .coerceAtLeast(drawerWidth.value - maxDragDistance.value)
                                             layoutViewModel.setRightDrawerOffset(initialOffset)
                                             layoutViewModel.setRightDragging(true)
-                                            return available
+                                            return available // 完全消费事件，防止内容滚动
                                         }
 
                                         return Offset.Zero
@@ -234,13 +269,13 @@ fun LayoutScreen(
 
                                     override suspend fun onPreFling(available: Velocity): Velocity {
                                         val horizontalVelocity = available.x
-                                        
+
                                         // 处理左侧拖拽结束
                                         if (layoutViewModel.isLeftDragging) {
                                             val dragDistance = layoutViewModel.leftDrawerOffset + drawerWidth.value
-                                            val shouldOpen = dragDistance > openThreshold.value || 
+                                            val shouldOpen = dragDistance > openThreshold.value ||
                                                            horizontalVelocity > DrawerConfig.VELOCITY_THRESHOLD
-                                            
+
                                             if (shouldOpen) {
                                                 layoutViewModel.openLeftDrawer()
                                             } else {
@@ -255,9 +290,9 @@ fun LayoutScreen(
                                         // 处理右侧拖拽结束
                                         if (layoutViewModel.isRightDragging) {
                                             val dragDistance = drawerWidth.value - layoutViewModel.rightDrawerOffset
-                                            val shouldOpen = dragDistance > openThreshold.value || 
+                                            val shouldOpen = dragDistance > openThreshold.value ||
                                                            abs(horizontalVelocity) > DrawerConfig.VELOCITY_THRESHOLD
-                                            
+
                                             if (shouldOpen) {
                                                 layoutViewModel.openRightDrawer()
                                             } else {

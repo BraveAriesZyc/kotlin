@@ -174,7 +174,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             color = Color.Companion.Yellow,
             onClick = {
                 try {
-                    closeRightDrawer()
+//                    closeRightDrawer()
                     // UI展示模块
                     viewModelScope.launch {
                         delay(3)
