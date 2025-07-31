@@ -69,20 +69,20 @@ inline fun <reified T : Any> NavGraphBuilder.composableSlide(
         typeMap,
         deepLinks,
         enterTransition = {
-            // 新页面：从右到左滑入 + 渐变显示
+            // 新页面：从右到左滑入
             slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300))
         },
         exitTransition = {
-            // 旧页面：缩小消失 + 渐变消失
-            scaleOut(targetScale = 0.8f, animationSpec = tween(300))
+            // 旧页面：向左滑出
+            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(400))
         },
         popEnterTransition = {
-            // 返回时：新页面从小到大缩放 + 渐变显示
-            scaleIn(initialScale = 0.8f, animationSpec = tween(300))
+            // 返回时：新页面从左到右滑入
+            slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(300))
         },
         popExitTransition = {
-            // 返回时：旧页面从左到右滑出 + 渐变消失
-            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300))
+            // 返回时：旧页面向右滑出
+            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(400))
         },
         sizeTransform,
         content
