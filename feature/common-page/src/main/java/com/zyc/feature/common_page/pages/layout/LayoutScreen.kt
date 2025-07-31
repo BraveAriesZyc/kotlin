@@ -35,7 +35,9 @@ object DrawerConfig {
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun LayoutScreen() {
+fun LayoutScreen(
+    isOverlayMode: Boolean = false // 默认为重叠模式
+) {
     val navController = LocalNavController.current
     val layoutViewModel by remember { mutableStateOf(LayoutScreenViewModel(navController)) }
     val pagerState = rememberPagerState(pageCount = { layoutViewModel.navItems.size })
@@ -49,11 +51,16 @@ fun LayoutScreen() {
     val drawerWidth = screenWidth * DrawerConfig.DRAWER_WIDTH_RATIO
 
     val swipeThreshold = with(density) { (screenWidth * DrawerConfig.SWIPE_THRESHOLD_RATIO).toPx() }
+    // 根据isOverlayMode参数决定是否应用主内容偏移
     val mainContentOffset by animateFloatAsState(
-        targetValue = when {
-            isLeftDrawerOpen -> drawerWidth.value
-            isRightDrawerOpen -> -drawerWidth.value
-            else -> 0f
+        targetValue = if (isOverlayMode) {
+            0f // 重叠模式：主内容不偏移
+        } else {
+            when {
+                isLeftDrawerOpen -> drawerWidth.value
+                isRightDrawerOpen -> -drawerWidth.value
+                else -> 0f
+            }
         },
         animationSpec = tween(durationMillis = 300),
         label = "mainContentOffset"
