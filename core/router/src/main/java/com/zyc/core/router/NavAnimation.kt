@@ -74,7 +74,7 @@ inline fun <reified T : Any> NavGraphBuilder.composableSlide(
         },
         exitTransition = {
             // 旧页面：向左滑出
-            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(400))
+            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(300))
         },
         popEnterTransition = {
             // 返回时：新页面从左到右滑入
@@ -82,7 +82,7 @@ inline fun <reified T : Any> NavGraphBuilder.composableSlide(
         },
         popExitTransition = {
             // 返回时：旧页面向右滑出
-            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(400))
+            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300))
         },
         sizeTransform,
         content
