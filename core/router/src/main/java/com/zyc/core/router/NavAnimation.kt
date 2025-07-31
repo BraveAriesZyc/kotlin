@@ -120,35 +120,4 @@ inline fun <reified T : Any> NavGraphBuilder.composableFaded(
         content
     )
 }
-//  滑动动画
-inline fun <reified T : Any> NavGraphBuilder.composableLayout(
-    typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
-    deepLinks: List<NavDeepLink> = emptyList(),
-    noinline sizeTransform:
-    (AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards
-    SizeTransform?)? =
-        null,
-    noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
-) {
-    composable(
-        T::class,
-        typeMap,
-        deepLinks,
-        enterTransition = {
-            // 新页面：由内往外扩展 + 渐变显示
-            fadeIn(animationSpec = tween(300)) + scaleIn(initialScale = 0.8f, animationSpec = tween(300))
-        },
-        exitTransition = {
-            // 旧页面：向内缩放 + 渐变消失
-            fadeOut(animationSpec = tween(300)) + scaleOut(targetScale = 0.8f, animationSpec = tween(300))
-        }, popEnterTransition = {
-            // 返回时：新页面（实际上是旧页面）由内往外扩展 + 渐变显示
-            fadeIn(animationSpec = tween(300)) + scaleIn(initialScale = 0.8f, animationSpec = tween(300))
-        }, popExitTransition = {
-            // 返回时：旧页面（实际上是新页面）向内缩放 + 渐变消失
-            fadeOut(animationSpec = tween(300)) + scaleOut(targetScale = 0.8f, animationSpec = tween(300))
-        },
-        sizeTransform,
-        content
-    )
-}
+
