@@ -19,13 +19,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+
 import com.zyc.core.ui.R
 import com.zyc.core.ui.components.layout.refreshview.BounceListView
-
 import com.zyc.core.ui.utils.event.GlobalAntiShake.debounceClick
 
 @SuppressLint("ConfigurationScreenWidthHeight")

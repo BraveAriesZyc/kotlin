@@ -215,30 +215,3 @@ data class DefaultDrawerItemType(
 )
 
 
-@SuppressLint("ModifierFactoryUnreferencedReceiver")
-fun Modifier.baseDrawer(isDragging: Boolean): Modifier {
-    return Modifier.let { modifier ->
-        if (isDragging) {
-            // 在拖拽时添加一个拦截所有滚动事件的nestedScroll
-            modifier.nestedScroll(object : NestedScrollConnection {
-                override fun onPreScroll(
-                    available: Offset,
-                    source: NestedScrollSource
-                ): Offset {
-                    return available // 消费所有滚动事件
-                }
-
-                override fun onPostScroll(
-                    consumed: Offset,
-                    available: Offset,
-                    source: NestedScrollSource
-                ): Offset {
-                    return available // 消费所有滚动事件
-                }
-            })
-        } else {
-            modifier
-        }
-    }
-
-}

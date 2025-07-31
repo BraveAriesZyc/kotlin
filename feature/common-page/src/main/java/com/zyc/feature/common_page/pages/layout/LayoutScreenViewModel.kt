@@ -19,32 +19,17 @@ import com.zyc.feature.profile.ProfileScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class LayoutScreenViewModel(navController: NavController) : ViewModel() {
+class LayoutScreenViewModel(
+    navController: NavController,
+    private val onOpenLeftDrawer: () -> Unit = {},
+    private val onOpenRightDrawer: () -> Unit = {}
+) : ViewModel() {
     // 当前页面状态
     private val _currentPage = mutableIntStateOf(0)
     val currentPage: State<Int> = _currentPage
 
 
-    // 左侧抽屉状态
-    private var _isLeftDrawerOpen = MutableStateFlow<Boolean>(false)
-    var isLeftDrawerOpen: StateFlow<Boolean> = _isLeftDrawerOpen
-
-    private var _isRightDrawerOpen = MutableStateFlow<Boolean>(false)
-    var isRightDrawerOpen: StateFlow<Boolean> = _isRightDrawerOpen
-
-    // 抽屉拖拽偏移量
-    private var _leftDrawerOffset by mutableFloatStateOf(0f)
-    val leftDrawerOffset: Float get() = _leftDrawerOffset
-
-    private var _rightDrawerOffset by mutableFloatStateOf(0f)
-    val rightDrawerOffset: Float get() = _rightDrawerOffset
-
-    // 拖拽状态
-    private var _isLeftDragging by mutableStateOf(false)
-    val isLeftDragging: Boolean get() = _isLeftDragging
-
-    private var _isRightDragging by mutableStateOf(false)
-    val isRightDragging: Boolean get() = _isRightDragging
+    // 侧边栏相关逻辑已移至BaseDrawerViewModel
 
     // 导航项列表
     val navItems = listOf(
@@ -54,9 +39,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             selectIcon = R.drawable.select_home,
             screen = {
                 HomeScreen(
-                    openDrawer = {
-                        openLeftDrawer()
-                    }
+                    openDrawer = onOpenLeftDrawer
                 )
             }
         ),
@@ -79,9 +62,7 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
             selectIcon = R.drawable.select_my,
             screen = {
                 ProfileScreen(
-                    openDrawer = {
-                        openRightDrawer()
-                    }
+                    openDrawer = onOpenRightDrawer
                 )
             }
         )
@@ -206,63 +187,5 @@ class LayoutScreenViewModel(navController: NavController) : ViewModel() {
         selectedIndex = index
     }
 
-    // 左侧抽屉控制
-    fun openLeftDrawer() {
-        _isLeftDrawerOpen.value = true
-        _isRightDrawerOpen.value = false // 确保只有一个抽屉打开
-    }
-
-    fun closeLeftDrawer() {
-        _isLeftDrawerOpen.value = false
-    }
-
-    fun toggleLeftDrawer() {
-        _isLeftDrawerOpen.value = !_isLeftDrawerOpen.value
-        if (_isLeftDrawerOpen.value) {
-            _isRightDrawerOpen.value = false
-        }
-    }
-
-    // 右侧抽屉控制
-    fun openRightDrawer() {
-        _isRightDrawerOpen.value = true
-        _isLeftDrawerOpen.value = false // 确保只有一个抽屉打开
-    }
-
-    fun closeRightDrawer() {
-        _isRightDrawerOpen.value = false
-    }
-
-    fun toggleRightDrawer() {
-        _isRightDrawerOpen.value = !_isRightDrawerOpen.value
-        if (_isRightDrawerOpen.value) {
-            _isLeftDrawerOpen.value = false
-        }
-    }
-
-    // 关闭所有抽屉
-    fun closeAllDrawers() {
-        _isLeftDrawerOpen.value = false
-        _isRightDrawerOpen.value = false
-    }
-
-    // 设置左侧抽屉偏移量
-    fun setLeftDrawerOffset(offset: Float) {
-        _leftDrawerOffset = offset
-    }
-
-    // 设置右侧抽屉偏移量
-    fun setRightDrawerOffset(offset: Float) {
-        _rightDrawerOffset = offset
-    }
-
-    // 设置左侧拖拽状态
-    fun setLeftDragging(isDragging: Boolean) {
-        _isLeftDragging = isDragging
-    }
-
-    // 设置右侧拖拽状态
-    fun setRightDragging(isDragging: Boolean) {
-        _isRightDragging = isDragging
-    }
+    // 侧边栏控制方法已移至BaseDrawerViewModel
 }
