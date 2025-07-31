@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Warning
@@ -18,10 +19,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.zyc.core.permission.manager.PermissionManager
 import com.zyc.core.permission.model.Permission
+import com.zyc.core.ui.R
+import com.zyc.core.ui.components.common.IconBackground
 import com.zyc.core.ui.components.common.ZAppBar
 import com.zyc.core.ui.components.layout.refreshview.BounceListView
 
@@ -156,36 +162,17 @@ private fun PermissionStatsCard(
     grantedPermissions: Int,
     dangerousPermissions: Int,
     allGranted: Boolean
-) {
-    val gradientColors = if (allGranted) {
-        listOf(
-            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f),
-            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
-        )
-    } else {
-        listOf(
-            MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.8f),
-            MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f)
-        )
-    }
-
-    Card(
+) { Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            .clip(RoundedCornerShape(8.dp)),
         colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
+            containerColor = MaterialTheme.colorScheme.surfaceBright
         )
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = gradientColors
-                    )
-                )
         ) {
             Column(
                 modifier = Modifier.padding(20.dp)
@@ -203,6 +190,7 @@ private fun PermissionStatsCard(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = "应用权限状态概览",
                             style = MaterialTheme.typography.bodySmall,
@@ -210,28 +198,13 @@ private fun PermissionStatsCard(
                         )
                     }
 
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
+                    IconBackground(
+                        icon = if (allGranted) "\uEB20" else "\uEA15",
                         color = if (allGranted)
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                            MaterialTheme.colorScheme.primary
                         else
-                            MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
-                        modifier = Modifier.size(48.dp)
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = if (allGranted) Icons.Default.Check else Icons.Default.Warning,
-                                contentDescription = null,
-                                tint = if (allGranted)
-                                    MaterialTheme.colorScheme.primary
-                                else
-                                    MaterialTheme.colorScheme.error,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
+                            MaterialTheme.colorScheme.error
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -244,20 +217,20 @@ private fun PermissionStatsCard(
                     EnhancedStatItem(
                         label = "总权限",
                         value = totalPermissions.toString(),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        backgroundColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+                        color = MaterialTheme.colorScheme.secondary,
+                        backgroundColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
                     )
                     EnhancedStatItem(
                         label = "已授权",
                         value = grantedPermissions.toString(),
                         color = MaterialTheme.colorScheme.primary,
-                        backgroundColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                        backgroundColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
                     )
                     EnhancedStatItem(
                         label = "危险权限",
                         value = dangerousPermissions.toString(),
                         color = MaterialTheme.colorScheme.error,
-                        backgroundColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
+                        backgroundColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f)
                     )
                 }
 
@@ -376,6 +349,7 @@ private fun PermissionCategoryCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -475,6 +449,7 @@ private fun PermissionDetailTool(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -533,10 +508,8 @@ private fun ClickablePermissionItem(
             .fillMaxWidth()
             .clickable { onClick() },
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceBright
-
+            containerColor = if(isGranted)  MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
         ),
-//        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -589,11 +562,12 @@ private fun ClickablePermissionItem(
                 }
 
                 // 箭头指示器
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = "查看详情",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
+                // 箭头图标
+                Text(
+                    text = "\uEB3C",
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontFamily = FontFamily(Font(R.font.icons)),
                 )
             }
         }
