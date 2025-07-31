@@ -54,7 +54,6 @@ object GlobalAntiShake {
         interactionSource: MutableInteractionSource? = null,
         onClick: () -> Unit
     ): Modifier = composed {
-        var lastClickTime by remember { mutableStateOf(0L) }
         var isDebouncing by remember { mutableStateOf(false) }
         clickable(
             indication = indication,
@@ -62,13 +61,13 @@ object GlobalAntiShake {
             enabled = config.enabled && !isDebouncing
         ) {
             val currentTime = System.currentTimeMillis()
+            val lastTime = clickRecords[config.key] ?: 0
             
             if (AppConfig.ENABLE_LOGGING) {
-                println("DebounceClick[${config.key}]: Attempting click at $currentTime")
+                println("DebounceClick[${config.key}]: Attempting click at $currentTime, last: $lastTime")
             }
 
-            if (canExecuteEvent(config, currentTime, lastClickTime)) {
-                lastClickTime = currentTime
+            if (canExecuteEvent(config, currentTime, lastTime)) {
                 clickRecords[config.key] = currentTime
                 isDebouncing = true
 

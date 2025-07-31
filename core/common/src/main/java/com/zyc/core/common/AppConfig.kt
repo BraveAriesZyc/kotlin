@@ -30,5 +30,5 @@ data object AppConfig {
 
     // 通用开关配置
     const val ENABLE_DEBUG = true
-    const val ENABLE_LOGGING = false
+    const val ENABLE_LOGGING = true
 }
