@@ -66,6 +66,12 @@ object Routes {
 
         @Serializable
         data object Setting
+
+        @Serializable
+        data object ThemeSetting
+
+        @Serializable
+        data object LanguageSetting
     }
 
     // ==================== UI展示模块路由 ====================

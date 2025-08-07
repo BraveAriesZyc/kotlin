@@ -2,7 +2,10 @@ package com.zyc.feature.profile
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.zyc.core.router.*
+import com.zyc.core.router.Routes
+import com.zyc.core.router.composableSlide
+import com.zyc.feature.profile.pages.setting.SettingScreen
+import com.zyc.feature.profile.pages.theme.ThemeSettingScreen
 
 /**
  * 个人资料模块的导航配置
@@ -26,8 +29,11 @@ fun NavGraphBuilder.profileGraph(
     onNavigateToAuth: () -> Unit = {},
     onBack: () -> Unit = { navController.popBackStack() }
 ) {
-    composableSlide<Routes.Profile.Profile> {
-
+    composableSlide<Routes.Profile.Setting> {
+        SettingScreen()
+    }
+    composableSlide<Routes.Profile.ThemeSetting> {
+        ThemeSettingScreen()
     }
 }
 

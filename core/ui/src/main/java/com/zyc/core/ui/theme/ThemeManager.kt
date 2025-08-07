@@ -1,32 +1,34 @@
 package com.zyc.core.ui.theme
 
 import androidx.compose.material3.ColorScheme
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import com.zyc.core.ui.theme.config.antDesign
 import com.zyc.core.ui.theme.config.element
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-enum class AppTheme {
-    ANT_DESIGN,
-    ELEMENT_UI
+enum class AppTheme(val title: String) {
+    ANT_DESIGN("Ant Design"),
+    ELEMENT_UI("Element UI")
 }
 
 class ThemeManager private constructor() {
 
-    // 使用StateFlow确保Compose能够观察并响应颜色变化
-    private val _themeMap = MutableStateFlow(
-        mapOf(
-            AppTheme.ANT_DESIGN to antDesign,
-            AppTheme.ELEMENT_UI to element
+
+    private val _themeList = MutableStateFlow(
+        listOf(
+            ThemeType(AppTheme.ELEMENT_UI.title, element),
+            ThemeType(AppTheme.ANT_DESIGN.title, antDesign),
         )
     )
-    val themeMap: StateFlow<Map<AppTheme, ColorScheme>> = _themeMap
 
-    val currentTheme = mutableStateOf(element)
 
-    fun updateTheme(theme: AppTheme) {
-        currentTheme.value = _themeMap.value[theme] ?: antDesign
+    val themeList: StateFlow<List<ThemeType>> = _themeList
+
+    val currentTheme = mutableIntStateOf(0)
+
+    fun updateTheme(index: Int) {
+        currentTheme.intValue = index
     }
 
     companion object {
@@ -42,3 +44,8 @@ class ThemeManager private constructor() {
         }
     }
 }
+
+class ThemeType(
+    val title: String,
+    val theme: ColorScheme
+)

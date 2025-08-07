@@ -123,6 +123,7 @@ class LayoutScreenViewModel(
             color = Color.Companion.Gray,
             onClick = {
                 // 个人设置逻辑
+                navController.navigate(Routes.Profile.Setting)
             }
         ),
         DefaultDrawerItemType(
