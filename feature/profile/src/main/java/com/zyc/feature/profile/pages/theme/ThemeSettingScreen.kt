@@ -45,7 +45,6 @@ fun ThemeSettingScreen() {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-
                                     .padding(bottom = 8.dp)
                                     .clip(
                                         shape = RoundedCornerShape(8.dp)
@@ -72,45 +71,6 @@ fun ThemeSettingScreen() {
                                 }
                             )
                         }
-
-//                        themeMap.forEach { entry ->
-//                            item(
-//                                key = entry.key,
-//                                content = {
-//                                    Row(
-//                                        modifier = Modifier
-//                                            .fillMaxWidth()
-//
-//                                            .padding(bottom = 8.dp)
-//                                            .clip(
-//                                                shape = RoundedCornerShape(8.dp)
-//                                            )
-//                                            .background(MaterialTheme.colorScheme.surfaceBright)
-//                                            .debounceClick {
-//                                                themeModel.updateTheme(entry.key)
-//                                            },
-//                                        verticalAlignment = Alignment.CenterVertically,
-//                                        content = {
-//                                            IconBackground(
-//                                                icon = "\uECB4",
-//                                                color = themeMap[entry.key]?.primary ?: MaterialTheme.colorScheme.primary,
-//                                            )
-//                                            Spacer(modifier = Modifier.width(16.dp))
-//                                            // 标题
-//                                            Text(
-//                                                text = entry.key.name,
-//                                                fontSize = 16.sp,
-//                                                fontWeight = FontWeight.Medium,
-//                                                color = MaterialTheme.colorScheme.onSurface,
-//                                                modifier = Modifier.weight(1f)
-//                                            )
-//                                        }
-//                                    )
-//
-//                                }
-//                            )
-//                        }
-
                     }
                 }
             )

@@ -18,6 +18,8 @@ android {
 
 
 dependencies {
+    //
+    implementation(project(":widget"))
     // 功能模块
     implementation(project(":feature:auth"))
     implementation(project(":feature:home"))
@@ -71,9 +73,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-
-
 
     implementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(platform(libs.androidx.compose.bom))
