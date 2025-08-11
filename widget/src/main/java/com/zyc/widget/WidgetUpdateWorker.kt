@@ -1,12 +1,15 @@
 package com.zyc.widget
 
+
 import android.content.Context
 import android.util.Log
 import androidx.glance.appwidget.updateAll
-import androidx.work.*
+import androidx.work.CoroutineWorker
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
 import com.zyc.widget.ui.LoveWidget
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 /**
@@ -20,29 +23,28 @@ class WidgetUpdateWorker(
 
     override suspend fun doWork(): Result {
         return try {
-            // 记录更新时间和日志
-            val currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
-            Log.d("小组件更新", "正在更新小组件，当前时间：$currentTime")
-
-            // 更新小组件
+            Log.d("小组件定时更新", "开始更新小组件数据")
+            // 更新今日课程小组件
             LoveWidget().updateAll(applicationContext)
-
-            Log.d("小组件更新", "更新成功")
             Result.success()
         } catch (e: Exception) {
-            Log.e("小组件更新", "更新失败：${e.message}", e)
+             Log.e("小组件定时更新", "Failed to update widgets", e)
             Result.retry()
         }
     }
 
+
     companion object {
         private const val WORK_NAME = "widget_update_work"
 
-        fun startOneSecondUpdate(context: Context) {
+        /**
+         * 启动定期更新任务
+         */
+        fun startPeriodicUpdate(context: Context) {
             val workRequest = PeriodicWorkRequestBuilder<WidgetUpdateWorker>(
-                1, TimeUnit.SECONDS
+                30, TimeUnit.MINUTES // 每30分钟更新一次
             ).build()
-            Log.d("小组件更新", "更新成功")
+
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 WORK_NAME,
                 ExistingPeriodicWorkPolicy.KEEP,
@@ -50,8 +52,10 @@ class WidgetUpdateWorker(
             )
         }
 
-        fun stopUpdate(context: Context) {
-            Log.d("小组件更新", "停止更新任务")
+        /**
+         * 停止定期更新任务
+         */
+        fun stopPeriodicUpdate(context: Context) {
             WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
         }
     }

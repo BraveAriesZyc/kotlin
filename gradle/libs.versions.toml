@@ -47,6 +47,7 @@ androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = 
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 
 # Material Design
+
 androidx-material = { module = "com.google.android.material:material", version.ref = "material" }
 androidx-material3 = { module = "androidx.compose.material3:material3" }
 androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3-ui" }
@@ -82,6 +83,7 @@ kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", v
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
 kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin-gradle-plugin" }
 androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance-appwidget" }
+
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work-runtime-ktx" }
 
 

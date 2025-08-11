@@ -177,6 +177,17 @@ class UIShowcaseHomeViewModel : ViewModel() {
                 "权限信息获取 - 获取权限详细信息",
                 "权限管理器演示 - PermissionManager核心功能"
             )
+        ),
+        ComponentCategory(
+            title = "系统",
+            description = "权限管理和检查相关的组件演示",
+            route = Routes.UIShowcase.SystemComponents,
+            icon = "\uEA56",
+            items = listOf(
+                "ZAppBar - 统一的应用顶部导航栏",
+                "通用按钮组件",
+                "通用卡片组件"
+            )
         )
     )
 }

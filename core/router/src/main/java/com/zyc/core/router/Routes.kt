@@ -108,5 +108,8 @@ object Routes {
 
         @Serializable
         data object PermissionComponents
+
+        @Serializable
+        data object SystemComponents
     }
 }

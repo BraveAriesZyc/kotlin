@@ -4,12 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "com.zyc.feature.ui_showcase"
+    namespace = "com.zyc.widget"
 
 
 }
 dependencies {
     implementation(libs.androidx.glance.appwidget)
+
     implementation(libs.androidx.work.runtime.ktx)
 }
 

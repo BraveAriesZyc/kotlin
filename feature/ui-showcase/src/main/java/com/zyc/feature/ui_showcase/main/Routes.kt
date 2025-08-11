@@ -14,6 +14,7 @@ import com.zyc.feature.ui_showcase.screen.interaction.InteractionComponentsScree
 import com.zyc.feature.ui_showcase.screen.layout.LayoutComponentsScreen
 import com.zyc.feature.ui_showcase.screen.navigation.NavigationComponentsScreen
 import com.zyc.feature.ui_showcase.screen.permission.PermissionComponentsScreen
+import com.zyc.feature.ui_showcase.screen.system.NotificationScreen
 
 /**
  * UI展示模块的子页面路由配置
@@ -88,7 +89,11 @@ fun NavGraphBuilder.installUIShowcaseScreens(
             onBack = { navController.popBackStack() }
         )
     }
-
+    composableSlide<Routes.UIShowcase.SystemComponents> {
+        NotificationScreen(
+            onBack = { navController.popBackStack() }
+        )
+    }
     composableSlide<Routes.UIShowcase.PermissionComponents> {
         PermissionComponentsScreen(
             onBack = { navController.popBackStack() }
