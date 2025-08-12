@@ -4,11 +4,10 @@ import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
-import com.zyc.widget.R
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionStartActivity
@@ -17,7 +16,9 @@ import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.layout.*
 import androidx.glance.text.Text
+import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import com.zyc.widget.R
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -54,7 +55,9 @@ class LoveWidget : GlanceAppWidget() {
                                 modifier = GlanceModifier.fillMaxWidth(),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 content = {
-                                    Text(text = "恋爱记")
+                                    Text(text = "🍀☀🍂❄", style = TextStyle(
+                                        fontSize = 16.sp
+                                    ))
                                 }
                             )
                             Spacer(modifier = GlanceModifier.height(5.dp))
@@ -66,8 +69,8 @@ class LoveWidget : GlanceAppWidget() {
                                     Row(
                                         modifier = GlanceModifier.fillMaxWidth(),
                                         content = {
-                                            Text(text = "天数: ")
-                                            Text(text = getDaysFromMarch1st())
+                                            Text(text = "存活天数: ")
+                                            Text(text = getDaysFrom2002March25thToToday())
                                         }
                                     )
                                     Spacer(modifier = GlanceModifier.height(5.dp))
@@ -88,18 +91,18 @@ class LoveWidget : GlanceAppWidget() {
         }
     }
 
-    // 获取从3月1日到今天的天数
-    private fun getDaysFromMarch1st(): String {
+    private fun getDaysFrom2002March25thToToday(): String {
+        // 固定起始日期：2002年3月25日
+        val startDate = LocalDate.of(2002, 3, 25)
+        // 获取系统当前日期（动态变化）
         val today = LocalDate.now()
-        // 确定年份：如果当前月份在3月之前，使用上一年
-        val year = if (today.monthValue < 3) today.year - 1 else today.year
-        val march1st = LocalDate.of(year, 3, 1)
 
-        // 计算天数差并加1，包含首尾日期
-        val days = ChronoUnit.DAYS.between(march1st, today) + 1
+        // 计算天数：两个日期之间的间隔天数 + 1（包含首尾两天）
+        val days = ChronoUnit.DAYS.between(startDate, today) + 1
+
+        // 返回结果（例如："8513 天"）
         return "$days 天"
     }
-
     // 获取带秒数的当前时间
     private fun getCurrentTimeWithSeconds(): String {
         val now = LocalDateTime.now()
