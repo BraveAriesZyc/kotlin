@@ -7,9 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.zyc.core.permission.manager.PermissionManager
+
 import com.zyc.core.permission.model.Permission
-import com.zyc.core.permission.model.PermissionStatus
 import com.zyc.core.permission.notification.NotificationUtil
 import com.zyc.core.ui.components.common.ZAppBar
 import com.zyc.core.ui.components.layout.refreshview.BounceListView
@@ -29,7 +28,6 @@ fun NotificationScreen(
         content = {
 
             val context = LocalContext.current
-            val permissionState = PermissionManager(context)
 
 
             val channelId = "test_channel_id"
@@ -40,8 +38,8 @@ fun NotificationScreen(
                     item {
                         Button(
                             onClick = {
-                                if (
-                                    permissionState.checkPermissionStatus(Permission.POST_NOTIFICATIONS) == PermissionStatus.GRANTED
+                                if (true
+//                                    permissionState.checkPermissionStatus(Permission.POST_NOTIFICATIONS) == PermissionStatus.GRANTED
                                     ) {
                                     NotificationUtil.sendNotification(
                                         context,
@@ -51,7 +49,7 @@ fun NotificationScreen(
                                         "你好吗？"
                                     )
                                 } else {
-                                    permissionState.requestPermission(Permission.POST_NOTIFICATIONS)
+//                                    permissionState.requestPermission(Permission.POST_NOTIFICATIONS)
                                 }
                             },
                             content = {

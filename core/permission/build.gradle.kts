@@ -1,5 +1,6 @@
 plugins {
     id("android-library-convention")
+    alias(libs.plugins.composeCompiler)
 }
 
 android {
@@ -8,5 +9,5 @@ android {
 
 dependencies {
     // 核心Android依赖
-    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.activity.compose)
 }

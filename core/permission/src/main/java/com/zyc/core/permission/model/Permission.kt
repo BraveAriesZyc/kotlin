@@ -59,17 +59,7 @@ enum class Permission(
     POST_NOTIFICATIONS(Manifest.permission.POST_NOTIFICATIONS, "通知权限"),
     //振动
 
-    VIBRATE(Manifest.permission.VIBRATE, "振动权限")
-    // 其他
-}
-
-
-
-// 定义权限状态枚举
-enum class PermissionStatus(
-    val description: String
-) {
-    GRANTED("同意"),         // 同意
-    TEMPORARILY_DENIED("临时拒绝"),  // 临时拒绝
-    PERMANENTLY_DENIED("永久拒绝")   // 永久拒绝
+    VIBRATE(Manifest.permission.VIBRATE, "振动权限"),
+    // 网络
+    NETWORK(Manifest.permission.INTERNET, "网络权限")
 }

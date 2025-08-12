@@ -31,13 +31,9 @@ fun UIShowcaseScreen(
     viewModel: UIShowcaseHomeViewModel = viewModel(),
     onBack: () -> Unit = {}
 ) {
-    Log.d("UIShowcaseScreen", "UIShowcaseScreen composable started")
     val uiState by viewModel.uiState.collectAsState()
-    Log.d("UIShowcaseScreen", "UI state collected: isLoading=${uiState.isLoading}, error=${uiState.error}, categories size=${uiState.categories.size}")
-
     when {
         uiState.isLoading -> {
-            Log.d("UIShowcaseScreen", "Showing loading state")
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
