@@ -31,18 +31,8 @@ class PermissionViewModel : ViewModel() {
             ),
             PermissionModel(
                 permission = Permission.FINE_LOCATION,
-                icon = "\uED6F",
-                iconColor = Color(0xFFB886FF)
-            ),
-            PermissionModel(
-                permission = Permission.COARSE_LOCATION,
                 icon = "\uED71",
                 iconColor = Color(0xFFFFD700)
-            ),
-            PermissionModel(
-                permission = Permission.READ_EXTERNAL_STORAGE,
-                icon = "\uEBDF",
-                iconColor = Color(0xFF8C42FF)
             ),
             PermissionModel(
                 permission = Permission.WRITE_EXTERNAL_STORAGE,
