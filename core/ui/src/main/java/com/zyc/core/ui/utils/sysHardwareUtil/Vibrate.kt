@@ -1,11 +1,10 @@
 package com.zyc.core.ui.utils.sysHardwareUtil
 
 import android.content.Context
-import android.os.Build
+import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import android.media.AudioAttributes
 import android.util.Log
 
 /**
@@ -44,18 +43,14 @@ object VibrationUtils {
                 // 震动强度数组，与模式对应（0表示等待阶段）
                 val intensities = intArrayOf(0, 200, 0, 255, 0, 150)
 
-                val vibrationEffect = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val vibrationEffect =
                     if (vibrator.hasAmplitudeControl()) {
                         VibrationEffect.createWaveform(pattern, intensities, -1)
                     } else {
                         VibrationEffect.createWaveform(pattern, -1)
                     }
-                } else {
-                    @Suppress("DEPRECATION")
-                    VibrationEffect.createWaveform(pattern, -1)
-                }
 
-                vibrator.vibrate(vibrationEffect, getAudioAttributes())
+                vibrator.vibrate(vibrationEffect, getVibrationAttributes())
                 Log.d(TAG, "模式震动已触发")
             }
         } catch (e: Exception) {
@@ -72,18 +67,17 @@ object VibrationUtils {
         try {
             val vibrator = getVibrator(context)
             if (vibrator?.hasVibrator() == true) {
-                val vibrationEffect = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val vibrationEffect =
                     if (vibrator.hasAmplitudeControl() && amplitude != VibrationEffect.DEFAULT_AMPLITUDE) {
                         VibrationEffect.createOneShot(milliseconds, amplitude)
                     } else {
                         VibrationEffect.createOneShot(milliseconds, VibrationEffect.DEFAULT_AMPLITUDE)
                     }
-                } else {
-                    @Suppress("DEPRECATION")
-                    VibrationEffect.createOneShot(milliseconds, VibrationEffect.DEFAULT_AMPLITUDE)
-                }
 
-                vibrator.vibrate(vibrationEffect, getAudioAttributes())
+                vibrator.vibrate(
+                    vibrationEffect,
+                    getVibrationAttributes()
+                )
                 Log.d(TAG, "震动已触发，时长: $milliseconds ms")
             }
         } catch (e: Exception) {
@@ -96,27 +90,19 @@ object VibrationUtils {
      */
     private fun getVibrator(context: Context): Vibrator? {
         return try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                vibratorManager.defaultVibrator
-            } else {
-                @Suppress("DEPRECATION")
-                context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            }
+            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
         } catch (e: Exception) {
             Log.e(TAG, "获取振动器失败: ${e.message}", e)
             null
         }
     }
 
-    /**
-     * 获取音频属性配置
-     * 用于告知系统震动的用途，以便系统进行适当的资源管理
-     */
-    private fun getAudioAttributes(): AudioAttributes {
-        return AudioAttributes.Builder()
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .setUsage(AudioAttributes.USAGE_ALARM)
+    private fun getVibrationAttributes(): VibrationAttributes {
+
+
+        return VibrationAttributes.Builder()
+            .setUsage(VibrationAttributes.USAGE_NOTIFICATION) // 震动用途（通知/游戏/触摸等）
             .build()
     }
 }

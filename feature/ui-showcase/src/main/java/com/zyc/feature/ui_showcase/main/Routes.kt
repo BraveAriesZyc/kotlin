@@ -13,6 +13,7 @@ import com.zyc.feature.ui_showcase.screen.hardware.HardwareComponentsScreen
 import com.zyc.feature.ui_showcase.screen.interaction.InteractionComponentsScreen
 import com.zyc.feature.ui_showcase.screen.layout.LayoutComponentsScreen
 import com.zyc.feature.ui_showcase.screen.navigation.NavigationComponentsScreen
+import com.zyc.feature.ui_showcase.screen.network.media.VideoComponentsScreen
 import com.zyc.feature.ui_showcase.screen.network.upload.FileUploadComponentsScreen
 import com.zyc.feature.ui_showcase.screen.permission.PermissionComponentsScreen
 import com.zyc.feature.ui_showcase.screen.system.NotificationScreen
@@ -102,6 +103,11 @@ fun NavGraphBuilder.installUIShowcaseScreens(
     }
     composableSlide<Routes.UIShowcase.NetworkComponents.FileUploadComponents> {
         FileUploadComponentsScreen(
+            onBack = { navController.popBackStack() }
+        )
+    }
+    composableSlide<Routes.UIShowcase.NetworkComponents.VideoComponents> {
+        VideoComponentsScreen(
             onBack = { navController.popBackStack() }
         )
     }

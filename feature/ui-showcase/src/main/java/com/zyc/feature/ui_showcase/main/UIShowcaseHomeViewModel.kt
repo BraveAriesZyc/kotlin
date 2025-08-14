@@ -196,6 +196,15 @@ class UIShowcaseHomeViewModel : ViewModel() {
             items = listOf(
                 ""
             )
+        ),
+        ComponentCategory(
+            title = "视频组件",
+            description = "视频组件相关的组件演示",
+            route = Routes.UIShowcase.NetworkComponents.VideoComponents,
+            icon = "\uEDCF",
+            items = listOf(
+                ""
+            )
         )
     )
 }

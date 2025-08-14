@@ -118,7 +118,7 @@ object Routes {
             data object FileUploadComponents
 
             @Serializable
-            data object NetworkComponentsDetail
+            data object VideoComponents
 
             @Serializable
             data object NetworkComponentsUpload
