@@ -18,6 +18,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:permission"))
     implementation(project(":core:network"))
+    implementation(project(":core:video"))
 
     // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
