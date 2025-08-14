@@ -35,7 +35,6 @@ fun PermissionComponentsScreen(
     val viewModel = viewModel<PermissionViewModel>()
     val permissions by viewModel.permissions.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    val context = LocalContext.current
 
     Scaffold(
         topBar = {

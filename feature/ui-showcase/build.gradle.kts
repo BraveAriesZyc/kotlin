@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:model"))
     implementation(project(":core:permission"))
+    implementation(project(":core:network"))
 
     // Compose BOM
     implementation(platform(libs.androidx.compose.bom))

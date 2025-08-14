@@ -55,7 +55,6 @@ class UIShowcaseHomeViewModel : ViewModel() {
     }
 
 
-
     /**
      * 清除错误状态
      */
@@ -187,6 +186,15 @@ class UIShowcaseHomeViewModel : ViewModel() {
                 "ZAppBar - 统一的应用顶部导航栏",
                 "通用按钮组件",
                 "通用卡片组件"
+            )
+        ),
+        ComponentCategory(
+            title = "网络组件",
+            description = "网络组件相关的组件演示",
+            route = Routes.UIShowcase.NetworkComponents.FileUploadComponents,
+            icon = "\uEA58",
+            items = listOf(
+                ""
             )
         )
     )

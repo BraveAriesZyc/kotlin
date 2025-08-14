@@ -1,6 +1,8 @@
 [versions]
 # 你提供的依赖版本
 activity-compose = "1.8.0"
+ijkplayer-armv7a = "0.8.8"
+ijkplayer-java = "0.8.8"
 kotlin = "2.0.21"
 agp = "8.10.0"
 android-driver = "2.1.0"
@@ -62,6 +64,7 @@ androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil-network-okhttp" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil-compose" }
+
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "junit-ext" }
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core" }
@@ -81,9 +84,9 @@ lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin-gradle-plugin" }
 androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance-appwidget" }
-
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work-runtime-ktx" }
-
+ijkplayer-java = { module = "tv.danmaku.ijk.media:ijkplayer-java", version.ref = "ijkplayer-java" }
+ijkplayer-armv7a = { module = "tv.danmaku.ijk.media:ijkplayer-armv7a", version.ref = "ijkplayer-armv7a" }
 
 
 [plugins]

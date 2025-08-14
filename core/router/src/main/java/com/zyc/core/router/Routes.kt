@@ -111,5 +111,20 @@ object Routes {
 
         @Serializable
         data object SystemComponents
+
+        @Serializable
+        data object NetworkComponents {
+            @Serializable
+            data object FileUploadComponents
+
+            @Serializable
+            data object NetworkComponentsDetail
+
+            @Serializable
+            data object NetworkComponentsUpload
+
+            @Serializable
+            data object NetworkComponentsDownload
+        }
     }
 }

@@ -2,4 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 	
 	<uses-permission android:name="android.permission.VIBRATE" />
+	<application>
+		<activity
+				android:name=".utils.mediaUtil.MediaPickerActivity"
+				android:theme="@style/Theme.Clover_app"/>
+	</application>
 </manifest>

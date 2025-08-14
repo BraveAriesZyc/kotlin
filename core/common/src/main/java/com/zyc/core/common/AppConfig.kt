@@ -31,4 +31,8 @@ data object AppConfig {
     // 通用开关配置
     const val ENABLE_DEBUG = true
     const val ENABLE_LOGGING = true
+
+
+    // 文件
+    const val CHUNK_SIZE = 1 * 1024 * 1024L // 1MB
 }
